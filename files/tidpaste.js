@@ -3,20 +3,7 @@ title: $:/plugins/bj/tiddlyclip.js
 type: application/javascript
 module-type: widget
 \*/
-/***
-|Name|TiddlyClipPlugin|
-|Version|0.0.1|
-|Author|BJ|
-|Date:|26-05-2014|
-|Type|plugin|
-|Overrides||
-|CoreVersions|2.6.0 5.0.12|
-!Description
-used with browser AddOn to gather clips of webpages and add them to a tiddlywiki.
-Used with configuaration tiddlers to provide flexibility in the manner in which the clips are added,
-and provide options via the browser's context menu system.
-!!!!!Code
-***/
+
 //{{{
 (function(){
 var tiddlyclip={};
@@ -38,7 +25,7 @@ tiddlyclip.modules.tPaste = (function () {
 	var api = 
 	{
 		onLoad:onLoad,				paste:paste,				
-		hasMode:hasMode,			loadSectionFromFile:loadSectionFromFile,
+		hasMode:hasMode,			
 		getTidContents:getTidContents,
 		hasModeBegining:hasModeBegining
 	};
@@ -396,21 +383,20 @@ tiddlyclip.modules.tPaste = (function () {
 
 	return api;
 }());
-
+///end tPaste ///
 tiddlyclip.modules.twobj = (function () {
 
 	var api = 
 	{
 		onLoad:onLoad, 			tiddlerExists:tiddlerExists,
 		loadtw:loadtw, 	 		modifyTW:modifyTW,
-		saveTW:saveTW,			getTiddler:getTiddler,
-		dock:dock			
+		saveTW:saveTW,			getTiddler:getTiddler		
 	}
 	var   tiddlerAPI,tPaste;
 	function onLoad () {
 				tiddlerAPI 	= tiddlyclip.modules.tiddlerObj;
 				tPaste=tiddlyclip.modules.tPaste;
-				dock();
+				tiddlyclip.modules.messagebox.injectMessageBox(document);
 		}
 	var tw =null,oldTW=null;
 	var storeStart;		
@@ -461,36 +447,10 @@ tiddlyclip.modules.twobj = (function () {
 			return(store.tiddlerExists(title));
 		else
 			return($tw.wiki.tiddlerExists(title));
-	}	
-	function dock() {
-		injectMessageBox(document);
-	};
-	function injectMessageBox(doc) {
-		// Inject the message box
-		var messageBox = doc.getElementById("tiddlyclip-message-box");
-		if(!messageBox) {
-			messageBox = doc.createElement("div");
-			messageBox.id = "tiddlyclip-message-box";
-			messageBox.style.display = "none";
-			doc.body.appendChild(messageBox);
-		}
-		// Attach the event handler to the message box
-		messageBox.addEventListener("tiddlyclip-save-file", onSaveFile,false);
-	};
-	function onSaveFile(event) {
-		tiddlyclip.log("savefile at last!");
-		// Get the details from the message
-		var message = event.target;
-	    var category = message.getAttribute("data-tiddlyclip-category");
-	    var pageData = message.getAttribute("data-tiddlyclip-pageData");
-	    var transformed =  JSON.parse(pageData);
-	    if (!transformed.data) alert("not data");
-	    var currentsection = message.getAttribute("data-tiddlyclip-currentsection");
-		tPaste.paste(category,transformed,currentsection);	
-	}
-		   			   
+	}			   			   
 	return api;
 }());
+///end twobj///
 
 tiddlyclip.modules.tiddlerObj = (function () {
 
@@ -912,9 +872,8 @@ tiddlyclip.modules.tiddlerObj = (function () {
 		return nams;
 	}	
 }());
-
- tiddlyclip.modules.defaults = (function ()
-{
+///end tiddlerObj///
+ tiddlyclip.modules.defaults = (function () {
 	var defaultCommands = {
 		search:{tip:'search selection in tw', command:function(){alert("mysearch")}}
 	};
@@ -979,9 +938,8 @@ tiddlyclip.modules.tiddlerObj = (function () {
 
  	return api;
 }());
-
-tiddlyclip.modules.convert =(function ()
-{
+///end defaults///
+tiddlyclip.modules.convert =(function () {
 	function onLoad() {
 
 	}
@@ -1407,7 +1365,7 @@ tiddlyclip.modules.convert =(function ()
 	}
 	return api;
 }());
-
+///end convert///
 
 var MODULES = tiddlyclip.modules;
 for (var mod in MODULES) {
