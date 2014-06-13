@@ -1,0 +1,13 @@
+{
+	"tiddlers": [
+		{
+			"file": "convert.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/convert.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		}
+	]
+}

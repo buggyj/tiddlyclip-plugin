@@ -1,0 +1,9 @@
+{
+	"title": "$:/plugins/bj/tiddlyclip",
+	"description": "include web content",
+	"author": "Jeffrey Wilkinson",
+	"version": "0.0.1",
+	"core-version": ">=5.0.12",
+	"source": "https://github.com/buggyj/tiddlyclip",
+	"plugin-type": "plugin"
+}

@@ -1,0 +1,12 @@
+{
+	"tiddlers": [
+		{
+			"file": "tidpaste.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/tidpaste.js",
+				"module-type": "library"
+			}
+		}
+	]
+}
