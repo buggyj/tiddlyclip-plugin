@@ -1,0 +1,12 @@
+created: 20130913210000000
+creator: Yours truly
+modified: 20140624054004121
+modifier: Yours truly
+tags: TiddlyClipConfig
+title: LogDetYM
+type: text/plain
+
+[
+{"#detail":"((*@Category*))((*@YearMonth*))\n\n"},
+{"#newdata": "((*!$mydate==@YearMonth*??*#detail*))"}
+]

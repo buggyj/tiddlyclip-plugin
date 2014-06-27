@@ -1,0 +1,12 @@
+changecount: 1
+created: 20130711191100000
+creator: Your Name
+modified: 20140624132516270
+modifier: Your Name
+tags: TiddlyClipConfig
+title: LogConfig
+type: text/vnd.tiddlywiki
+
+|!Title|!Body|!Tags|!Fields|!Initvals|!Modes|
+|((*@Category*))((*@YearMonth*))|[[LogDet]]||{"$mydate":"((*@DateComma*))"},{"#1":"1"},{"$new":"((*$new+#1*))"}|{"$mydate":"((*@DateComma*))"}, {"$new":"0"}|append|
+|((*@Category*))|[[LogDetYM]]||{"$mydate":"((*@YearMonth*))"}|{"$mydate":"((@DateComma*))"}|append|
