@@ -620,6 +620,7 @@ tiddlyclip.modules.tiddlerObj = (function () {
 			pageData.data.DateLong=       $tw.utils.formatDateString(new Date(),dateLong);		
 			pageData.data.DateShort=      $tw.utils.formatDateString(new Date(),dateShort);	       
 			pageData.data.DateComma=     pageData.data.DateShort.toString().replace(/ /g,':');
+			pageData.data.DateTimeShort=  $tw.utils.formatDateString(new Date(),dateTimeShort);
 		}
 		pageData.data.Category1stWord=pageData.data.Category.replace(/(.*) (.*)/,"$1");
 		var protoData = {}; 
