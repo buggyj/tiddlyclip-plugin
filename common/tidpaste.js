@@ -154,8 +154,8 @@ tiddlyclip.modules.tPaste = (function () {
 		if ((typeof defRule) =='string' ) { //we has a row definition
 			//remove triple quotes around any | - these were needed to stop TW thinking they were table elements
 			var pieces = defRule.replace(/\"\"\"\|\"\"\"/g,"&bar;").split("|");
-			if  (pieces.length <6) {error('short:'+defRule);throw new Error('Invalid Rule');} //error malformeed TODO: inform the user
-			for (var i=1;i<6;i++) {
+			if  (pieces.length <7) {error('short:'+defRule);throw new Error('Invalid Rule');} //error malformeed TODO: inform the user
+			for (var i=1;i<7;i++) {
 				pieces[i]= pieces[i].replace(whiteSpace,"").replace("&bar;","|"); 
 				if (pieces[i] == null) {
 					if (i==1) throw new Error('Invlid Rule');//must define a name for the tid
@@ -166,8 +166,8 @@ tiddlyclip.modules.tPaste = (function () {
 						 if (temp != null) pieces[i] = temp;
 					}						
 				} else{
-					if (i < 4) pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';
-					else if (i <6)	pieces[i] = '['+pieces[i]+']';	
+					if (i==4||i==5)	pieces[i] = '['+pieces[i]+']';	
+					else pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';
 				}
 			}
 			this.title =pieces[1];
@@ -175,7 +175,7 @@ tiddlyclip.modules.tPaste = (function () {
 			this.tags = pieces[3];
 			this.fields =pieces[4]; 
 			this.InitVals=pieces[5];	
-			this.modes =extractModes(pieces[6]);
+			this.modes =pieces[6];
 		}	
 		else { // we are passed a structure
 			this.title =defRule.title;
@@ -186,22 +186,6 @@ tiddlyclip.modules.tPaste = (function () {
 			this.modes = modes;	
 		}
 		
-	}
-		
-	Rule.prototype.hasMode=function(mode){
-		if (!this.modes) return false;
-		for (var i=0; i< this.modes.length;i++)
-			if (mode === this.modes[i]) return true;
-		return false;
-	}
-	
-	Rule.prototype.getWriteMode=function(mode){
-		var writeMode = 'overwrite';
-		if (!this.modes) return writeMode;
-		for (var i=0; i< this.modes.length;i++)
-			if (('append' === this.modes[i])||('prepend' === this.modes[i])||('move' === this.modes[i])
-			   ||('overwrite' === this.modes[i])||('once' === this.modes[i])) return (this.modes[i]);
-		return writeMode;
 	}
 
 	function userInput(source){ //replace  % delimited strings with user input
@@ -291,26 +275,27 @@ tiddlyclip.modules.tPaste = (function () {
 		if (!hasMode(cat,"tiddlers"))  { //user has not selected  tiddler mode
 			if (hasModeBegining(cat,"tiddler")) loadTiddlerVarsFrom(pageData,firstRemoteTid(pageData));//copy into data area for insertion by a rule
 			for(var i=startrule; i<patterns.length; i++)  {	
-					var writeMode = patterns[i].getWriteMode();
-					var tiddlerObj = new tiddlerAPI.Tiddler();
+				var tiddlerObj, writeMode;
+				if (patterns[i].title == null) {
+					tiddlyclip[patterns[i].body](catName,pageData,section,tiddlers,tideditMode);
+					continue;
+				}
+				tiddlerObj = new tiddlerAPI.Tiddler();
 
-					if ((patterns[i].hasMode('pipeLast'))&&(tiddlers.length!==0)) 
-						tiddlerObj.subst(new Rule(tiddlers.pop(),patterns[i].modes),pageData); //remove last element and use as a rule
-					else
-						tiddlerObj.subst(patterns[i],pageData);
-						
-					tiddlerObj.createdByRule=patterns[i];		//reference back to the rule - can be used later
-					//tiddlerObj.text=userInput(tiddlerObj.text); //not used at present
-					tiddlerObj.addTags(catTags);
-					//user extensions
-					for (var userExtends in api.AfterSub) {
-							api.AfterSub[userExtends](tiddlerObj);
-					}
-					if (cancelled.val==true) {return;}
-					//if (pageData.data.WriteMode !="none") writeMode=pageData.data.WriteMode;
-					//add tiddlers one by one to our list of edits
-					tiddlers.push(tiddlerObj);
-					tideditMode.push(writeMode);
+				tiddlerObj.subst(patterns[i],pageData);
+					
+				tiddlerObj.createdByRule=patterns[i];		//reference back to the rule - can be used later
+				//tiddlerObj.text=userInput(tiddlerObj.text); //not used at present
+				tiddlerObj.addTags(catTags);
+				//user extensions
+				for (var userExtends in api.AfterSub) {
+						api.AfterSub[userExtends](tiddlerObj);
+				}
+				if (cancelled.val==true) {return;}
+				//if (pageData.data.WriteMode !="none") writeMode=pageData.data.WriteMode;
+				//add tiddlers one by one to our list of edits
+				tiddlers.push(tiddlerObj);
+				tideditMode.push(tiddlerObj.getWriteMode());
 			}
 		} else { 
 			var tid;
@@ -592,6 +577,22 @@ tiddlyclip.modules.tiddlerObj = (function () {
 		return tiddler;
 	}
 
+	Tiddler.prototype.hasMode=function(mode){
+		if (!this.modes) return false;
+		for (var i=0; i< this.modes.length;i++)
+			if (mode === this.modes[i]) return true;
+		return false;
+	}
+	
+	Tiddler.prototype.getWriteMode=function(mode){
+		var writeMode = 'overwrite';
+		if (!this.modes) return writeMode;
+		for (var i=0; i< this.modes.length;i++)
+			if (('append' === this.modes[i])||('prepend' === this.modes[i])||('move' === this.modes[i])
+			   ||('overwrite' === this.modes[i])||('once' === this.modes[i])) return (this.modes[i]);
+		return writeMode;
+	}
+	
 	function undoHtmlEncode( input ) {
 		input =input
         .replace(/&bar;/g, '|')
@@ -602,6 +603,13 @@ tiddlyclip.modules.tiddlerObj = (function () {
         return (input);   
 	}
 
+	function extractModes(tagString) {
+		var modes =[], tList = tagString.split(' ');
+		for (var i=0; i< tList.length; i++) {
+			modes[i] = tList[i].trim();
+		}
+		return modes;
+	}
 	Tiddler.prototype.subst  =	function (rule,pageData){
 		var dateLong=    'DDD, MMM DDth, YYYY';
 		var dateTimeLong='DDD, MMM DDth, YYYY at hh12:0mm:0ss am';	
@@ -631,15 +639,32 @@ tiddlyclip.modules.tiddlerObj = (function () {
 		for (var n in pageData.data) {table['@'][n]= pageData.data[n];}
 		for (var n in macrosx) {table['@'][n]= macrosx[n];}
 
+
 		this.parseStructure(rule.title);			 
 		this.title=table['#']['newdata'];
+		
+		table['#']={};		
+		//first we need to find the modes before we can decide how to update
+		var storedTid=twobj.getTiddler(this.title);
+		if (storedTid) {
+			storedTid.exportFieldsTo(table['$']);
+			table['@']['newtiddler']= 'false';
+		} else {
+			table['@']['newtiddler']= 'true';
+			this.exportFieldsTo(table['$']);
+		}
+		this.parseStructure(rule.modes);			 
+		this.modes=extractModes(table['#']['newdata']);
+		table['#']={};
+		table['$']={};	
 		//this copies tags from target to preserve it's tags as well as obtaining any fields
-		if (rule.hasMode('append')||rule.hasMode('prepend')||rule.hasMode('modify')) {
+		if (this.hasMode('append')||this.hasMode('prepend')||this.hasMode('modify')) {
 			var storedTid=twobj.getTiddler(this.title);
 			if (storedTid) {
 				storedTid.exportFieldsTo(table['$']);
 				table['@']['newtiddler']= 'false';
 			} else {
+				this.exportFieldsTo(table['$']);
 				this.parseStructure(rule.InitVals);
 				table['@']['newtiddler']= 'true';
 			}
@@ -649,7 +674,7 @@ tiddlyclip.modules.tiddlerObj = (function () {
 			this.parseStructure(rule.InitVals);
 			table['@']['newtiddler']= 'true';
 		}
-		if (rule.hasMode('modify')){
+		if (this.hasMode('modify')){
 			//expose old values
 			table['$'].tags = this.tags;
 			table['$'].text = this.text;
@@ -690,7 +715,7 @@ tiddlyclip.modules.tiddlerObj = (function () {
 		if (type !== '#' &&type !=='$' && type !=='@') error("variable: invalid name "+n);
         else return {type:type, leftSide:n.substring(1)};
 	 }
-	function valOf(n) {
+	function valOf(n, test) {
 		var val, type = n.substring(0,1);
 		if (type !== '#' &&type !=='$'&&type !=='@'){
 			error("source: invalid name"+n);
@@ -698,7 +723,10 @@ tiddlyclip.modules.tiddlerObj = (function () {
 		}
 		else {
 			val=table[type][n.substring(1)];
-			if (!val) error("source: invalid val "+n);
+			if (val == undefined) { 
+				if (!test)  error("source: invalid val "+n);
+				return null;
+			}
 			return val;
 		}
 	 }
@@ -777,6 +805,19 @@ tiddlyclip.modules.tiddlerObj = (function () {
 				self.removeField(key2.substring(1));
 				return "deleted "+key2;
 			}
+			if (key1=="exists") {
+				if (valOf(key2, true) != null)
+					return "true";
+				else
+					return "false"
+			}
+			if (key1=="alert") {
+				if (valOf(key2) == null)
+					alert(key2+" null");
+				else
+					alert(valOf(key2));
+				return "alerted";
+			}
 			//handle normal functions
 			var val;
 			if (!!key2) val = valOf(key2);
@@ -794,14 +835,14 @@ return tiddlyclip[key1](val);
 		});
 	}
 	
-	Tiddler.prototype.replaceALL=function(source, data){ //replace all % delimited strings
+	Tiddler.prototype.replaceALL=function(source, data){ //replace all ((* *)) delimited strings
 		var self = this;
 		return source.replace(/\(\(\*([\S\s]*?)\*\)\)/g,function(m,key,offset,str){ 
-			var parts, vals, res, firstterm, firstparts;
-			// check for  ((*conditionalstring*??*someotherstring*))
+			var parts, vals, res, firstterm, firstparts, testedTrue = true;
+			// check for  ((*conditional*??*Use this variable*??*or use this variable*))
 			firstparts= key.split("*??*");
 			//handle conditional string
-			if (firstparts.length ==2) {	
+			if (firstparts.length >1) {	
 				var negate=(firstparts[0].substring(0,1)== '!');
 				if (negate) {
 					firstterm = firstparts[0].substring(1);
@@ -814,22 +855,35 @@ return tiddlyclip[key1](val);
 					var regParts = (valOf(parts[1])).split("/");
 					var pattern=new RegExp(regParts[1],regParts[2]);
 					
-					if (negate&&pattern.test(vals[0]))return '' ;
-					else if (!negate&&!pattern.test(vals[0]))return '' ;
+					if (negate&&pattern.test(vals[0])) testedTrue = false;
+					else if (!negate&&!pattern.test(vals[0]))testedTrue = false;
 				}
 				// comparision
 				else if ((parts= firstterm.split("==")).length ==2) {
 					if ((vals =toValues(parts))==null) return m;
 					if ((res=handleBinaryForm(vals[0],negate?"NQ":"EQ",vals[1]))==null) return m;
-					else if (!res) return ''; 
+					else if (!res) testedTrue = false; 
 				} 
+				// macro
+				else if ((res = self.handleFunction(firstterm)) != null) { // a function
+					if ( negate && res==="true") 	{testedTrue = false;}
+					if (!negate && res==="false") {testedTrue = false;}
+
+				}
 				// boolean variable
 				else {
 					if ((vals =valOf(firstterm))==null)  return m;
-					if ( negate && vals==="true") 	return "";
-					if (!negate && vals==="false") 	return "";
+					if ( negate && vals==="true") 	testedTrue = false;
+					if (!negate && vals==="false") testedTrue = false;
 				}
-				key= firstparts[1];	//string after *??* becomes key
+
+				if (testedTrue) {
+					key = firstparts[1];
+				} 
+				else { 
+					if (firstparts.length == 2) return '';//no 'else' defined
+					key = firstparts[2];
+				}
 			}
 			// end of handling conditional string part
 			var parts;
