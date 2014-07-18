@@ -1,11 +1,11 @@
 /***
 |Name|TiddlyClipPlugin|
-|Version|0.0.1|
+|Version|0.0.2|
 |Author|BJ|
-|Date:|26-05-2014|
+|Date:|16-07-2014|
 |Type|plugin|
 |Overrides||
-|CoreVersions|2.6.0 5.0.12|
+|CoreVersion|2.6.0|
 !Description
 used with browser AddOn to gather clips of webpages and add them to a tiddlywiki.
 Used with configuaration tiddlers to provide flexibility in the manner in which the clips are added,

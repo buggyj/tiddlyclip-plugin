@@ -7,5 +7,9 @@ type: text/vnd.tiddlywiki
 
 !default
 |!Category|!Tip|!Tags|!Rule Tid|!Modes|
+|tid||clippedtid|defaultTid|tiddlers|
 |LogBook|logbook|log|LogConfig|addtext|
-|ReadAble|logbook|log|ReadConfig||
+|ReadAble|||ReadConfig||
+|ConVert|convertTW2||ConvertConfig||
+|WebList|logbook||WebClipTid||
+|SnapIt|||SnapConfig||

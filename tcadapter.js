@@ -41,7 +41,7 @@ CreateTiddlerWidget.prototype.render = function(parent,nextSibling) {
 
 CreateTiddlerWidget.prototype.getTiddlerList = function() {
 	var defaultFilter = "[all[shadows+tiddlers]tag[$:/tags/tiddlyclip]]";
-	return this.wiki.filterTiddlers(defaultFilter,this);//BJ FIXME should not allow user defined filters
+	return this.wiki.filterTiddlers(defaultFilter,this);
 }
 /*
 Compute the internal state of the widget
@@ -128,7 +128,6 @@ tcWidget.prototype.render = function(parent,nextSibling) {
 	    var currentsection = message.getAttribute("data-tiddlyclip-currentsection");					
 		self.dispatchEvent({type: "tiddlyclip-create", category:category, pagedata: transformed, currentsection:currentsection});	
 	}
-
 };
 
 /*
