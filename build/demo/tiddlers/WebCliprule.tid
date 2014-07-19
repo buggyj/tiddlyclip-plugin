@@ -1,0 +1,9 @@
+created: 20140219094301916
+modified: 20140716070755976
+tags: TiddlyClipRule TCdoc
+title: WebCliprule
+type: text/vnd.tiddlywiki
+
+|!Title|!Body|!Tags|!Fields|!Initvals|!Modes|
+|((*@DateTimeShort*))|((*@Web*))|((*@Section*)) [[((*@DateShort*))]]|{"$location":"((*@PageRef*))"},{"$caption":"((*@PageTitle*))"}||append|
+|((*@Section*))|[[List_Clip_Caption]]||||once|

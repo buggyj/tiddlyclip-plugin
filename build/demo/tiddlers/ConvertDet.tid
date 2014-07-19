@@ -1,0 +1,9 @@
+created: 20140624143451501
+modified: 20140624143525223
+title: ConvertDet
+type: text/vnd.tiddlywiki
+
+[
+{"#readable":"((*@makeReadable(@Web)*))"},
+{"#newdata": "((*@htmlToTW2(#readable)*))\n\n------\n\n"}
+]
