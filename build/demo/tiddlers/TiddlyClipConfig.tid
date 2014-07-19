@@ -7,9 +7,13 @@ type: text/vnd.tiddlywiki
 
 !default
 |!Category|!Tip|!Tags|!Rule Tid|!Modes|
-|tid||clippedtid|defaultTid|tiddlers|
+|tid||clippedtid|TidConfig|tiddlers|
 |LogBook|logbook|log|LogConfig|addtext|
 |ReadAble|||ReadConfig||
 |ConVert|convertTW2||ConvertConfig||
-|WebList|logbook||WebClipTid||
-|SnapIt|||SnapConfig||
+|WebList|||WebClipTid||
+|SnapIt|||SnapConfig|snap30|
+
+!ClipList
+|!Category|!Tip|!Tags|!Rule Tid|!Modes|
+|webclip|||WebCliprule||
