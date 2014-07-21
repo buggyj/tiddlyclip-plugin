@@ -12,6 +12,7 @@ type: text/vnd.tiddlywiki
 |ReadAble|||ReadConfig||
 |ConVert|convertTW2||ConvertConfig||
 |WebList|||WebClipTid||
+|highlight||||highlight|
 |SnapIt|||SnapConfig|snap30|
 
 !ClipList
