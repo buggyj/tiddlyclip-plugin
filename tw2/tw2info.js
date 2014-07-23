@@ -1,6 +1,6 @@
 /***
 |Name|TiddlyClipPlugin|
-|Version|0.0.2|
+|Version|0.0.3|
 |Author|BJ|
 |Date:|16-07-2014|
 |Type|plugin|

@@ -4,9 +4,9 @@ creator: BJ
 modified: 20140624132516270
 modifier: BJ
 tags: TiddlyClipConfig
-title: ConvertConfig
+title: SnapUtubeConfig
 type: text/vnd.tiddlywiki
 
 |!Title|!Body|!Tags|!Fields modifiers|!field initials|!Modes|
-|((*@category*))|[[ConvertDet]]|||{"$type":"text/x-tiddler"}|append|
+|((*@pageTitle*))|[[UtubeDetail]]|ClipIntrest|||
 

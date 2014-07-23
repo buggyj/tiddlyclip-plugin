@@ -7,6 +7,6 @@ title: LogDetYM
 type: text/plain
 
 [
-{"#detail":"((*@Category*))((*@YearMonth*))\n\n"},
-{"#newdata": "((*!$mydate==@YearMonth*??*#detail*))"}
+{"#detail":"((*@category*))((*@yearMonth*))\n\n"},
+{"#newdata": "((*!$mydate==@yearMonth*??*#detail*))"}
 ]

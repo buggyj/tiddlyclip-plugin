@@ -352,7 +352,7 @@ tiddlyclip.modules.tPaste = (function () {
 					tiddlerObj=new tiddlerAPI.Tiddler(tid);
 					var editMode;//no editmode
 					tiddlerObj.addTags(catTags);
-					if (!vers2 && pageData.data.Classic =='true') tiddlerObj.addMimeType('text/x-tiddlywiki');
+					if (!vers2 && pageData.data.classic =='true') tiddlerObj.addMimeType('text/x-tiddlywiki');
 					tiddlers.push(tiddlerObj);
 					tideditMode.push(editMode);
 				}
@@ -650,21 +650,21 @@ Tiddler.prototype.addCreationFields=function() {
 		var dateShort=   'DD MMM YYYY';//journal form
 		var dateTimeShort=   'YYYY/MM/DD 0hh:0mm:0ss';//journal form
 		if (vers2) {		
-			pageData.data.YearMonth=(new Date()).convertToYYYYMMDDHHMMSSMMM().replace(/(.*)\.(.*)/,"$1").substr(0,6);
-			pageData.data.DateTimeLong=  new Date().formatString(dateTimeLong);	//replaces  %DateTimeLong%
-			pageData.data.DateLong=      new Date().formatString(dateLong);		//replaces  %DateLong%
-			pageData.data.DateShort=     new Date().formatString(dateShort);		//replaces  %DateShort%     
-			pageData.data.DateTimeShort=     new Date().formatString(dateTimeShort);		//replaces  %DateShort%   
-			pageData.data.DateComma=     pageData.data.DateShort.toString().replace(/ /g,':');
+			pageData.data.yearMonth=(new Date()).convertToYYYYMMDDHHMMSSMMM().replace(/(.*)\.(.*)/,"$1").substr(0,6);
+			pageData.data.dateTimeLong=  new Date().formatString(dateTimeLong);	//replaces  %dateTimeLong%
+			pageData.data.dateLong=      new Date().formatString(dateLong);		//replaces  %dateLong%
+			pageData.data.dateShort=     new Date().formatString(dateShort);		//replaces  %dateShort%     
+			pageData.data.dateTimeShort=     new Date().formatString(dateTimeShort);		//replaces  %dateShort%   
+			pageData.data.dateComma=     pageData.data.dateShort.toString().replace(/ /g,':');
 		}else {
-			pageData.data.YearMonth=$tw.utils.stringifyDate(new Date()).replace(/(.*)\.(.*)/,"$1").substr(0,6);
-			pageData.data.DateTimeLong=   $tw.utils.formatDateString(new Date(),dateTimeLong);	
-			pageData.data.DateLong=       $tw.utils.formatDateString(new Date(),dateLong);		
-			pageData.data.DateShort=      $tw.utils.formatDateString(new Date(),dateShort);	       
-			pageData.data.DateComma=     pageData.data.DateShort.toString().replace(/ /g,':');
-			pageData.data.DateTimeShort=  $tw.utils.formatDateString(new Date(),dateTimeShort);
+			pageData.data.yearMonth=$tw.utils.stringifyDate(new Date()).replace(/(.*)\.(.*)/,"$1").substr(0,6);
+			pageData.data.dateTimeLong=   $tw.utils.formatDateString(new Date(),dateTimeLong);	
+			pageData.data.dateLong=       $tw.utils.formatDateString(new Date(),dateLong);		
+			pageData.data.dateShort=      $tw.utils.formatDateString(new Date(),dateShort);	       
+			pageData.data.dateComma=     pageData.data.dateShort.toString().replace(/ /g,':');
+			pageData.data.dateTimeShort=  $tw.utils.formatDateString(new Date(),dateTimeShort);
 		}
-		pageData.data.Category1stWord=pageData.data.Category.replace(/(.*) (.*)/,"$1");
+		pageData.data.category1stWord=pageData.data.category.replace(/(.*) (.*)/,"$1");
 
 		var macrosx =defaults.getMacros();
 		table={$:{}};table['#']={};table['@']={};
@@ -1003,8 +1003,8 @@ return tiddlyclip[key1](val);
 	];
 	var defaultRules = {
 		defaultTid:"|((*@remoteTidTitle*))|((*@remoteTidText*))|((*@remoteTidTags*))|||append|",
-		defaultText:"|((*@PageTitle*))|((*@PageRef*)) <br>date='((*@DateTimeLong*))', <html>((*@Text*))</html>||||append|",
-		defaultWeb: "|((*@PageTitle*))|((*@PageRef*)) <br>date='((*@DateTimeLong*))', <html>((*@Web*))</html>||||append|"
+		defaultText:"|((*@PageTitle*))|((*@PageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@Text*))</html>||||append|",
+		defaultWeb: "|((*@PageTitle*))|((*@PageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@Web*))</html>||||append|"
 	}
 
 	var defaultPrefs = {

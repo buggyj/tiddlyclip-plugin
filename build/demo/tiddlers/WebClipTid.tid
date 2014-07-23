@@ -5,5 +5,5 @@ title: WebClipTid
 type: text/vnd.tiddlywiki
 
 |!Title|!Body|!Tags|!Fields|!Initvals|!Modes|
-|((*@PageTitle*))|[[WebClipDetailRule]]|((*@Category*))|{"$type":"text/html"}||append|
-|((*@Category*))|[[WebClipTagRule]]||||once|
+|((*@pageTitle*))|[[WebClipDetailRule]]|((*@category*))|{"$type":"text/html"}||append|
+|((*@category*))|[[WebClipTagRule]]||||once|

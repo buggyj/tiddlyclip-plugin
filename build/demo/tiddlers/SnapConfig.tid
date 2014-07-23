@@ -8,5 +8,6 @@ title: SnapConfig
 type: text/vnd.tiddlywiki
 
 |!Title|!Body|!Tags|!Fields modifiers|!field initials|!Modes|
-|((*@Category*))|((*@snap*))|||{"$type":"image/png"}|move|
+|((*@pageTitle*))/thumbprint|((*@snap*))|ClippedImage|{"$type":"image/png"}||
+|((*@pageTitle*))|!((*@pageTitle*))\n\n{{((*@pageTitle*))/thumbprint}}\n\n((*@text*))\n\n!Comment\n\n((*@userString*))|ClipIntrest|||
 

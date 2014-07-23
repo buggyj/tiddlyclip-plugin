@@ -5,5 +5,5 @@ title: WebCliprule
 type: text/vnd.tiddlywiki
 
 |!Title|!Body|!Tags|!Fields|!Initvals|!Modes|
-|((*@DateTimeShort*))|((*@Web*))|((*@Section*)) [[((*@DateShort*))]]|{"$location":"((*@PageRef*))"},{"$caption":"((*@PageTitle*))"}||append|
-|((*@Section*))|[[List_Clip_Caption]]||||once|
+|((*@dateTimeShort*))|((*@web*))|((*@section*)) [[((*@dateShort*))]]|{"$location":"((*@pageRef*))"},{"$caption":"((*@pageTitle*))"}||append|
+|((*@section*))|[[List_Clip_Caption]]||||once|

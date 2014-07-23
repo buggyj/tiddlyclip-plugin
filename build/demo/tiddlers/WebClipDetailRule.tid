@@ -4,4 +4,4 @@ tags: TiddlyClipRule
 title: WebClipDetailRule
 type: text/plain
 
-[{"#newdata":"((*@PageRef*)) <br> ((*@DateTimeShort*))<br>((*@Web*))"}]
+[{"#newdata":"((*@pageRef*)) <br> ((*@dateTimeShort*))<br>((*@web*))"}]

@@ -8,5 +8,5 @@ title: ReadConfig
 type: text/vnd.tiddlywiki
 
 |!Title|!Body|!Tags|!Fields|!Initvals|!Modes|
-|((*@Category*))|[[ReadDet]]||||append|
+|((*@category*))|[[ReadDet]]||||append|
 

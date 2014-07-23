@@ -13,7 +13,8 @@ type: text/vnd.tiddlywiki
 |ConVert|convertTW2||ConvertConfig||
 |WebList|||WebClipTid||
 |highlight||||highlight|
-|SnapIt|||SnapConfig|snap30|
+|snapPage|||SnapConfig|snap30 addtext|
+|snapUtube|||SnapUtubeConfig|addtext|
 
 !ClipList
 |!Category|!Tip|!Tags|!Rule Tid|!Modes|
