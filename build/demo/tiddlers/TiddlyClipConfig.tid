@@ -8,6 +8,7 @@ type: text/vnd.tiddlywiki
 !default
 |!Category|!Tip|!Tags|!Rule Tid|!Modes|
 |tid||clippedtid|TidConfig|tiddlers|
+|text|copy as text||PlainText||
 |LogBook|logbook|log|LogConfig|addtext|
 |ReadAble|||ReadConfig||
 |ConVert|convertTW2||ConvertConfig||

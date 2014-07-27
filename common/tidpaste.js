@@ -709,7 +709,7 @@ Tiddler.prototype.addCreationFields=function() {
 		//---modes are now determined 
 		table['#']={};
 		table['$']={};
-		table['$'].title=title;
+
 		//---expose whether this is a new tiddler
 		if (this.hasMode('append')||this.hasMode('prepend')||this.hasMode('modify')) {
 			var storedTid=twobj.getTiddler(title);
@@ -729,6 +729,7 @@ Tiddler.prototype.addCreationFields=function() {
 			this.parseStructure(rule.InitVals);
 			table['@']['newtiddler']= 'true';
 		}
+		table['$'].title=title;
 	}
 	Tiddler.prototype.subst  =	function (rule,pageData){
 
@@ -1003,8 +1004,8 @@ return tiddlyclip[key1](val);
 	];
 	var defaultRules = {
 		defaultTid:"|((*@remoteTidTitle*))|((*@remoteTidText*))|((*@remoteTidTags*))|||append|",
-		defaultText:"|((*@PageTitle*))|((*@PageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@Text*))</html>||||append|",
-		defaultWeb: "|((*@PageTitle*))|((*@PageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@Web*))</html>||||append|"
+		defaultText:"|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@text*))</html>||||append|",
+		defaultWeb: "|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@web*))</html>||||append|"
 	}
 
 	var defaultPrefs = {
