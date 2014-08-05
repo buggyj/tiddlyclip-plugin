@@ -1,8 +1,8 @@
 /***
 |Name|TiddlyClipPlugin|
-|Version|0.0.3|
-|Author|BJ|
-|Date:|16-07-2014|
+|Version|0.0.4|
+|Author|Jeffrey Wilkinson aka BJ|
+|Date:|02-08-2014|
 |Type|plugin|
 |Overrides||
 |CoreVersion|2.6.0|

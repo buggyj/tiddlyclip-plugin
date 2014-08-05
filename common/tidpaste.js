@@ -84,9 +84,9 @@ tiddlyclip.modules.tPaste = (function () {
 		return {valid:false}; 
 	}
 
-	function findSection(activeSection) {
+	function findSection(activeSection,configTable) {
         var sectionStrgs;
-		var content = getTidContents("TiddlyClipConfig");//where all sections are defined
+		var content = configTable;
 		if (content != null) {
 			sectionStrgs = content.split(defaults.getMacros().FOLDSTART+'['); //sections begin with a title, , followed by a table of categories
 			if(sectionStrgs.length>1) {
@@ -264,8 +264,11 @@ tiddlyclip.modules.tPaste = (function () {
 		//then use build in 'dummy' rule and use substitutionTiddler as input to the substitution engine
 		
 		//status ("paste enter");
-		var cat = findCategory (findSection(section), catName);
+		var cat = findCategory (findSection(section,getTidContents("TiddlyClipConfig")), catName);
 		if (!cat.valid) {
+				cat = findCategory (findSection(section), catName);//look for default rule
+		}
+		if (!cat.valid) {			
 			status("not valid category");
 			return;
 		}
@@ -906,7 +909,7 @@ return tiddlyclip[key1](val);
 					firstterm = firstparts[0];
 				}
 				// regex condition
-				if ((parts= firstterm.split("/")).length ==2) {
+				if ((parts= firstterm.split("/")).length ==3) {
 					if ((vals = toValues(parts)) == null) return m;
 					var regParts = (valOf(parts[1])).split("/");
 					var pattern=new RegExp(regParts[1],regParts[2]);
@@ -998,7 +1001,7 @@ return tiddlyclip[key1](val);
 		defaultCommands:defaultCommands
 	}	
 	var defaultCategories = [
-		"|tid|copy tids||defaultTid|tiddlers|",
+		"|tid|copy tids||defaultTid|tiddlerscopy|",
 		"|text|save text||defaultText||",
 		"|web|save html||defaultWeb||"
 	];
