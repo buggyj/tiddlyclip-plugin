@@ -28,7 +28,7 @@ tiddlyclip.modules.tPaste = (function () {
 	var   tiddlerObj, twobj,   defaults;
 
 	function onLoad() {
-		tiddlerAPI 	= tiddlyclip.modules.tiddlerObj;
+		tiddlerAPI 	= tiddlyclip.modules.tiddlerAPI;
 		twobj		= tiddlyclip.modules.twobj;
 		defaults	= tiddlyclip.modules.defaults;
 	}
@@ -132,17 +132,7 @@ tiddlyclip.modules.tPaste = (function () {
 		var ruleDefs = tiddler.trim().split("\n");
 		var arrayOfRules =[];
 		var firstRow=0,firstrule=0;;
-		if (ruleDefs[firstRow].substring(0,2)==='$:') {
-			arrayOfRules[0]= {valid:true};
-			try {
-					if (!vers2) {
-						arrayOfRules[0].run=require(ruleDefs[firstRow]).run;
-						firstrule=1;
-					}
-			} catch(e) {error("no extmodule found")};
-			firstRow=2;
-			if (ruleDefs.length<2) return arrayOfRules;
-		}
+
         if (ruleDefs[firstRow].substring(0,2)==='|!') firstRow += 1;// row  maybe column titles, ie the string |!Title|!Body|!Tags|!Modes|
 		for (var i=firstrule,j=firstRow; j<ruleDefs.length; i++,j++) {
 			arrayOfRules[i]=new  Rule(ruleDefs[j]);
@@ -230,15 +220,7 @@ tiddlyclip.modules.tPaste = (function () {
 		 }
 		 return result;
 	}
-	function loadTiddlerVarsFrom(pageData,tid) {
-		//alert(twobj.title + 'title');
-		//BJ FIXME this need to be changed so that it acts like 'append mode'
-		// and the tiddler is got from the retrieve procedure
-		tidObj=new tiddlerAPI.Tiddler(tid);
-		pageData.data.remoteTidText= decodeutf8(tidObj.text);
-		pageData.data.remoteTidTags= decodeutf8(tidObj.tags||" ");
-		pageData.data.remoteTidTitle=decodeutf8(tidObj.title);		
-	}
+
 	function firstRemoteTid(pageData) {
 		pageData.remoteTidIndex = 0;
 		return pageData.remoteTidArr[0];
@@ -353,11 +335,14 @@ tiddlyclip.modules.tPaste = (function () {
 				}
 				else {
 					tiddlerObj=new tiddlerAPI.Tiddler(tid);
-					var editMode;//no editmode
+					var writeMode;//no editmode
 					tiddlerObj.addTags(catTags);
+					//BJ remove these to 'defaults and move defaults to api table
+					if (!vers2) writeMode = 'import';
+					
 					if (!vers2 && pageData.data.classic =='true') tiddlerObj.addMimeType('text/x-tiddlywiki');
 					tiddlers.push(tiddlerObj);
-					tideditMode.push(editMode);
+					tideditMode.push(writeMode);
 				}
 			}
 
@@ -377,11 +362,14 @@ tiddlyclip.modules.tPaste = (function () {
 		if (vers2) 
 			return store.getTiddlerText(tidname);
 		else
-			return $tw.wiki.getTiddlerText(tidname);
+			return tiddlyclip.getTidContents(tidname);
 	}
 		
 	function addTiddlerToTW( tiddlerObj, writeMode) { 
-		
+		if (writeMode=='import'){
+					twobj.importtids(tiddlerObj);
+			return;
+		}
 		if (!twobj.tiddlerExists(tiddlerObj.fields.title))  twobj.modifyTW(tiddlerObj);
 		else {
 			//status ("writemode is "+writeMode);
@@ -394,11 +382,14 @@ tiddlyclip.modules.tPaste = (function () {
 				case 'move':
 					var oldtid = twobj.getTiddler(tiddlerObj.fields.title);//retrieve existing version
 					if (!!oldtid)  {
-						oldtid.title =oldtid.title + new Date();//move old tid by appending the date to its title
+						oldtid.fields.title =oldtid.fields.title +'/'+ new Date();//move old tid by appending the date to its title
 						twobj.modifyTW(oldtid);//move out the way
 					}
 					twobj.modifyTW(tiddlerObj);
 					break;
+				case 'add/import':
+					twobj.importtids(tiddlerObj);
+				break;
 				default: //overwrite
 				twobj.modifyTW(tiddlerObj);
 			}
@@ -413,11 +404,12 @@ tiddlyclip.modules.twobj = (function () {
 	var api = 
 	{
 		onLoad:onLoad, 			tiddlerExists:tiddlerExists,
-		modifyTW:modifyTW,		getTiddler:getTiddler		
+		modifyTW:modifyTW,		getTiddler:getTiddler,
+		importtids:importtids	
 	}
 	var   tiddlerAPI,tPaste;
 	function onLoad () {
-				tiddlerAPI 	= tiddlyclip.modules.tiddlerObj;
+				tiddlerAPI 	= tiddlyclip.modules.tiddlerAPI;
 				tPaste=tiddlyclip.modules.tPaste;
 		}
 	var tw =null,oldTW=null;
@@ -427,7 +419,7 @@ tiddlyclip.modules.twobj = (function () {
 		if (vers2) 
 			var storedTid=store.getTiddler(tidname);
 		else
-			var storedTid=$tw.wiki.getTiddler(tidname);
+			var storedTid=tiddlyclip.getTiddler(tidname);
 		if (storedTid) {
 			return (new tiddlerAPI.Tiddler(storedTid,true));
 		}
@@ -436,9 +428,16 @@ tiddlyclip.modules.twobj = (function () {
 	function modifyTW(t)
 	{
 	    var fields={}; 
+		t.attribs = t.attribs.filter(function(i) {return t.toRemove.indexOf(i) < 0;});
+		$tw.utils.each(t.fields, function(value, name ) {	
+		   fields[name]=	t.fields[name];//put fields into a group
+			//alert("mod"+name+' '+fields[name]);
+			//status  ("name "+name+"val "+value);
+			});
 	    if (vers2) {
+			t.fields = fields;
+			fields = {}
 			var exclude = ["title","modifier","modified","created","creator","tags","text"];
-			exclude = exclude.concat(t.toRemove);
 			t.attribs = t.attribs.filter(function(i) {return exclude.indexOf(i) < 0;});
 			for (var i = 0; i < t.attribs.length;i++) {
 				fields[t.attribs[i]]=t.fields[t.attribs[i]];//put extended fields into a group
@@ -448,27 +447,33 @@ tiddlyclip.modules.twobj = (function () {
 											t.fields.tags,fields,false,t.fields.created,t.fields.creator);
 			autoSaveChanges(null,[tiddler]);
 		} else {
-			t.attribs = t.attribs.filter(function(i) {return t.toRemove.indexOf(i) < 0;});
-			$tw.utils.each(t.fields, function(value, name ) {	
-			   fields[name]=	t.fields[name];//put fields into a group
-				//alert("mod"+name+' '+fields[name]);
-				//status  ("name "+name+"val "+value);
-				});
-			$tw.wiki.addTiddler(new $tw.Tiddler(fields));
+			tiddlyclip.modifyTW(fields);
 		}
 	}		
-			   			   
+
+	function importtids(t){
+	    var fields={}; 
+
+		t.attribs = t.attribs.filter(function(i) {return t.toRemove.indexOf(i) < 0;});
+		$tw.utils.each(t.fields, function(value, name ) {	
+		   fields[name]=	t.fields[name];//put fields into a group
+			//alert("mod"+name+' '+fields[name]);
+			//status  ("name "+name+"val "+value);
+			});
+		tiddlyclip.importTids(fields);
+
+	}		   			   
 	function tiddlerExists(title) {
 	    if (vers2) 
 			return(store.tiddlerExists(title));
 		else
-			return($tw.wiki.tiddlerExists(title));
+			return tiddlyclip.tiddlerExists(title);
 	}			   			   
 	return api;
 }());
 ///end twobj///
 
-tiddlyclip.modules.tiddlerObj = (function () {
+tiddlyclip.modules.tiddlerAPI = (function () {
 
 	var api = 
 	{
@@ -520,7 +525,7 @@ Tiddler.prototype.addCreationFields=function() {
 							current.attribs.push(fieldName);},false);	
 				this.addCreationFields();
 			} else {
-				el =  new $tw.Tiddler($tw.wiki.getCreationFields(),$tw.wiki.getModificationFields());
+				el =  tiddlyclip.newProtoTiddler();
 				for (var atr in el.fields){ 
 						current.fields[atr]=el.getFieldString(atr);
 						current.attribs.push(atr);		
@@ -552,27 +557,28 @@ Tiddler.prototype.addCreationFields=function() {
 						current.attribs.push(fieldName);},false);	
 			} else {
 				for (var atr in el.fields){ 
-						current.fields[atr]=el.getFieldString(atr);
+						current.fields[atr]=el.fields[atr];
 						current.attribs.push(atr);		
 				}
 			}		
 			if (!!this.fields.tags) this.fields.tags = (this.fields.tags instanceof Array)?this.fields.tags.join(' '):this.fields.tags;
 		    else this.fields.tags="";
 			//this.body =   this.text;
-		}	
+		} 
+		//BJ I think this can be removed - or must be put elsewhere
 		if (vers2) {
 			if (!!this.fields.modified ) this.fields.modified=(this.fields.modified instanceof Date) ? this.fields.modified : Date.convertFromYYYYMMDDHHMM(this.fields.modified);
 			this.fields.created=(this.fields.created instanceof Date) ? this.fields.created : Date.convertFromYYYYMMDDHHMM(this.fields.created);
-		} else {
+		} else {/*
 			if (!!this.fields.modified ) this.fields.modified=(this.fields.modified instanceof Date) ? this.fields.modified : $tw.utils.parseDate(this.fields.modified);
-			this.fields.created=(this.fields.created instanceof Date) ? this.fields.created : $tw.utils.parseDate(this.fields.created);
+			this.fields.created=(this.fields.created instanceof Date) ? this.fields.created : $tw.utils.parseDate(this.fields.created);*/
 		}				
 		return this;
 	}
 	
 	Tiddler.prototype.addMimeType=function(mime){
 		this.attribs.push('type');
-		this.fieldstype = mime;
+		this.fields.type = mime;
 	}
 	
 	Tiddler.prototype.exportFieldsTo=function(obj){
@@ -589,6 +595,7 @@ Tiddler.prototype.addCreationFields=function() {
 		
 	Tiddler.prototype.exportModifierFieldsTo=function(obj){
 		if (!obj) return null;
+		
 		obj.modified = this.fields.modified?this.fields.modified:new Date(); //BJ don't we need to convert to a string?
 		obj.modifier = this.fields.modifier?this.fields.modifier:'unknown'; 			
 		return obj;
@@ -626,7 +633,9 @@ Tiddler.prototype.addCreationFields=function() {
 		var writeMode = 'overwrite';
 		if (!this.modes) return writeMode;
 		if (this.hasMode("move")) return "move";
-		if (this.hasMode("once")) return "once";
+		else if (this.hasMode("once")) return "once";
+		else if (this.hasMode("import")) return "import";
+		else if (this.hasMode("add/import")) return "add/import";
 		return writeMode;
 	}
 	
@@ -660,12 +669,10 @@ Tiddler.prototype.addCreationFields=function() {
 			pageData.data.dateTimeShort=     new Date().formatString(dateTimeShort);		//replaces  %dateShort%   
 			pageData.data.dateComma=     pageData.data.dateShort.toString().replace(/ /g,':');
 		}else {
-			pageData.data.yearMonth=$tw.utils.stringifyDate(new Date()).replace(/(.*)\.(.*)/,"$1").substr(0,6);
-			pageData.data.dateTimeLong=   $tw.utils.formatDateString(new Date(),dateTimeLong);	
-			pageData.data.dateLong=       $tw.utils.formatDateString(new Date(),dateLong);		
-			pageData.data.dateShort=      $tw.utils.formatDateString(new Date(),dateShort);	       
-			pageData.data.dateComma=     pageData.data.dateShort.toString().replace(/ /g,':');
-			pageData.data.dateTimeShort=  $tw.utils.formatDateString(new Date(),dateTimeShort);
+			var dates =tiddlyclip.dates();
+			for (var atr in dates){ 
+				pageData.data[atr]=dates[atr];
+			}
 		}
 		pageData.data.category1stWord=pageData.data.category.replace(/(.*) (.*)/,"$1");
 
@@ -718,7 +725,7 @@ Tiddler.prototype.addCreationFields=function() {
 			var storedTid=twobj.getTiddler(title);
 			if (storedTid) {
 				storedTid.exportFieldsTo(table['$']);
-				this.exportModifierFieldsTo(table['$']);
+				//this.exportModifierFieldsTo(table['$']);//not need as exportFieldsTo does this
 				table['@']['newtiddler']= 'false';
 			} else { 
 				this.exportFieldsTo(table['$']);
@@ -758,6 +765,7 @@ Tiddler.prototype.addCreationFields=function() {
 		this.parseStructure(rule.tags);	
 
 		table['#']={};
+		table['@'].fields=table['$'];
 		this.parseStructure(rule.fields);
 		//---move data from parser table into tiddler
 		this.applyEdits(table['$']);
@@ -858,6 +866,11 @@ Tiddler.prototype.addCreationFields=function() {
 
 	 Tiddler.prototype.handleFunction=function(source) {
 		var self = this;
+		function alertAll() {
+			var args = Array.prototype.slice.call(arguments);
+			args.unshift('alertAll');
+			alert(args.join(' '));
+		}
 		if (!/@(.*)\(([\S\s]*?)\)/.test(source) )return null;
 		return source.replace(/@(.*)\(([\S\s]*?)\)/g,function(m,key1,key2,offset,str){
 			if (key1=="delete") {
@@ -877,11 +890,16 @@ Tiddler.prototype.addCreationFields=function() {
 					alert(valOf(key2));
 				return "alerted";
 			}
+
 			//handle normal functions
-			var val;
-			if (!!key2) val = valOf(key2);
-			else val = ""
-return tiddlyclip[key1](val);
+			var vals;
+			if (!!key2) vals = toValues(key2.split(/\s*,\s*/));
+			else vals = null;
+			if (key1=="alertAll") {
+					alertAll.apply(null,vals);
+					return "all alerted";
+			}
+			return tiddlyclip[key1].apply(null,vals);
 /*
 			try {
 				return tiddlyclip[key1](val);
@@ -1001,12 +1019,12 @@ return tiddlyclip[key1](val);
 		defaultCommands:defaultCommands
 	}	
 	var defaultCategories = [
-		"|tid|copy tids||defaultTid|tiddlerscopy|",
+		"|tid|copy tids||defaultTid|tiddlers|",
 		"|text|save text||defaultText||",
 		"|web|save html||defaultWeb||"
 	];
 	var defaultRules = {
-		defaultTid:"|((*@remoteTidTitle*))|((*@remoteTidText*))|((*@remoteTidTags*))|||append|",
+		defaultTid:'|((*$title*))|||||no-textsaver|',
 		defaultText:"|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@text*))</html>||||append|",
 		defaultWeb: "|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@web*))</html>||||append|"
 	}
@@ -1042,7 +1060,10 @@ return tiddlyclip[key1](val);
 	}		
  
 	function getDefaultRule(ruleName) {
+		if (vers2)
 		return defaultRules[ruleName];
+		else
+		return tiddlyclip.getDefaultRule(ruleName);
 	}
 
  	return api;

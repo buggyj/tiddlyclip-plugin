@@ -1,13 +1,13 @@
 changecount: 18
 created: 20130603141300000
-modified: 20140623150741773
+modified: 20140723150741773
 modifier: Your Name
 title: TiddlyClipConfig
 type: text/vnd.tiddlywiki
 
 !default
 |!Category|!Tip|!Tags|!Rule Tid|!Modes|
-|tid||clippedtid|TidConfig|tiddlers|
+|tidme||clippedtid|TidConfig|tiddlers|
 |text|copy as text||PlainText||
 |LogBook|logbook|log|LogConfig|addtext|
 |ReadAble|||ReadConfig||

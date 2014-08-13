@@ -9,5 +9,5 @@ type: text/vnd.tiddlywiki
 
 [{"#rule":"/(.*)v=(.*)/"},{"#term":"$2"},
 {"#main":"<iframe width='560' height='315' src='https://www.youtube.com/embed/((*@pageRef/#rule/#term*))?rel=0' frameborder='0' allowfullscreen></iframe>"},
-{"#newdata":"((*@pageTitle*))\n\n((*@pageRef*))\n\n((*#main*))\n\n((*@text*))\n\n!!Comment\n\n((*@userString*))"}]}]
+{"#newdata":"((*@pageTitle*))\n\n((*@pageRef*))\n\n((*#main*))\n\n((*@text*))\n\n!!Comment\n\n((*@userString*))"}]
 

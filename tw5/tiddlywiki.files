@@ -8,6 +8,15 @@
 				"tags":  "$:/tags/tiddlyclip",
 				"module-type": "library"
 			}
+		},
+		{
+			"file": "multitid.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/multitid.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
 		}
 	]
 }

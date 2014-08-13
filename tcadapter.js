@@ -47,9 +47,63 @@ CreateTiddlerWidget.prototype.getTiddlerList = function() {
 Compute the internal state of the widget
 */
 CreateTiddlerWidget.prototype.execute = function() {
+	var self = this;
 	// Get our parameters here we could allow an module to modify the plugin
 	// Get the commands and place them in the tiddlyclip structure to expose them to the user
+	tiddlyclip.dates=function(){
+		var dates ={};
+		var dateLong=    'DDD, MMM DDth, YYYY';
+		var dateTimeLong='DDD, MMM DDth, YYYY at hh12:0mm:0ss am';	
+		var dateShort=   'DD MMM YYYY';//journal form
+		var dateTimeShort=   'YYYY/MM/DD 0hh:0mm:0ss';//journal form
+		
+		dates.yearMonth=$tw.utils.stringifyDate(new Date()).replace(/(.*)\.(.*)/,"$1").substr(0,6);
+		dates.dateTimeLong=   $tw.utils.formatDateString(new Date(),dateTimeLong);	
+		dates.dateLong=       $tw.utils.formatDateString(new Date(),dateLong);		
+		dates.dateShort=      $tw.utils.formatDateString(new Date(),dateShort);	       
+		dates.dateComma=     dates.dateShort.toString().replace(/ /g,':');
+		dates.dateTimeShort=  $tw.utils.formatDateString(new Date(),dateTimeShort);
+		return dates;
+	}
+	tiddlyclip.getDefaultRule=function (ruleName) {
+	var defaultRules = {
+			defaultTid:'|((*$title*))|||{"#type":"text/x-tiddlywiki"},{"$type":"((*@classic*??*#type*??*$type*))"}||no-textsaver import|',
+			defaultText:"|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@text*))</html>||||append|",
+			defaultWeb: "|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@web*))</html>||||append|"
+		};
+		return defaultRules[ruleName];
+	}
+	tiddlyclip.newProtoTiddler = function (){
+		return new $tw.Tiddler($tw.wiki.getCreationFields(),$tw.wiki.getModificationFields());
+	}
+	tiddlyclip.modifyTW= function(fields){
+			$tw.wiki.addTiddler(new $tw.Tiddler(fields,$tw.wiki.getModificationFields()));
+	}
+	tiddlyclip.getTidContents= function(tidname) {
+			return $tw.wiki.getTiddlerText(tidname);
+	}
+	tiddlyclip.tiddlerExists= function(title) {
+			return($tw.wiki.tiddlerExists(title));
+	}	
+	tiddlyclip.getTiddler= function (title) {
+		var tid = $tw.wiki.getTiddler(title);
+		if (!tid){
+			return null;
+		}
+		var current = {fields:{}};
+		for (var atr in tid.fields){ 
+			current.fields[atr]=tid.getFieldString(atr);	
+		}
+		return current;	
+	}
+	tiddlyclip.importTids =function (tidfields) {
+		//tiddlyclip.log("savefile at last!");
+		// Get the details from the message
+        var tiddlerFieldsArray = [tidfields];					
+		self.dispatchEvent({type: "tw-import-tiddlers", param: JSON.stringify(tiddlerFieldsArray)});	
+	}
 	this.list = this.getTiddlerList();
+	 
 	$tw.utils.each(this.list,function(title,index) {
 		try {
 			var func = require(title);
