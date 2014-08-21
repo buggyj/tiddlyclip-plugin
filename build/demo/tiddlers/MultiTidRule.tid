@@ -1,0 +1,12 @@
+changecount: 1
+created: 20130711191100000
+creator: BJ
+modified: 20140624132516270
+modifier: BJ
+tags: TiddlyClipConfig
+title: MultiTidRule
+type: text/vnd.tiddlywiki
+
+|!Title|!Body|!Tags|!Fields modifiers|!field initials|!Modes|
+|((*$title*))-clipped||ClippedImage|{"#null":"((*@tomultid(@userstring,@fields)*))"}||no-textsaver|
+

@@ -28,10 +28,6 @@ tiddlyclip.modules.tPaste = (function () {
 		twobj		= tiddlyclip.modules.twobj;
 		defaults	= tiddlyclip.modules.defaults;
 	}
-	api.BeforeSave = {};
-	api.AfterSub = {};
-
-
 /////////////////////////////////////////////////////////////////////////////
 	function findDefaultRule(rule) {
 		return (rule.substring(0,7)==='default') ? defaults.getDefaultRule(rule):null;
@@ -84,7 +80,7 @@ tiddlyclip.modules.tPaste = (function () {
         var sectionStrgs;
 		var content = configTable;
 		if (content != null) {
-			sectionStrgs = content.split(defaults.getMacros().FOLDSTART+'['); //sections begin with a title, , followed by a table of categories
+			sectionStrgs = content.split(defaults.getDefs().FOLDSTART+'['); //sections begin with a title, , followed by a table of categories
 			if(sectionStrgs.length>1) {
 				//status("found clip list format config")		 
 				sectionStrgs.shift();	
@@ -131,7 +127,7 @@ tiddlyclip.modules.tPaste = (function () {
 
         if (ruleDefs[firstRow].substring(0,2)==='|!') firstRow += 1;// row  maybe column titles, ie the string |!Title|!Body|!Tags|!Modes|
 		for (var i=firstrule,j=firstRow; j<ruleDefs.length; i++,j++) {
-			arrayOfRules[i]=new  Rule(ruleDefs[j]);
+			arrayOfRules[i]=new Rule(ruleDefs[j]);
 		}
 		return arrayOfRules;
 	}
@@ -597,7 +593,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		}
 		pageData.data.category1stWord=pageData.data.category.replace(/(.*) (.*)/,"$1");
 
-		var macrosx =defaults.getMacros();
+		var macrosx =defaults.getDefs();
 		table={$:{}};table['#']={};table['@']={};
 		for (var n in pageData.data) {table['@'][n]= pageData.data[n];}
 		for (var n in macrosx) {table['@'][n]= macrosx[n];}
@@ -738,7 +734,12 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 				var rightSide =b[i][n];
 				if (typeof rightSide === "object") error("source: invalid type object");
 				else if (typeof rightSide === "string") {
-					rightSide = this.replaceALL(rightSide);
+					var replaceOp= this.replaceALL(rightSide);
+					if (!replaceOp.abort) rightSide = replaceOp.result;
+					else {
+						moreThanOne++;
+						break;
+					}
 				}
 				else error("source: invalid type");
 				var returedVals =  getSimpleVarFrom (n);
@@ -774,7 +775,10 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 					 return null;
 		}	
 	}
-
+	 Tiddler.prototype.abort=function(source) {
+		if (/@abort\(\)/.test(source) ){ return true;}
+		return false;
+	}
 	 Tiddler.prototype.handleFunction=function(source) {
 		var self = this;
 		function alertAll() {
@@ -783,6 +787,8 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			alert(args.join(' '));
 		}
 		if (!/@(.*)\(([\S\s]*?)\)/.test(source) )return null;
+		//abort macro
+		if (/@abort\(\)/.test(source) ){ return null;}
 		return source.replace(/@(.*)\(([\S\s]*?)\)/g,function(m,key1,key2,offset,str){
 			if (key1=="delete") {
 				self.removeField(key2.substring(1));
@@ -824,8 +830,8 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 	}
 	
 	Tiddler.prototype.replaceALL=function(source, data){ //replace all ((* *)) delimited strings
-		var self = this;
-		return source.replace(/\(\(\*([\S\s]*?)\*\)\)/g,function(m,key,offset,str){ 
+		var self = this, abort=false;
+		return {result:source.replace(/\(\(\*([\S\s]*?)\*\)\)/g,function(m,key,offset,str){ 
 			var parts, vals, res, firstterm, firstparts, testedTrue = true;
 			// check for  ((*conditional*??*Use this variable*??*or use this variable*))
 			firstparts= key.split("*??*");
@@ -901,11 +907,12 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			}
 			// macro
 			if ((res = self.handleFunction(key)) != null) return res;
+			else if (self.abort(key)) {abort=true; return null};//abort replaceAll completely
 			// vanilla variable
 			if ((res = valOf(key)) != null) return res;
 			// error
 			return m;
-		});
+		}),abort:abort};
     }
 	///////////////// parser implementation end/////////////////
 	return api;
@@ -924,8 +931,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 	{
 		onLoad:onLoad, getDefaultRule:getDefaultRule, 
 		getDefaultCategories:getDefaultCategories,
-		getTWPrefs:getTWPrefs,
-		getMacros:getMacros,
+		getDefs:getDefs,
 		defaultCommands:defaultCommands
 	}	
 	var defaultCategories = [
@@ -933,32 +939,21 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		"|text|save text||defaultText||",
 		"|web|save html||defaultWeb||"
 	];
-	var defaultPrefs = {
-		ConfigOptsTiddler:'ConfigOptions',
-		filechoiceclip:1,
-		txtUserName:'default'
-	}
-	var macros = {
-	FOLDSTART:'ᏜᏜᏜᏜ*',
-	FOLDCONTENT:'!/%%/'
-	}
-	
-	function getMacros(){
-		if (!twobj.tiddlerExists("TiddlyClipMacros"))  return macros;
 
-		var content = twobj.getTidContents("TiddlyClipMacros");//where all marcos are defined	
+	
+	function getDefs(){
+		if (!twobj.tiddlerExists("TiddlyClipDefs"))  return tiddlyclip.defs;
+
+		var content = twobj.getTidContents("TiddlyClipDefs");//where all marcos are defined	
 		try {
-			if (content =="") return macros;
+			if (content =="") return tiddlyclip.defs;
 			var values =JSON.parse(content);
 			if (!!values) {return values;}
 		}catch(e){	
 		}
-		return macros; 
+		return tiddlyclip.defs; 
 	}
 	
-	function getTWPrefs(){ return defaultPrefs;}
-	
-
 	function getDefaultCategories() {
 		return defaultCategories;
 	}		

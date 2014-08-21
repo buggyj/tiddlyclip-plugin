@@ -67,11 +67,13 @@ CreateTiddlerWidget.prototype.execute = function() {
 	}
 	tiddlyclip.getDefaultRule=function (ruleName) {
 	var defaultRules = {
-			defaultTid:'|((*$title*))|||{"#type":"text/x-tiddlywiki"},{"$type":"((*@classic*??*#type*??*$type*))"}||no-textsaver import|',
+			defaultTid:'|((*$title*))|||{"#type":"text/x-tiddlywiki"},{"$type":"((*@classic*??*#type*??*@abort()*))"}||no-textsaver import|',
 			defaultText:"|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@text*))</html>||||append|",
 			defaultWeb: "|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@web*))</html>||||append|"
 		};
 		return defaultRules[ruleName];
+	}
+	tiddlyclip.defs = {
 	}
 	tiddlyclip.newProtoTiddler = function (){
 		var tid = new $tw.Tiddler($tw.wiki.getCreationFields(),$tw.wiki.getModificationFields());

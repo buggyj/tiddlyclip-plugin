@@ -20,3 +20,8 @@ type: text/vnd.tiddlywiki
 !ClipList
 |!Category|!Tip|!Tags|!Rule Tid|!Modes|
 |webclip|||WebCliprule||
+|Snapclip|||SnapClipRule|snap30 addtext|
+
+!MultiTids
+|!Category|!Tip|!Tags|!Rule Tid|!Modes|
+|Tomultitid|||MultiTidRule|tiddlers userstring nosave|

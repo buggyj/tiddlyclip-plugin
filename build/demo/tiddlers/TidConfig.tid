@@ -8,4 +8,4 @@ title: TidConfig
 type: text/vnd.tiddlywiki
 
 |!Title|!Body|!Tags|!Fields|!Initvals|!Modes|
-|((*$title*))-clipped|||{"#type":"text/x-tiddlywiki"},{"$type":"((*@classic*??*#type*??*$type*))"}||no-textsaver add/import||
+|((*$title*))-clipped|||{"#type":"text/x-tiddlywiki"},{"$type":"((*@classic*??*#type*??*@abort()*))"}||no-textsaver add/import||

@@ -1,4 +1,3 @@
-;
 	tiddlyclip.dates=function(){
 		var dates ={};
 		var dateLong=    'DDD, MMM DDth, YYYY';
@@ -22,6 +21,12 @@
 		}
 		return defaultRules[ruleName];
 	}
+	
+	tiddlyclip.defs = {
+	FOLDSTART:'ᏜᏜᏜᏜ*',
+	FOLDCONTENT:'!/%%/'
+	}
+	
 	tiddlyclip.newProtoTiddler = function (){
 		var tid = new window.Tiddler(),current={fields:{}};
 		store.forEachField(tid,function(tiddler,fieldName,value){

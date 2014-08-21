@@ -10,7 +10,7 @@ exports.run  = function(IMPORT_TITLE,tiddler)
 		newFields = new Object({
 			title: IMPORT_TITLE,
 			type: "application/json",
-			"plugin-type": "plugin"
+			"multitid-type": "vault"
 		}),
 		incomingTiddlers = [];
 	// Process each tiddler
