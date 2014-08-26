@@ -7,5 +7,5 @@ type: text/vnd.tiddlywiki
 {"#part0":"\n</$reveal>\n\n"},
 {"#false":"false"},
 {"#part1":"<$button popup='$:/StateTiddler((*@category*))((*$new*))'>((*@dateComma*)) </$button>\n<$reveal type='nomatch' state='$:/StateTiddler((*@category*))((*$new*))' text=''>"},
-{"#newdata": "((*!$mydate==@dateComma*??*#part0*))((*@newtiddler*??*#part1*))((*!$mydate==@dateComma*??*#part1*))\n\n((*@userString*))\n\n------"}
+{"#newdata": "((*!$mydate==@dateComma*??*#part0*))((*@newtiddler*??*#part1*))((*!$mydate==@dateComma*??*#part1*))\n\n((*@userstring*))\n\n------"}
 ]

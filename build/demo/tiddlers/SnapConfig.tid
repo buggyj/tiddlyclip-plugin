@@ -9,5 +9,5 @@ type: text/vnd.tiddlywiki
 
 |!Title|!Body|!Tags|!Fields modifiers|!field initials|!Modes|
 |((*@pageTitle*))/thumbprint|((*@snap*))|ClippedImage|{"$type":"image/png"}||
-|((*@pageTitle*))|!((*@pageRef*))\n\n{{((*@pageTitle*))/thumbprint}}\n\n((*@text*))\n\n!Comment\n\n((*@userString*))|ClipIntrest|||
+|((*@pageTitle*))|!((*@pageRef*))\n\n{{((*@pageTitle*))/thumbprint}}\n\n((*@text*))\n\n!Comment\n\n((*@userstring*))|ClipIntrest|||
 

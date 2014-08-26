@@ -15,7 +15,7 @@
 	}
 	tiddlyclip.getDefaultRule=function (ruleName) {
 		var defaultRules = {
-			defaultTid:'|((*$title*))|||||no-textsaver|',
+			defaultTid:'||||||no-textsaver|',
 			defaultText:"|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@text*))</html>||||append|",
 			defaultWeb: "|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@web*))</html>||||append|"
 		}
@@ -79,6 +79,7 @@
 			store.forEachField(temp,function(tiddler,fieldName,value){
 				storedTid.fields[fieldName]=value;
 			});
+			storedTid.fields['title']=title;
 		}			
 		if (storedTid) {
 			if (!!storedTid.fields.modified ) storedTid.fields.modified=
@@ -91,10 +92,10 @@
 	}
 	
 	tiddlyclip.finish=function (tids) {
-		autoSaveChanges(null,tids); 
+		//tiddlyspace either expects a list of tids (not titles) or a null - we could get the tids here or put null
+		autoSaveChanges(null,null); 
 	}
-
 	tiddlyclip.importTids =function (tidfields) {
-	
 	}
+    tiddlyclip.macro = {};
 ;

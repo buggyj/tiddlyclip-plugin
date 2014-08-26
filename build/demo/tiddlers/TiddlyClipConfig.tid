@@ -9,18 +9,18 @@ type: text/vnd.tiddlywiki
 |!Category|!Tip|!Tags|!Rule Tid|!Modes|
 |tidme||clippedtid|TidConfig|tiddlers|
 |text|copy as text||PlainText||
-|LogBook|logbook|log|LogConfig|addtext|
+|LogBook|logbook|log|LogConfig|userstring|
 |ReadAble|||ReadConfig||
 |ConVert|convertTW2||ConvertConfig||
 |WebList|||WebClipTid||
 |highlight||||highlight|
-|snapPage|||SnapConfig|snap30 addtext|
-|snapUtube|||SnapUtubeConfig|addtext|
+|snapPage|||SnapConfig|snap30 userstring|
+|snapUtube|||SnapUtubeConfig|userstring|
 
 !ClipList
 |!Category|!Tip|!Tags|!Rule Tid|!Modes|
 |webclip|||WebCliprule||
-|Snapclip|||SnapClipRule|snap30 addtext|
+|Snapclip|||SnapClipRule|snap30 userstring|
 
 !MultiTids
 |!Category|!Tip|!Tags|!Rule Tid|!Modes|

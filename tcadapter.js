@@ -67,7 +67,7 @@ CreateTiddlerWidget.prototype.execute = function() {
 	}
 	tiddlyclip.getDefaultRule=function (ruleName) {
 	var defaultRules = {
-			defaultTid:'|((*$title*))|||{"#type":"text/x-tiddlywiki"},{"$type":"((*@classic*??*#type*??*@abort()*))"}||no-textsaver import|',
+			defaultTid:'||||{"#type":"text/x-tiddlywiki"},{"$type":"((*@classic*??*#type*??*@abort()*))"}||no-textsaver import|',
 			defaultText:"|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@text*))</html>||||append|",
 			defaultWeb: "|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@web*))</html>||||append|"
 		};
@@ -117,7 +117,8 @@ CreateTiddlerWidget.prototype.execute = function() {
 	$tw.utils.each(this.list,function(title,index) {
 		try {
 			var func = require(title);
-			tiddlyclip[func.name]=func.run;
+			tiddlyclip.macro={};
+			tiddlyclip.macro[func.name]=func.run;
 		} catch (e) {
 			alert("tc: problem with command " + title);
 		} 

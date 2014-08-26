@@ -154,11 +154,18 @@ tiddlyclip.modules.tPaste = (function () {
 						 if (temp != null) pieces[i] = temp;
 					}						
 				} else{
-					if (i==6)  			pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';	
-					else if (i==4||i==5)pieces[i] = '['+pieces[i]+']';	
-					else if (i==3)  	pieces[i] = '[{"$tags":"'+pieces[i]+'"}]';
-					else if (i==2)  	pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';					
-					else if (i==1)  	pieces[i] = '[{"$title":"'+pieces[i]+'"}]';
+					
+					if (i==6)  					pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//modes	
+					else if (i==4||i==5)		pieces[i] = '['+pieces[i]+']';	
+					else if (i==3) {
+					  if (pieces[i]) pieces[i] = '[{"$tags":"'+pieces[i]+'"}]'; 
+					  else pieces[i] ='[]'; // don't modify/create
+				   }
+					else if (i==2)  			pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//text		
+					else if (i==1){
+					  if (pieces[i]) pieces[i] = '[{"$title":"'+pieces[i]+'"}]';
+					  else pieces[i] ='[]'; // don't modify/create
+				   }  			
 				}
 			}
 			this.title =pieces[1];
@@ -265,11 +272,6 @@ tiddlyclip.modules.tPaste = (function () {
 		if (!hasModeBegining(cat,"tiddler"))  { //user has not selected  tiddler mode
 			for(var i=startrule; i<patterns.length; i++)  {	
 				var tiddlerObj, writeMode;
-				if (patterns[i].title == null) {
-					//status ("title null - looking for macro in tble");
-					tiddlyclip[patterns[i].body](catName,pageData,section,tiddlers,tideditMode);
-					continue;
-				}
 				tiddlerObj = new tiddlerAPI.Tiddler();
 				//status ("before subst");
 				
@@ -294,11 +296,6 @@ tiddlyclip.modules.tPaste = (function () {
 				if (!hasMode(cat,"tiddlerscopy")) {
 					for(var i=startrule; i<patterns.length; i++)  {	
 						var tiddlerObj, writeMode;
-						if (patterns[i].title == null) {
-							//status ("title null - looking for macro in tble");
-							tiddlyclip[patterns[i].body](catName,pageData,section,tiddlers,tideditMode);
-							continue;
-						}
 						tiddlerObj = new tiddlerAPI.Tiddler(tid);
 						//status ("before subst");
 						
@@ -776,7 +773,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		}	
 	}
 	 Tiddler.prototype.abort=function(source) {
-		if (/@abort\(\)/.test(source) ){ return true;}
+		if (/@abort\(/.test(source) ){ return true;}
 		return false;
 	}
 	 Tiddler.prototype.handleFunction=function(source) {
@@ -788,11 +785,16 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		}
 		if (!/@(.*)\(([\S\s]*?)\)/.test(source) )return null;
 		//abort macro
-		if (/@abort\(\)/.test(source) ){ return null;}
 		return source.replace(/@(.*)\(([\S\s]*?)\)/g,function(m,key1,key2,offset,str){
 			if (key1=="delete") {
 				self.removeField(key2.substring(1));
 				return "deleted "+key2;
+			}
+			if (key1=="abort") {
+				if (!key2) return null; //empty params means abort whatever
+				if (valOf(key2, true) == null) return null; //if val not exist abort
+				if (valOf(key2) === 'false') return null;
+				return "";//otherwise just remove the abort() token
 			}
 			if (key1=="exists") {
 				if (valOf(key2, true) != null)
@@ -816,7 +818,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 					alertAll.apply(null,vals);
 					return "all alerted";
 			}
-			return tiddlyclip[key1].apply(null,vals);
+			return tiddlyclip.macro[key1].apply(null,vals);
 /*
 			try {
 				return tiddlyclip[key1](val);
