@@ -96,6 +96,7 @@
 		autoSaveChanges(null,null); 
 	}
 	tiddlyclip.importTids =function (tidfields) {
+		this.modifyTW(tidfields);//for the present
 	}
     tiddlyclip.macro = {};
 ;

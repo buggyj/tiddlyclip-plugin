@@ -123,12 +123,20 @@ tiddlyclip.modules.tPaste = (function () {
 	function addSequenceOfRules(tiddler,cat) { 		
 		var ruleDefs = tiddler.trim().split("\n");
 		var arrayOfRules =[];
-		var firstRow=0,firstrule=0;;
-
+		var firstRow=0,firstrule=0;
+/*
         if (ruleDefs[firstRow].substring(0,2)==='|!') firstRow += 1;// row  maybe column titles, ie the string |!Title|!Body|!Tags|!Modes|
 		for (var i=firstrule,j=firstRow; j<ruleDefs.length; i++,j++) {
 			arrayOfRules[i]=new Rule(ruleDefs[j]);
 		}
+*/
+		var j = 0;
+		for (var i = 0;i < ruleDefs.length;i++) {
+			 if (ruleDefs[i].charAt(0) !== "|" || ruleDefs[i].charAt(1) === "!") continue;//row maybe column titles, ie the string |!Title|!Body|!Tags|!Modes| or a comment
+			 arrayOfRules[j]=new Rule(ruleDefs[i]);
+			 j++;
+		}
+
 		return arrayOfRules;
 	}
 
@@ -260,10 +268,7 @@ tiddlyclip.modules.tPaste = (function () {
 		var catTags = cat.tags;//main config tags 
 		var patterns = cat.rules;
 		var startrule=0;
-		if (!!patterns[0].run) {
-			patterns[0].run(catName,pageData, section);
-			startrule=1;
-		}
+
 		if(hasMode(cat,"nosub")) return;
 		//now loop over each tiddler to be created(defined in the category's extension entry)
 		//if a list of tiddlers are to be copied from a page then we will have to loop over them as well
@@ -287,7 +292,7 @@ tiddlyclip.modules.tPaste = (function () {
 				//if (pageData.data.WriteMode !="none") writeMode=pageData.data.WriteMode;
 				//add tiddlers one by one to our list of edits
 				tiddlers.push(tiddlerObj);
-				tideditMode.push(tiddlerObj.getWriteMode());
+
 				//status ("after push to list");
 			}
 		} else { 
@@ -310,7 +315,7 @@ tiddlyclip.modules.tPaste = (function () {
 						//if (pageData.data.WriteMode !="none") writeMode=pageData.data.WriteMode;
 						//add tiddlers one by one to our list of edits
 						tiddlers.push(tiddlerObj);
-						tideditMode.push(tiddlerObj.getWriteMode());
+
 						//status ("after push to list");
 					}
 				}
@@ -319,7 +324,6 @@ tiddlyclip.modules.tPaste = (function () {
 					var writeMode;//no editmode
 					tiddlerObj.addTags(catTags);
 					tiddlers.push(tiddlerObj);
-					tideditMode.push(writeMode);
 				}
 			}
 
@@ -329,42 +333,48 @@ tiddlyclip.modules.tPaste = (function () {
 		var tidnames=[];
 		for (var i =0; i< tiddlers.length; i++) {
 			if (!tiddlers[i].isNull()){
-				addTiddlerToTW(tiddlers[i], tideditMode[i]);
+				addTiddlerToTW(tiddlers[i]);
 				tidnames.push(tiddlers[i].fields.title)
 			}
 		}
 		if(hasMode(cat,"nofin")) return;
 		twobj.finish(tidnames);
 	}  
-
-	function addTiddlerToTW( tiddlerObj, writeMode) { 
-		if (writeMode=='import'){
-					twobj.importtids(tiddlerObj);
-			return;
-		}
-		if (!twobj.tiddlerExists(tiddlerObj.fields.title))  twobj.modifyTW(tiddlerObj);
-		else {
-			//status ("writemode is "+writeMode);
-			switch (writeMode) {
-				case 'once':
-					var oldtid = twobj.getTiddler(tiddlerObj.fields.title);//retrieve existing version
-					if (!!oldtid) break;
-					twobj.modifyTW(tiddlerObj);
-					break;
-				case 'move':
-					var oldtid = twobj.getTiddler(tiddlerObj.fields.title);//retrieve existing version
-					if (!!oldtid)  {
-						oldtid.fields.title =oldtid.fields.title +'/'+ new Date();//move old tid by appending the date to its title
-						twobj.modifyTW(oldtid);//move out the way
-					}
-					twobj.modifyTW(tiddlerObj);
-					break;
-				case 'add/import':
-					twobj.importtids(tiddlerObj);
-				break;
-				default: //overwrite
+     
+    function save(tiddlerObj) {
+		switch (tiddlerObj.getSaveMode()) {
+			case 'add/import':
+				if (twobj.tiddlerExists(tiddlerObj.fields.title))  twobj.importtids(tiddlerObj);
+				else twobj.modifyTW(tiddlerObj);
+			break;
+			case 'add':
 				twobj.modifyTW(tiddlerObj);
-			}
+			break;
+			default: //import
+				twobj.importtids(tiddlerObj);
+		}
+	}
+		
+	function addTiddlerToTW( tiddlerObj) { 
+
+		switch (tiddlerObj.getWriteMode()) {
+			case 'once':
+				var oldtid = twobj.getTiddler(tiddlerObj.fields.title);//retrieve existing version
+				if (!!oldtid) break;
+				save(tiddlerObj);
+				break;
+			case 'move':
+				var oldtid = twobj.getTiddler(tiddlerObj.fields.title);//retrieve existing version
+				if (!!oldtid)  {
+					oldtid.fields.title =oldtid.fields.title +'/'+ new Date();//move old tid by appending the date to its title
+					oldtid.modes = tiddlerObj.modes //need to know the save mode
+					save(oldtid);//move out the way
+				}
+				save(tiddlerObj);
+				break;
+			default: //import
+				save(tiddlerObj);
+
 		}
 	}
 
@@ -552,13 +562,18 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 	}
 	
 	Tiddler.prototype.getWriteMode=function(mode){
-		var writeMode = 'overwrite';
+		var writeMode = 'normal';
 		if (!this.modes) return writeMode;
 		if (this.hasMode("move")) return "move";
 		else if (this.hasMode("once")) return "once";
-		else if (this.hasMode("import")) return "import";
-		else if (this.hasMode("add/import")) return "add/import";
 		return writeMode;
+	}
+	
+	Tiddler.prototype.getSaveMode=function(mode) {
+		if (!this.modes) return 'import';
+		else if (this.hasMode("add/import")) return "add/import";
+		else if (this.hasMode("add")) return "add";
+		return 'import';
 	}
 	
 	function undoHtmlEncode( input ) {
