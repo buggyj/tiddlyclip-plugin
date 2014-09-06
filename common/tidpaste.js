@@ -372,6 +372,10 @@ tiddlyclip.modules.tPaste = (function () {
 				}
 				save(tiddlerObj);
 				break;
+			case 'inc':
+				tiddlerObj.fields.title = twobj.getNewTitle(tiddlerObj.fields.title); 
+				save(tiddlerObj);
+				break;
 			default: //import
 				save(tiddlerObj);
 
@@ -388,7 +392,7 @@ tiddlyclip.modules.twobj = (function () {
 		onLoad:onLoad, 			tiddlerExists:tiddlerExists,
 		modifyTW:modifyTW,		getTiddler:getTiddler,
 		getTidContents:getTidContents,finish:finish,
-		importtids:importtids	
+		importtids:importtids,	getNewTitle:getNewTitle	
 	}
 	var   tiddlerAPI;
 	function onLoad () {
@@ -399,8 +403,10 @@ tiddlyclip.modules.twobj = (function () {
 
 	function getTidContents(tidname) {
 			return tiddlyclip.getTidContents(tidname);
+	}	
+	function getNewTitle(tidname) {
+			return tiddlyclip.getNewTitle(tidname);
 	}
-
 	function getTiddler(tidname) {	
 		var storedTid=tiddlyclip.getTiddler(tidname);
 		if (storedTid) {
@@ -566,6 +572,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		if (!this.modes) return writeMode;
 		if (this.hasMode("move")) return "move";
 		else if (this.hasMode("once")) return "once";
+		else if (this.hasMode("inc")) return "inc";
 		return writeMode;
 	}
 	
@@ -792,23 +799,23 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		return false;
 	}
 	 Tiddler.prototype.handleFunction=function(source) {
-		var self = this;
+		var self = this, abort=false;
 		function alertAll() {
 			var args = Array.prototype.slice.call(arguments);
 			args.unshift('alertAll');
 			alert(args.join(' '));
 		}
-		if (!/@(.*)\(([\S\s]*?)\)/.test(source) )return null;
+		if (!/@(.*)\(([\S\s]*?)\)/.test(source) )return {result:null,abort:abort};
 		//abort macro
-		return source.replace(/@(.*)\(([\S\s]*?)\)/g,function(m,key1,key2,offset,str){
+		return {result:source.replace(/@(.*)\(([\S\s]*?)\)/g,function(m,key1,key2,offset,str){
 			if (key1=="delete") {
 				self.removeField(key2.substring(1));
 				return "deleted "+key2;
 			}
 			if (key1=="abort") {
-				if (!key2) return null; //empty params means abort whatever
-				if (valOf(key2, true) == null) return null; //if val not exist abort
-				if (valOf(key2) === 'false') return null;
+				if (!key2) {abort=true;return null;} //empty params means abort whatever
+				if (valOf(key2, true) == null) {abort=true;return null;} //if val not exist abort
+				if (valOf(key2) === 'false'){abort=true;return null;}
 				return "";//otherwise just remove the abort() token
 			}
 			if (key1=="exists") {
@@ -843,7 +850,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			} 
 */				
 			return m;
-		});
+		}),abort:abort};
 	}
 	
 	Tiddler.prototype.replaceALL=function(source, data){ //replace all ((* *)) delimited strings
@@ -876,7 +883,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 					else if (!res) testedTrue = false; 
 				} 
 				// macro
-				else if ((res = self.handleFunction(firstterm)) != null) { // a function
+				else if ((res = self.handleFunction(firstterm).result) != null) { // a function
 					if ( negate && res==="true") 	{testedTrue = false;}
 					if (!negate && res==="false") {testedTrue = false;}
 
@@ -923,8 +930,10 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 				return res.toString();
 			}
 			// macro
-			if ((res = self.handleFunction(key)) != null) return res;
-			else if (self.abort(key)) {abort=true; return null};//abort replaceAll completely
+			var returned = self.handleFunction(key);
+			if (returned.abort) {abort=true; return null};//abort replaceAll completely
+			if ((res = returned.result) != null) return res;
+			else 
 			// vanilla variable
 			if ((res = valOf(key)) != null) return res;
 			// error

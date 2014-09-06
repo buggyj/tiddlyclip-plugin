@@ -2,8 +2,8 @@
 	"title": "$:/plugins/bj/tiddlyclip",
 	"description": "include web content",
 	"author": "Jeffrey Wilkinson (aka BJ)",
-	"version": "0.0.4-alpha",
-	"core-version": ">=5.0.13",
+	"version": "0.0.5-alpha",
+	"core-version": ">=5.0.16",
 	"source": "https://github.com/buggyj/tiddlyclip",
 	"plugin-type": "plugin"
 }

@@ -59,6 +59,17 @@
 	tiddlyclip.tiddlerExists= function(title) {
 			return(store.tiddlerExists(title));
 	}	
+	tiddlyclip.getNewTitle= function(baseTitle,options) {
+		options = options || {};
+		var c = 0,
+			title = baseTitle;
+		while(this.tiddlerExists(title) ) {
+			title = baseTitle + 
+				(options.prefix || "-") + 
+				(++c);
+		}
+		return title;
+	}
 	tiddlyclip.getTiddler= function (title) {
 		/*
 		var tid=store.getTiddler(title);

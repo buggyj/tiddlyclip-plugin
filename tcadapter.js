@@ -86,6 +86,10 @@ CreateTiddlerWidget.prototype.execute = function() {
 	tiddlyclip.modifyTW= function(fields){
 			$tw.wiki.addTiddler(new $tw.Tiddler(fields,$tw.wiki.getModificationFields()));
 	}
+	tiddlyclip.getNewTitle= function(base,options) {
+			options = options || {prefix: "-"};
+			return $tw.wiki.generateNewTitle(base,options);
+	}
 	tiddlyclip.getTidContents= function(tidname) {
 			return $tw.wiki.getTiddlerText(tidname);
 	}
@@ -104,13 +108,13 @@ CreateTiddlerWidget.prototype.execute = function() {
 		return current;	
 	}	
 	tiddlyclip.finish=function (tids) {
-		self.dispatchEvent({type: "tw-auto-save-wiki"}); 
+		self.dispatchEvent({type: "tm-auto-save-wiki"}); 
 	}
 	tiddlyclip.importTids =function (tidfields) {
 		//tiddlyclip.log("savefile at last!");
 		// Get the details from the message
         var tiddlerFieldsArray = [tidfields];					
-		self.dispatchEvent({type: "tw-import-tiddlers", param: JSON.stringify(tiddlerFieldsArray)});	
+		self.dispatchEvent({type: "tm-import-tiddlers", param: JSON.stringify(tiddlerFieldsArray)});	
 	}
 	this.list = this.getTiddlerList();
 	 
