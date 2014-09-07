@@ -332,7 +332,7 @@ tiddlyclip.modules.tPaste = (function () {
 		//status ("before adding to tw");
 		var tidnames=[];
 		for (var i =0; i< tiddlers.length; i++) {
-			if (!tiddlers[i].isNull()){
+			if (!tiddlers[i].noSave()){
 				addTiddlerToTW(tiddlers[i]);
 				tidnames.push(tiddlers[i].fields.title)
 			}
@@ -539,8 +539,8 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		return obj;
 	}	
 
-	Tiddler.prototype.isNull=function(){
-		return (!this.fields.title)
+	Tiddler.prototype.noSave=function(){
+		return (!this.fields.title ||this.hasMode("nosave"));
 	}
 		
 	Tiddler.prototype.addTags=function(tag){
