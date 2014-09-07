@@ -960,13 +960,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		getDefs:getDefs,
 		defaultCommands:defaultCommands
 	}	
-	var defaultCategories = [
-		"|tid|copy tids||defaultTid|tiddlers|",
-		"|text|save text||defaultText||",
-		"|web|save html||defaultWeb||"
-	];
 
-	
 	function getDefs(){
 		if (!twobj.tiddlerExists("TiddlyClipDefs"))  return tiddlyclip.defs;
 
@@ -981,13 +975,12 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 	}
 	
 	function getDefaultCategories() {
-		return defaultCategories;
+		return tiddlyclip.defaultCategories;
 	}		
  
 	function getDefaultRule(ruleName) {
 		return tiddlyclip.getDefaultRule(ruleName);
 	}
-
  	return api;
 }());
 ///end defaults///

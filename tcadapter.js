@@ -66,13 +66,24 @@ CreateTiddlerWidget.prototype.execute = function() {
 		return dates;
 	}
 	tiddlyclip.getDefaultRule=function (ruleName) {
-	var defaultRules = {
+		var defaultRules = {
 			defaultTid:'||||{"#type":"text/x-tiddlywiki"},{"$type":"((*@classic*??*#type*??*@abort()*))"}||no-textsaver import|',
-			defaultText:"|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@text*))</html>||||append|",
-			defaultWeb: "|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@web*))</html>||||append|"
-		};
+			defaultSnip:
+			'|((*@pageTitle*))/thumbprint|((*@exists(@snap)*??*@snap*))|ClippedImage|'+
+			'|{"$type":"image/png"},{"$when":"((*@dateTimeShort*))"},{"$location":"((*@pageRef*))"}|[[SnapRuleMode]]|'+
+			'|((*@pageTitle*))|((*@pageRef*))\\n\\n{{((*@pageTitle*))/thumbprint}}\\n\\n((*@text*))\\n\\n||'+
+			'|{"$location":"((*@pageRef*))"},{"$caption":"((*@pageTitle*))"},{"$when":"((*@dateTimeShort*))"}||',
+			defaultPin: '|((*@pageTitle*))|((*@pageRef*))\\n\\n[img[((*@onImage*??*@imageURL*??*@largestImgURL*))]]\\n\\n((*@text*))\\n\\n((*@exists(@userstring)*??*@userstring*))||'+
+						'|{"$location":"((*@pageRef*))"},{"$caption":"((*@pageTitle*))"},{"$when":"((*@dateTimeShort*))"}|inc|'
+		}
 		return defaultRules[ruleName];
 	}
+	tiddlyclip.defaultCategories = [
+		"|Tip|copy tids||defaultTip|tiddlers|",
+		"|Snip|copy||defaultSnip||",
+		"|Pin|Pin it||defaultPin||"
+	];
+
 	tiddlyclip.defs = {
 	}
 	tiddlyclip.newProtoTiddler = function (){

@@ -15,13 +15,19 @@
 	}
 	tiddlyclip.getDefaultRule=function (ruleName) {
 		var defaultRules = {
-			defaultTid:'||||||no-textsaver|',
-			defaultText:"|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@text*))</html>||||append|",
-			defaultWeb: "|((*@pageTitle*))|((*@pageRef*)) <br>date='((*@dateTimeLong*))', <html>((*@web*))</html>||||append|"
+			defaultTip:'||||||no-textsaver|',
+			defaultSnip:'|((*@pageTitle*))|((*@pageRef*))\\n((*@text*))||'+
+						'|{"$location":"((*@pageRef*))"},{"$caption":"((*@pageTitle*))"},{"$when":"((*@dateTimeShort*))"}|inc|',
+			defaultPin: '|((*@pageTitle*))|((*@pageRef*))\\n\\n[img[((*@onImage*??*@imageURL*??*@largestImgURL*))]]\\n\\n((*@text*))\\n\\n((*@exists(@userstring)*??*@userstring*))||'+
+						'|{"$location":"((*@pageRef*))"},{"$caption":"((*@pageTitle*))"},{"$when":"((*@dateTimeShort*))"}|inc|'
 		}
 		return defaultRules[ruleName];
 	}
-	
+	tiddlyclip.defaultCategories = [
+		"|Tip|copy tids||defaultTip|tiddlers|",
+		"|Snip|copy||defaultSnip||",
+		"|Pin|Pin it||defaultPin||"
+	];
 	tiddlyclip.defs = {
 	FOLDSTART:'ᏜᏜᏜᏜ*',
 	FOLDCONTENT:'!/%%/'
