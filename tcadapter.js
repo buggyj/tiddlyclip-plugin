@@ -5,6 +5,7 @@ module-type: widget
 
 
 \*/
+
 (function(){
 
 /*jslint node: true, browser: true */
@@ -104,6 +105,12 @@ CreateTiddlerWidget.prototype.execute = function() {
 	tiddlyclip.getTidContents= function(tidname) {
 			return $tw.wiki.getTiddlerText(tidname);
 	}
+	//$tw.wiki.my.logEnable= function() {tiddlyclip.logit=true};
+	//$tw.wiki.my.logDisable= function() {tiddlyclip.logit=false};
+	tiddlyclip.log= function(x) {
+		//if (tiddlyclip.logit) 
+		//alert(x);
+	};
 	tiddlyclip.tiddlerExists= function(title) {
 			return($tw.wiki.tiddlerExists(title));
 	}	

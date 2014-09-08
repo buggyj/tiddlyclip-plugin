@@ -4,4 +4,4 @@ type: text/vnd.tiddlywiki
 \rules only table wikilink prettylink
 
 |!Title|!Body|!Tags|!Fields modifiers|!field initials|!Modes|
-|((*@pageTitle*))|((*@pageRef*))\\n\\n[img[((*@onImage*??*@imageURL*??*@largestImgURL*))]]\\n\\n((*@text*))\\n\\n((*@exists(@userstring)*??*@userstring*))|||{"$location":"((*@pageRef*))"},{"$caption":"((*@pageTitle*))"},{"$when":"((*@dateTimeShort*))"}|inc add|
+|((*@pageTitle*))|((*@pageRef*))\n\n[img[((*@onImage*??*@imageURL*??*@largestImgURL*))]]\n\n((*@text*))\n\n((*@exists(@userstring)*??*@userstring*))|||{"$location":"((*@pageRef*))"},{"$caption":"((*@pageTitle*))"},{"$when":"((*@dateTimeShort*))"}|inc add|

@@ -3,12 +3,12 @@ tiddlyclip={hello:"hello"};
 
 (function(){
 tiddlyclip.modules={};
-tiddlyclip.log= function(x) {};
+
 var log = function (x) {
 	alert(x);
 }
 	function status (param) {
-		//alert(param);
+		tiddlyclip.log(param);
 		}
 
 if (true) {
@@ -54,9 +54,13 @@ tiddlyclip.modules.tPaste = (function () {
 		
 		if (!catFound) {status ("not found cat: "+category);return {valid:false};}
 		
-		var ruleDefs =  twobj.getTidContents(pieces[4]);
+		var ruleDefs =  twobj.getTidContents(pieces[4].replace(/^\[\[([\s\S]*)\]\]/,"$1"));//remove wikiword parens if present
 		//if rule is not found use the default rules
-		if (!ruleDefs) {ruleDefs = findDefaultRule(pieces[4]);}
+		if (!ruleDefs) {
+			status ("rules not found for cat: "+category+" was "+pieces[4]);
+			ruleDefs = findDefaultRule(pieces[4]);
+			
+			}
 		if (!!ruleDefs)  {	
 			try {
 				cat = {rules:null,valid:false};		
@@ -65,7 +69,7 @@ tiddlyclip.modules.tPaste = (function () {
 				cat.tags = pieces[3];
 				cat.tip  = pieces[2];
 				cat.valid= true;
-				//status("found cat: "+category)
+				status("found cat: "+category)
 				return cat;
 			} catch(e) {
 				status("caught error while adding rules for cat: " + category);
@@ -82,19 +86,19 @@ tiddlyclip.modules.tPaste = (function () {
 		if (content != null) {
 			sectionStrgs = content.split(defaults.getDefs().FOLDSTART+'['); //sections begin with a title, , followed by a table of categories
 			if(sectionStrgs.length>1) {
-				//status("found clip list format config")		 
+				status("found clip list format config")		 
 				sectionStrgs.shift();	
 				//only load active categories 
 				return (sectionStrgs[activeSection].split('!/%%/\n')[1]);//strip of section name from first line
 			} else { 
-				//status("found straight config format");
+				status("found straight config format");
 				sectionStrgs = content.split('\n!'); //sections begin with a title, eg !mysection, followed by a table of categories
 				//only load active categories
 				return (sectionStrgs[activeSection].replace(/(^\|)*\n/,''));//strip of section name from first line
 			}
 
 		}else {
-			//status("config tiddler not found try with default values");
+			status("config tiddler not found try with default values");
 			return defaults.getDefaultCategories().join("\n");
 		}
 	}
@@ -252,7 +256,7 @@ tiddlyclip.modules.tPaste = (function () {
 		//BJ: if atHome exists, then catName should be the name of a tiddler containing the cat, if this is ""
 		//then use build in 'dummy' rule and use substitutionTiddler as input to the substitution engine
 		
-		//status ("paste enter");
+		status ("paste enter");
 		var cat = findCategory (findSection(section,twobj.getTidContents("TiddlyClipConfig")), catName);
 		if (!cat.valid) {
 				cat = findCategory (findSection(section), catName);//look for default rule
@@ -261,7 +265,7 @@ tiddlyclip.modules.tPaste = (function () {
 			status("not valid category");
 			return;
 		}
-		//status ("valid category");
+		status ("valid category");
 		//could check for type of cat.rules if function then run -- allows module plugin with Tw5
 		var cancelled = {val:false};
 		var tiddlers = [],tideditMode=[];//list of tids to store
@@ -273,27 +277,27 @@ tiddlyclip.modules.tPaste = (function () {
 		//now loop over each tiddler to be created(defined in the category's extension entry)
 		//if a list of tiddlers are to be copied from a page then we will have to loop over them as well
 
-		//status ("before subst loop");
+		status ("before subst loop");
 		if (!hasModeBegining(cat,"tiddler"))  { //user has not selected  tiddler mode
 			for(var i=startrule; i<patterns.length; i++)  {	
 				var tiddlerObj, writeMode;
 				tiddlerObj = new tiddlerAPI.Tiddler();
-				//status ("before subst");
+				status ("before subst");
 				
 				tiddlerObj.setPageVars(pageData);
 				tiddlerObj.setNormal(patterns[i],pageData);
 				tiddlerObj.subst(patterns[i],pageData);
 
-				//status ("after subst");	
+				status ("after subst");	
 				//tiddlerObj.text=userInput(tiddlerObj.text); //not used at present
 				tiddlerObj.addTags(catTags);
-				//status ("after addTags");
+				status ("after addTags");
 				if (cancelled.val==true) {return;}
 				//if (pageData.data.WriteMode !="none") writeMode=pageData.data.WriteMode;
 				//add tiddlers one by one to our list of edits
 				tiddlers.push(tiddlerObj);
 
-				//status ("after push to list");
+				status ("after push to list");
 			}
 		} else { 
 			var tid;
@@ -302,21 +306,21 @@ tiddlyclip.modules.tPaste = (function () {
 					for(var i=startrule; i<patterns.length; i++)  {	
 						var tiddlerObj, writeMode;
 						tiddlerObj = new tiddlerAPI.Tiddler(tid);
-						//status ("before subst");
+						status ("before subst");
 						
 						tiddlerObj.setPageVars(pageData);
 						tiddlerObj.setTids(patterns[i],pageData);
 						tiddlerObj.subst(patterns[i],pageData);
-						//status ("after subst");	
+						status ("after subst");	
 						//tiddlerObj.text=userInput(tiddlerObj.text); //not used at present
 						tiddlerObj.addTags(catTags);
-						//status ("after addTags");
+						status ("after addTags");
 						if (cancelled.val==true) {return;}
 						//if (pageData.data.WriteMode !="none") writeMode=pageData.data.WriteMode;
 						//add tiddlers one by one to our list of edits
 						tiddlers.push(tiddlerObj);
 
-						//status ("after push to list");
+						status ("after push to list");
 					}
 				}
 				else {
@@ -329,7 +333,7 @@ tiddlyclip.modules.tPaste = (function () {
 
 		}
 		if(hasMode(cat,"nosave")) return;
-		//status ("before adding to tw");
+		status ("before adding to tw");
 		var tidnames=[];
 		for (var i =0; i< tiddlers.length; i++) {
 			if (!tiddlers[i].noSave()){
@@ -683,7 +687,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		//---check to see if user will handle insertion of new text		 
 		if (!this.hasMode('no-textsaver')) {
 			var data = table['#']['newdata'], prepend =this.hasMode('prepend');
-			//status ("not textsaver with data "+ data+" olddata "+	table['$']['text']);
+			status ("not textsaver with data "+ data+" olddata "+	table['$']['text']);
 			//BJ does this.fields.text exist with a new tiddler? 
 			table['$']['text'] = (!!prepend)?data + table['$']['text'] :table['$']['text'] + data;
 		}

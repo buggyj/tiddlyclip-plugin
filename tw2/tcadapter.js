@@ -62,6 +62,11 @@
 	tiddlyclip.getTidContents= function(tidname) {
 			return store.getTiddlerText(tidname);
 	}
+	tiddlyclip.logEnable= function() {tiddlyclip.logit=true};
+	tiddlyclip.logDisable= function() {tiddlyclip.logit=false};
+	tiddlyclip.log= function(x) {
+		//if (tiddlyclip.logit) alert(x);
+	};	
 	tiddlyclip.tiddlerExists= function(title) {
 			return(store.tiddlerExists(title));
 	}	
