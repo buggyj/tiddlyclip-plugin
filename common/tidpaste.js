@@ -844,7 +844,12 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 					alertAll.apply(null,vals);
 					return "all alerted";
 			}
-			return tiddlyclip.macro[key1].apply(null,vals);
+			try {
+				return tiddlyclip.macro[key1].apply(null,vals);
+			}
+			catch(e) {
+				alert (key1 + "marco not found");	
+			}
 /*
 			try {
 				return tiddlyclip[key1](val);

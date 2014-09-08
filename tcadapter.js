@@ -135,11 +135,11 @@ CreateTiddlerWidget.prototype.execute = function() {
 		self.dispatchEvent({type: "tm-import-tiddlers", param: JSON.stringify(tiddlerFieldsArray)});	
 	}
 	this.list = this.getTiddlerList();
-	 
+	tiddlyclip.macro={};
 	$tw.utils.each(this.list,function(title,index) {
 		try {
 			var func = require(title);
-			tiddlyclip.macro={};
+			
 			tiddlyclip.macro[func.name]=func.run;
 		} catch (e) {
 			alert("tc: problem with command " + title);

@@ -4,6 +4,6 @@ title: ConvertDet
 type: text/vnd.tiddlywiki
 
 [
-{"#readable":"((*@makeReadable(@Web)*))"},
+{"#readable":"((*@web*))"},
 {"#newdata": "((*@htmlToTW2(#readable)*))\n\n------\n\n"}
 ]
