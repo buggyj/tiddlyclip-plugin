@@ -1,4 +1,4 @@
-tiddlyclip.convert  = function(text) {
+tiddlyclip.macro.htmlToTW2  = function(text) {
 
 
 	
