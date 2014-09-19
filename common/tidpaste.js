@@ -466,9 +466,49 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 	function createDiv(){
 		return document.createElement("div");
 	}
-	
+	// Static method to bracket a string with double square brackets if it contains a space
+	function encodeTiddlyLink(title)
+	{
+		return title.indexOf(" ") == -1 ? title : "[[" + title + "]]";
+	};
+
+	// Static method to encodeTiddlyLink for every item in an array and join them with spaces
+	function encodeTiddlyLinkList(list)
+	{
+		if(list) {
+			var t,results = [];
+			for(t=0; t<list.length; t++)
+				results.push(encodeTiddlyLink(list[t]));
+			return results.join(" ");
+		} else {
+			return "";
+		}
+	};
 	function removeDuplicates(names) {
-		var i,j,dup,nams = '', nlist = names.split(' ');
+		var i,j,dup,nams = []; 
+
+		// Parse a string array from a bracketted list. For example "OneTiddler [[Another Tiddler]] LastOne"
+		var parseStringArray = function(value) {
+			if(typeof value === "string") {
+				var memberRegExp = /(?:^|[^\S\xA0])(?:\[\[(.*?)\]\])(?=[^\S\xA0]|$)|([\S\xA0]+)/mg,
+					results = [],
+					match;
+				do {
+					match = memberRegExp.exec(value);
+					if(match) {
+						var item = match[1] || match[2];
+						if(item !== undefined && results.indexOf(item) === -1) {
+							results.push(item);
+						}
+					}
+				} while(match);
+				return results;
+			} else {
+				return null;
+			}
+		};
+		nlist = parseStringArray(names);
+		/*
 		for ( i=0; i < nlist.length; i++)
 			nlist[i] = nlist[i].trim();
 		for ( i=0; i < nlist.length; i++){
@@ -479,9 +519,10 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 					break;
 				}
 			}
-			if (!dup) nams = nams+' '+nlist[i];
+			if (!dup) nams.push(nlist[i]);
 		}
-		return nams;
+		*/
+		return encodeTiddlyLinkList(nlist);
 	}
 	function Tiddler(el,truetid) {
 		this.attribs = ["text"];
@@ -547,10 +588,16 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		return (!this.fields.title ||this.hasMode("nosave"));
 	}
 		
-	Tiddler.prototype.addTags=function(tag){
-		if (!tag) return;
-		if (!this.fields.tags) this.fields.tags = ' ';
-		this.fields.tags = removeDuplicates(this.fields.tags + ' '+ tag);
+	Tiddler.prototype.addTags=function(tags){
+		if (!tags) return;
+		if (!this.fields.tags) {
+			this.fields.tags = removeDuplicates(tags);
+			this.attribs.push("tags");	
+		}
+		else {
+			this.fields.tags = removeDuplicates(this.fields.tags + ' '+ tags);
+		}
+		alert ( this.fields.tags);
 	}
 
 	Tiddler.prototype.applyEdits = function(fields) {
