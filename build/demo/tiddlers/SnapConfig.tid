@@ -11,5 +11,5 @@ type: text/vnd.tiddlywiki
 
 |!Title|!Body|!Tags|!Fields modifiers|!field initials|!Modes|
 |((*@pageTitle*))/thumbprint|((*@snap*))|ClippedImage||{"$type":"image/png"}||
-|((*@pageTitle*))|[[SnapDetail]]|ClipIntrest||||
+|((*@pageTitle*))|((*@pageRef*))\n\n{{((*@pageTitle*))/thumbprint}}\n\n((*@text*))\n\n|ClipIntrest||||
 

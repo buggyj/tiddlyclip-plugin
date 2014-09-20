@@ -167,16 +167,16 @@ tiddlyclip.modules.tPaste = (function () {
 					}						
 				} else{
 					
-					if (i==6)  					pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//modes	
-					else if (i==4||i==5)		pieces[i] = '['+pieces[i]+']';	
+					if (i==6)  			pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//modes	
+					else if (i==4||i==5)pieces[i] = '['+pieces[i]+']';	
 					else if (i==3) {
-					  if (pieces[i]) pieces[i] = '[{"$tags":"'+pieces[i]+'"}]'; 
-					  else pieces[i] ='[]'; // don't modify/create
+					  if (pieces[i]) 	pieces[i] = '[{"#space":" "},{"$tags":"((*@exists($tags)*??*$tags*))((*@exists($tags)*??*#space*))'+pieces[i]+'"}]'; 
+					  else 				pieces[i] ='[]'; // don't modify/create
 				   }
-					else if (i==2)  			pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//text		
+					else if (i==2)  	pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//text		
 					else if (i==1){
-					  if (pieces[i]) pieces[i] = '[{"$title":"'+pieces[i]+'"}]';
-					  else pieces[i] ='[]'; // don't modify/create
+					  if (pieces[i]) 	pieces[i] = '[{"$title":"'+pieces[i]+'"}]';
+					  else 				pieces[i] ='[]'; // don't modify/create
 				   }  			
 				}
 			}
