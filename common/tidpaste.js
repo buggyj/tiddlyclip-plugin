@@ -150,34 +150,32 @@ tiddlyclip.modules.tPaste = (function () {
 		//extracts subst patterns for title, body, tags. Also extracts modes
 		var Tid;
 		var whiteSpace = /^\s+|\s+$/g;//use trim
-		
+		var isLinked = /^\[\[([\s|\S]*)\]\]$/;
 		if ((typeof defRule) =='string' ) { //we has a row definition
 			//remove triple quotes around any | - these were needed to stop TW thinking they were table elements
 			var pieces = defRule.replace(/\"\"\"\|\"\"\"/g,"&bar;").split("|");
 			if  (pieces.length <7) {error('short:'+defRule);throw new Error('Invalid Rule');} //error malformeed TODO: inform the user
 			for (var i=1;i<7;i++) {
-				pieces[i]= pieces[i].replace(whiteSpace,"").replace("&bar;","|"); 
+				pieces[i]= pieces[i].replace("&bar;","|"); 
 				if (pieces[i] == null) {
 					if (i==1) throw new Error('Invlid Rule');//must define a name for the tid
-				} else 	if (pieces[i].substring(0,2)==='[[') { // -there is a definition in a seperated tiddler - go get it
-				    var temp=pieces[i].replace (/\[\[([\s|\S]*)\]\]/,"$1"); //remove  brackets
-					if (temp.substring(0,2) !== '[[') {
+				} else 	if (i!=3 && isLinked.test(pieces[i])) { // -there is a definition in a seperated tiddler - go get it
+				    var temp=pieces[i].replace (/^\[\[([\s|\S]*)\]\]$/,"$1"); //remove  brackets
 						 temp =twobj.getTidContents(temp); //this.body contains the name of the tiddler
-						 if (temp != null) pieces[i] = temp;
-					}						
+						 if (temp != null) pieces[i] = temp;						
 				} else{
 					
-					if (i==6)  			pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//modes	
-					else if (i==4||i==5)pieces[i] = '['+pieces[i]+']';	
+					if (i==6)  				pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//modes	
+					else if (i==4||i==5)	pieces[i] = '['+pieces[i]+']';	
 					else if (i==3) {
-					  if (pieces[i]) 	pieces[i] = '[{"#space":" "},{"$tags":"((*@exists($tags)*??*$tags*))((*@exists($tags)*??*#space*))'+pieces[i]+'"}]'; 
-					  else 				pieces[i] ='[]'; // don't modify/create
-				   }
-					else if (i==2)  	pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//text		
+						  if (pieces[i]) 	pieces[i] = '[{"#space":" "},{"$tags":"((*@exists($tags)*??*$tags*))((*@exists($tags)*??*#space*))'+pieces[i]+'"}]'; 
+						  else 				pieces[i] ='[]'; // don't modify/create
+					   }
+					else if (i==2)  		pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//text		
 					else if (i==1){
-					  if (pieces[i]) 	pieces[i] = '[{"$title":"'+pieces[i]+'"}]';
-					  else 				pieces[i] ='[]'; // don't modify/create
-				   }  			
+						  if (pieces[i]) 	pieces[i] = '[{"$title":"'+pieces[i]+'"}]';
+						  else 				pieces[i] ='[]'; // don't modify/create
+					   }  			
 				}
 			}
 			this.title =pieces[1];
