@@ -1,0 +1,16 @@
+created: 20140920125217908
+modified: 20140921153252028
+title: TITLETID
+type: text/vnd.tiddlywiki
+
+[
+  {
+    "#rule": "/[\\s\\S]*\\/(.*?)$/g"
+  },
+  {
+    "#term": "$1"
+  },
+  {
+    "$title": "((*@linkURL/#rule/#term*))"
+  }
+]

@@ -1,0 +1,9 @@
+created: 20140920123952056
+modified: 20140922062054605
+title: localImage
+type: text/vnd.tiddlywiki
+
+\rules only table wikilink prettylink
+
+|!Title|!Body|!Tags|!Fields modifiers|!field initials|!Modes|
+|[[TITLETID]]|<$image source ='((*@sublink(@linkURL)*))'/>|||{"$location":"((*@linkURL*))"}||

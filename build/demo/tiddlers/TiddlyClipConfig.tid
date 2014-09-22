@@ -7,6 +7,7 @@ type: text/vnd.tiddlywiki
 
 !default
 |!Category|!Tip|!Tags|!Rule Tid|!Modes|
+|localImg|make tiddler with img||[[localImage]]|linkLocal|
 |tidme||clippedtid|TidConfig|tiddlers|
 |text|copy as text||PlainText||
 |LogBook|logbook|log|LogConfig|userstring|

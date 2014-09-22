@@ -962,8 +962,10 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			// regex ((*@PageRef/#rule/#term*)) or ((*.....*??*@PageRef/#rule/#term*))
 			if ((parts = key.split("/")).length ==3) {
 				if ((vals = toValues(parts)) == null) return m;
-				var regParts = (valOf(parts[1])).split("/");
-				var pattern=new RegExp(regParts[1],regParts[2]);
+				var regParts = (valOf(parts[1]));
+				var regexBody = regParts.replace(/\/([\s\S]*)\/.*$/,"$1");
+				var regexflags = regParts.replace(/.*\/(.*?)$/,"$1");
+				var pattern=new RegExp(regexBody,regexflags);
 			return vals[0].replace(pattern, vals[2]);
 			}
 			// substitute
