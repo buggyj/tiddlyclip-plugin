@@ -595,7 +595,6 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		else {
 			this.fields.tags = removeDuplicates(this.fields.tags + ' '+ tags);
 		}
-		alert ( this.fields.tags);
 	}
 
 	Tiddler.prototype.applyEdits = function(fields) {
