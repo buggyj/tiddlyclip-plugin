@@ -2,7 +2,7 @@
 |Name|TiddlyClipPlugin|
 |Version|0.0.5-alpha|
 |Author|Jeffrey Wilkinson aka BJ|
-|Date:|11-09-2014|
+|Date:|07-10-2014|
 |Type|plugin|
 |Overrides||
 |CoreVersion|2.6.0|
