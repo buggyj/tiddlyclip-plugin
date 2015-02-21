@@ -80,7 +80,7 @@ CreateTiddlerWidget.prototype.execute = function() {
 		return defaultRules[ruleName];
 	}
 	tiddlyclip.defaultCategories = [
-		"|Tip|copy tids||defaultTip|tiddlers|",
+		"|Tid|copy tids||defaultTid|tiddlers|",
 		"|Snip|copy||defaultSnip||",
 		"|Pin|Pin it||defaultPin||"
 	];

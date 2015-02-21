@@ -3,6 +3,6 @@ type: text/vnd.tiddlywiki
 
 !default
 |!Category|!Tip|!Tags|!Rule Tid|!Modes|
-|Tip|copy tids||[[defaultTip]]|tiddlers|
+|Tid|copy tids||[[defaultTid]]|tiddlers|
 |Snip|copy||[[defaultSnip]]||
 |Pin|pin it||[[defaultPin]]||
