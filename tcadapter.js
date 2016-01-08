@@ -195,12 +195,14 @@ tcWidget.prototype.render = function(parent,nextSibling) {
 	{
 		// Inject the message box
 		var messageBox = doc.getElementById("tiddlyclip-message-box");
-		if(!messageBox) {
-			messageBox = doc.createElement("div");
-			messageBox.id = "tiddlyclip-message-box";
-			messageBox.style.display = "none";
-			doc.body.appendChild(messageBox);
-		}
+		//remove previously setup
+		if(messageBox) messageBox.outerHTML = "";
+
+		messageBox = doc.createElement("div");
+		messageBox.id = "tiddlyclip-message-box";
+		messageBox.style.display = "none";
+		doc.body.appendChild(messageBox);
+
 		// Attach the event handler to the message box
 		messageBox.addEventListener("tiddlyclip-save-file", onSaveFile,false);
 	};
