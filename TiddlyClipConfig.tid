@@ -6,3 +6,4 @@ type: text/vnd.tiddlywiki
 |Tid|copy tids||[[defaultTid]]|tiddlers|
 |Snip|copy||[[defaultSnip]]||
 |Pin|pin it||[[defaultPin]]||
+|Snap|screen shot||[[defaultSnap]]|snap|
