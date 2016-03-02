@@ -149,8 +149,11 @@ CreateTiddlerWidget.prototype.execute = function() {
 };
 
 CreateTiddlerWidget.prototype.handleTiddlyclipEvent = function(event) {
-
-	tiddlyclip.modules.tPaste.paste(event.category,event.pagedata,event.currentsection);	
+	if (event.localsection) {
+		tiddlyclip.modules.tPaste.paste(event.category,event.pagedata,null,event.localsection);
+	} else {
+		tiddlyclip.modules.tPaste.paste(event.category,event.pagedata,event.currentsection);	
+	}
 	return false;
 };
 		
@@ -214,7 +217,7 @@ tcWidget.prototype.render = function(parent,nextSibling) {
 	    var pageData = message.getAttribute("data-tiddlyclip-pageData");
 	    var transformed =  JSON.parse(pageData);
 	    if (!transformed.data) alert("not data");
-	    var currentsection = message.getAttribute("data-tiddlyclip-currentsection");					
+	    var currentsection = message.getAttribute("data-tiddlyclip-currentsection");	
 		self.dispatchEvent({type: "tiddlyclip-create", category:category, pagedata: transformed, currentsection:currentsection});	
 	}
 };
@@ -236,5 +239,73 @@ tcWidget.prototype.refresh = function(changedTiddlers) {
 };
 
 exports["tcadapter"] = tcWidget;
+
+})();
+
+
+
+(function(){
+
+/*jslint node: true, browser: true */
+/*global $tw: false */
+"use strict";
+
+var Widget = require("$:/core/modules/widgets/widget.js").widget;
+
+var SetFieldWidget = function(parseTreeNode,options) {
+	this.initialise(parseTreeNode,options);
+};
+
+/*
+Inherit from the base widget class
+*/
+SetFieldWidget.prototype = new Widget();
+
+/*
+Render this widget into the DOM
+*/
+SetFieldWidget.prototype.render = function(parent,nextSibling) {
+	this.computeAttributes();
+	this.execute();
+};
+
+/*
+Compute the internal state of the widget
+*/
+SetFieldWidget.prototype.execute = function() {
+	this.tabletid = this.getAttribute("$tabletid");
+	this.catname = this.getAttribute("$catname");
+};
+
+/*
+Refresh the widget by ensuring our attributes are up to date
+*/
+SetFieldWidget.prototype.refresh = function(changedTiddlers) {
+	var changedAttributes = this.computeAttributes();
+	if(changedAttributes["$tabletid"] || changedAttributes["$catname"]) {
+		this.refreshSelf();
+		return true;
+	}
+	return this.refreshChildren(changedTiddlers);
+};
+
+/*
+Invoke the action associated with this widget
+*/
+SetFieldWidget.prototype.invokeAction = function(triggeringWidget,event) {
+	var self = this,
+		options = {};
+	var pagedata = {data:{}};
+	$tw.utils.each(this.attributes,function(attribute,name) {
+		if(name.charAt(0) !== "$") {
+			pagedata.data[name] = attribute;
+		}
+	});
+	pagedata.data.category="none";
+	self.dispatchEvent({type: "tiddlyclip-create", category:this.catname, pagedata: pagedata, currentsection:null, localsection:this.tabletid});
+	return true; // Action was invoked
+};
+
+exports["action-tiddlydo"] = SetFieldWidget;
 
 })();

@@ -1,0 +1,12 @@
+created: 20160228133112122
+modified: 20160302075149166
+tags: 
+title: Testing local clip action
+type: text/vnd.tiddlywiki
+
+<$createclip>
+<$button>
+<$action-tiddlydo tid="clipdotestout" text="hellowrd" $tabletid="testtable" $catname="testcat" />
+Modify ~clipdotestout
+</$button>
+</$createclip>

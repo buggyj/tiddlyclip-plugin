@@ -249,13 +249,20 @@ tiddlyclip.modules.tPaste = (function () {
 		defaults.defaultCommands[cat].command(pageData);
 	}
 	// This is the function called when clicking the context menu item.
-	function paste(catName,pageData, section, atHome, substitutionTiddler)
+	function paste(catName,pageData, section, substitutionTiddler)
 	{  
 		//BJ: if atHome exists, then catName should be the name of a tiddler containing the cat, if this is ""
 		//then use build in 'dummy' rule and use substitutionTiddler as input to the substitution engine
+		var cat;
 		
 		status ("paste enter");
-		var cat = findCategory (findSection(section,twobj.getTidContents("TiddlyClipConfig")), catName);
+		
+		if (substitutionTiddler) {
+			cat = findCategory (twobj.getTidContents(substitutionTiddler), catName);
+		} else {
+			cat = findCategory (findSection(section,twobj.getTidContents("TiddlyClipConfig")), catName);
+		}
+		//find the table denoted by the section (a header in the TiddlyClipConfig ), then find the row (cat)
 		if (!cat.valid) {
 				cat = findCategory (findSection(section), catName);//look for default rule
 		}
