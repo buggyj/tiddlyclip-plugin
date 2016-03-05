@@ -87,6 +87,16 @@ CreateTiddlerWidget.prototype.execute = function() {
 
 	tiddlyclip.defs = {
 	}
+	tiddlyclip.getMultiTidTitle = function(title) {
+		var p = title.indexOf("->"), container, tid;
+		if(p !== -1) {
+			container = title.substr(0, p).trim();
+			tid = title.substr(p+2).trim();
+		} else {
+			tid = title;
+		}
+		return {container:container, title:tid};
+	}
 	tiddlyclip.newProtoTiddler = function (){
 		var tid = new $tw.Tiddler($tw.wiki.getCreationFields(),$tw.wiki.getModificationFields());
 		var current = {fields:{}};
@@ -96,14 +106,54 @@ CreateTiddlerWidget.prototype.execute = function() {
 		return current;	
 	}
 	tiddlyclip.modifyTW= function(fields){
+		var tiddler = this.getMultiTidTitle(fields.title), tid;
+		if(!tiddler.container) {
+			this.modifyTWsimple(fields);
+			return;
+		}
+		//remove container from title	
+		fields.title = 	tiddler.title;
+		var container =  $tw.wiki.getTiddler(tiddler.container), text;
+		if (container) {
+			text = JSON.parse(container.fields.text);
+		} else {
+			text = {tiddlers:{}};
+		}
+		//add the new subtiddler
+		text.tiddlers[tiddler.title] = fields;
+		//modify name to be the subtiddler
+		text.tiddlers[tiddler.title].title = tiddler.title;
+		var updateFields = {
+			title: tiddler.container,
+			text: JSON.stringify(text)
+		};	
+		$tw.wiki.addTiddler(new $tw.Tiddler($tw.wiki.getCreationFields(),container,updateFields,$tw.wiki.getModificationFields()));	
+
+	}
+	tiddlyclip.modifyTWsimple= function(fields){	
 			$tw.wiki.addTiddler(new $tw.Tiddler(fields,$tw.wiki.getModificationFields()));
 	}
-	tiddlyclip.getNewTitle= function(base,options) {
-			options = options || {prefix: "-"};
-			return $tw.wiki.generateNewTitle(base,options);
+	tiddlyclip.getNewTitle= function(baseTitle,options) {
+		options = options || {};
+		var c = 0,
+			title = baseTitle;
+		while(this.tiddlerExists(title) ) {
+			title = baseTitle + 
+				(options.prefix || "-") + 
+				(++c);
+		}
+		return title;
 	}
 	tiddlyclip.getTidContents= function(tidname) {
-			return $tw.wiki.getTiddlerText(tidname);
+		var tiddler = this.getMultiTidTitle(tidname);
+		if(tiddler.container) {
+			tiddler = $tw.wiki.getSubTiddler(tiddler.container,tiddler.title);
+		} else {
+			tiddler = $tw.wiki.getTiddler(tiddler.title);
+		}
+		if (tiddler && tiddler.fields) {
+			return tiddler.fields.text;
+		}
 	}
 	//$tw.wiki.my.logEnable= function() {tiddlyclip.logit=true};
 	//$tw.wiki.my.logDisable= function() {tiddlyclip.logit=false};
@@ -111,11 +161,22 @@ CreateTiddlerWidget.prototype.execute = function() {
 		//if (tiddlyclip.logit) 
 		//alert(x);
 	};
-	tiddlyclip.tiddlerExists= function(title) {
-			return($tw.wiki.tiddlerExists(title));
+	tiddlyclip.tiddlerExists= function(tidname) {
+		var tiddler = this.getMultiTidTitle(tidname);
+		if(tiddler.container) {
+			tiddler = $tw.wiki.getSubTiddler(tiddler.container,tiddler.title);
+		} else {
+			tiddler = $tw.wiki.getTiddler(tiddler.title);
+		}
+			return(!!tiddler);
 	}	
 	tiddlyclip.getTiddler= function (title) {
-		var tid = $tw.wiki.getTiddler(title);
+		var tiddler = this.getMultiTidTitle(title), tid;
+		if(tiddler.container) {
+			tid = $tw.wiki.getSubTiddler(tiddler.container,tiddler.title);
+		} else {
+			tid = $tw.wiki.getTiddler(tiddler.title);
+		}
 		if (!tid){
 			return null;
 		}
@@ -128,7 +189,34 @@ CreateTiddlerWidget.prototype.execute = function() {
 	tiddlyclip.finish=function (tids) {
 		self.dispatchEvent({type: "tm-auto-save-wiki"}); 
 	}
-	tiddlyclip.importTids =function (tidfields) {
+	tiddlyclip.importTids =function (fields) {
+		var tiddler = this.getMultiTidTitle(fields.title), tid;
+		if(!tiddler.container) {
+			this.importTidsSimple(fields);
+			return;
+		}
+		//remove container from title	
+		fields.title = 	tiddler.title;
+		var container =  $tw.wiki.getTiddler(tiddler.container), text;
+		if (container) {
+			text = JSON.parse(container.fields.text);
+		} else {
+			text = {tiddlers:{}};
+		}
+		//add the new subtiddler
+		text.tiddlers[tiddler.title] = fields;
+		//modify name to be the subtiddler
+		text.tiddlers[tiddler.title].title = tiddler.title;
+		var updateFields = {
+			title: tiddler.container,
+			text: JSON.stringify(text)
+		};	
+		var tid = new $tw.Tiddler($tw.wiki.getCreationFields(),container,updateFields,$tw.wiki.getModificationFields());	
+		//alert(JSON.stringify(tid))
+        var tiddlerFieldsArray = [tid.fields];					
+		self.dispatchEvent({type: "tm-import-tiddlers", param: JSON.stringify(tiddlerFieldsArray)});	
+	}
+	tiddlyclip.importTidsSimple =function (tidfields) {
 		//tiddlyclip.log("savefile at last!");
 		// Get the details from the message
         var tiddlerFieldsArray = [tidfields];					

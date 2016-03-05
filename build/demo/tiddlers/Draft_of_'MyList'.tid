@@ -1,0 +1,8 @@
+created: NaNNaNNaNNaNNaNNaNNaN
+draft.of: MyList
+draft.title: MyList
+modified: 20160305102044470
+title: Draft of 'MyList'
+type: application/json
+
+{"tiddlers":{"tiddlycliptest — test":{"text":"http://127.0.0.1:8089/ <br>date='Saturday, March 5th, 2016 at 9:56:47 am', <html>button in the sidebar on the right</html>","created":"20160305095647240","modified":"20160305095647240","title":"tiddlycliptest — test"},"tiddlycliptest — test-1":{"text":"http://127.0.0.1:8089/ <br>date='Saturday, March 5th, 2016 at 9:49:59 am', <html>being reliably saved</html>","created":"20160305094959913","modified":"20160305094959913","title":"tiddlycliptest — test-1"},"tiddlycliptest — test-2":{"text":"http://127.0.0.1:8089/ <br>date='Saturday, March 5th, 2016 at 10:20:28 am', <html> TiddlyWiki and what it can do</html>","created":"20160305102028651","modified":"20160305102028651","title":"tiddlycliptest — test-2"}}}

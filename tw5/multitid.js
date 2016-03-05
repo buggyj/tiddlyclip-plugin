@@ -1,8 +1,10 @@
 exports.name ="tomultid";
-exports.run  = function(IMPORT_TITLE,tiddler)
+exports.run  = function(IMPORT_TITLE,tiddler,field,value)
 	{
 
-	var tiddlers = [tiddler];
+	var tiddlers = [tiddler],
+		field = field||"multitid-type",
+		value = value||"vault";
 
 	// Get the current $:/Import tiddler
 	var importTiddler = $tw.wiki.getTiddler(IMPORT_TITLE),
@@ -10,7 +12,7 @@ exports.run  = function(IMPORT_TITLE,tiddler)
 		newFields = new Object({
 			title: IMPORT_TITLE,
 			type: "application/json",
-			"multitid-type": "vault"
+			field: value
 		}),
 		incomingTiddlers = [];
 	// Process each tiddler

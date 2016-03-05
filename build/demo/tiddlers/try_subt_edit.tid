@@ -1,0 +1,13 @@
+created: 20160302122305085
+list: [[Self Customizing Extensions]] HypoTextIdeas [[Top level Ideas]] [[plugin of customising tiddlers]] PluginDev
+modified: 20160302182130933
+tags: 
+title: try subt edit
+type: text/vnd.tiddlywiki
+
+<$vars parentTiddler="testtid">
+<$vars currentTiddler="testtid">
+<ul><$list filter="[all[current]plugintiddlers[]sort[title]]" class='btn btn-primary'>
+<li>{{!!title||listtemplatesubedit}}</li></$list></ul>
+</$vars>
+</$vars> 

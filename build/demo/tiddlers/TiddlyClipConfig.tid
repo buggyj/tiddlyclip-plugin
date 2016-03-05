@@ -1,6 +1,6 @@
 changecount: 18
 created: 20130603141300000
-modified: 20140903093657107
+modified: 20160304070106372
 modifier: Your Name
 title: TiddlyClipConfig
 type: text/vnd.tiddlywiki
@@ -21,7 +21,7 @@ type: text/vnd.tiddlywiki
 !ClipList
 |!Category|!Tip|!Tags|!Rule Tid|!Modes|
 |webclip|||WebCliprule||
-|Snapclip|||SnapClipRule|snap30 userstring|
+|MyList|||PlainTextClipList||
 
 !MultiTids
 |!Category|!Tip|!Tags|!Rule Tid|!Modes|

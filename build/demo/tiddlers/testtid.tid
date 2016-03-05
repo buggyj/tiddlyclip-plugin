@@ -1,0 +1,32 @@
+created: 20160302181818343
+modified: 20160302181818343
+multitid-type: vault
+title: testtid
+type: application/json
+
+{
+    "tiddlers": {
+        "TiddlyClipConfig-clipped": {
+            "text": "!default\n|!Category|!Tip|!Tags|!Rule Tid|!Modes|\n|localImg|make tiddler with img||[[localImage]]|linkLocal|\n|tidme||clippedtid|TidConfig|tiddlers|\n|text|copy as text||PlainText||\n|LogBook|logbook|log|LogConfig|userstring|\n|ReadAble|||ReadConfig||\n|ConVert|convertTW2||ConvertConfig||\n|WebList|||WebClipTid||\n|highlight||||highlight|\n|snapPage|||SnapConfig|snap30 |\n|snapUtube|||SnapUtubeConfig|userstring|\n\n!ClipList\n|!Category|!Tip|!Tags|!Rule Tid|!Modes|\n|webclip|||WebCliprule||\n|Snapclip|||SnapClipRule|snap30 userstring|\n\n!MultiTids\n|!Category|!Tip|!Tags|!Rule Tid|!Modes|\n|Tomultitid|||MultiTidRule|tiddlers userstring nosave|\n",
+            "changecount": "18",
+            "created": "20130603141300000",
+            "modified": "20140903093657107",
+            "modifier": "Your Name",
+            "title": "TiddlyClipConfig-clipped",
+            "type": "text/vnd.tiddlywiki",
+            "revision": "0",
+            "bag": "default",
+            "tags": "ClippedImage"
+        },
+        "WebCliprule-clipped": {
+            "text": "|!Title|!Body|!Tags|!Fields|!Initvals|!Modes|\n|((*@dateTimeShort*))|((*@web*))|((*@section*)) [[((*@dateShort*))]]|{\"$location\":\"((*@pageRef*))\"},{\"$caption\":\"((*@pageTitle*))\"}||append|\n|((*@section*))|[[List_Clip_Caption]]||||once|\n",
+            "created": "20140219094301916",
+            "modified": "20140716070755976",
+            "tags": "TiddlyClipRule TCdoc ClippedImage",
+            "title": "WebCliprule-clipped",
+            "type": "text/vnd.tiddlywiki",
+            "revision": "0",
+            "bag": "default"
+        }
+    }
+}
