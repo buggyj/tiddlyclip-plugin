@@ -1,7 +1,0 @@
-created: 20140219094827398
-modified: 20140702150247963
-tags: TiddlyClipRule
-title: WebClipDetailRule
-type: text/plain
-
-[{"#newdata":"((*@pageRef*)) <br> ((*@dateTimeShort*))<br>((*@web*))"}]

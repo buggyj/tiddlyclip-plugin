@@ -1,7 +1,0 @@
-created: 20140224184546030
-modified: 20140302122322195
-tags: TiddlyClipRule
-title: WebClipTagRule
-type: text/plain
-
-[{"#newdata": "<$set name='loop1' value=<<qualify '$:/temp/taglist'>>>\n<ul><$taglist class='tc-btn tc-btn-primary'>\n<li>{{!!title||taglisttemplate}}</li></$taglist></ul>\n</$set>"}]
