@@ -1,2 +1,5 @@
-/build/demo/output
+**/output
 /tw2release
+$__StoryList.tid
+**/build/extlibs/tiddlers/
+**/build/playground/tiddlers/
