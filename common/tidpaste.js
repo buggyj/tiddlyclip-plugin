@@ -343,7 +343,7 @@ tiddlyclip.modules.tPaste = (function () {
 		for (var i =0; i< tiddlers.length; i++) {
 			if (!tiddlers[i].noSave()){
 				addTiddlerToTW(tiddlers[i]);
-				tidnames.push(tiddlers[i].fields.title)
+				if(tiddlers[i].hasMode("open")) tidnames.push(tiddlers[i].fields.title)
 			}
 		}
 		if(hasMode(cat,"nofin")) return;

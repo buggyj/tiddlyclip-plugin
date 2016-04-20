@@ -2,8 +2,6 @@
 title: $:/plugins/bj/tiddlyclip/tcadapter.js
 type: application/javascript
 module-type: widget
-
-
 \*/
 
 (function(){
@@ -89,7 +87,7 @@ CreateTiddlerWidget.prototype.execute = function() {
 	}
 	tiddlyclip.getMultiTidTitle = function(title) {
 		var p = title.indexOf("->"), container, tid;
-		if(p !== -1) {
+		if(p !== -1 && title.substr(0, 8) !== "Draft of") {
 			container = title.substr(0, p).trim();
 			tid = title.substr(p+2).trim();
 		} else {
@@ -187,6 +185,10 @@ CreateTiddlerWidget.prototype.execute = function() {
 		return current;	
 	}	
 	tiddlyclip.finish=function (tids) {
+		for (var i = 0; i < tids.length; i++){
+			 self.dispatchEvent({type: "tm-navigate", navigateTo:tids[i]});
+			 //alert("open "+tids[i])
+		 }
 		self.dispatchEvent({type: "tm-auto-save-wiki"}); 
 	}
 	tiddlyclip.importTids =function (fields) {
@@ -340,19 +342,19 @@ exports["tcadapter"] = tcWidget;
 
 var Widget = require("$:/core/modules/widgets/widget.js").widget;
 
-var SetFieldWidget = function(parseTreeNode,options) {
+var ToDoWidget = function(parseTreeNode,options) {
 	this.initialise(parseTreeNode,options);
 };
 
 /*
 Inherit from the base widget class
 */
-SetFieldWidget.prototype = new Widget();
+ToDoWidget.prototype = new Widget();
 
 /*
 Render this widget into the DOM
 */
-SetFieldWidget.prototype.render = function(parent,nextSibling) {
+ToDoWidget.prototype.render = function(parent,nextSibling) {
 	this.computeAttributes();
 	this.execute();
 };
@@ -360,7 +362,7 @@ SetFieldWidget.prototype.render = function(parent,nextSibling) {
 /*
 Compute the internal state of the widget
 */
-SetFieldWidget.prototype.execute = function() {
+ToDoWidget.prototype.execute = function() {
 	this.tabletid = this.getAttribute("$tabletid");
 	this.catname = this.getAttribute("$catname");
 };
@@ -368,7 +370,7 @@ SetFieldWidget.prototype.execute = function() {
 /*
 Refresh the widget by ensuring our attributes are up to date
 */
-SetFieldWidget.prototype.refresh = function(changedTiddlers) {
+ToDoWidget.prototype.refresh = function(changedTiddlers) {
 	var changedAttributes = this.computeAttributes();
 	if(changedAttributes["$tabletid"] || changedAttributes["$catname"]) {
 		this.refreshSelf();
@@ -380,7 +382,7 @@ SetFieldWidget.prototype.refresh = function(changedTiddlers) {
 /*
 Invoke the action associated with this widget
 */
-SetFieldWidget.prototype.invokeAction = function(triggeringWidget,event) {
+ToDoWidget.prototype.invokeAction = function(triggeringWidget,event) {
 	var self = this,
 		options = {};
 	var pagedata = {data:{}};
@@ -389,11 +391,16 @@ SetFieldWidget.prototype.invokeAction = function(triggeringWidget,event) {
 			pagedata.data[name] = attribute;
 		}
 	});
-	pagedata.data.category="none";
+	pagedata.data.category=this.catname;
 	self.dispatchEvent({type: "tiddlyclip-create", category:this.catname, pagedata: pagedata, currentsection:null, localsection:this.tabletid});
 	return true; // Action was invoked
 };
 
-exports["action-tiddlydo"] = SetFieldWidget;
+ToDoWidget.prototype.invokeMsgAction = function(param) {
+	return this.invokeAction(this); 
+}
+
+exports["action-tiddlydo"] = ToDoWidget;
 
 })();
+
