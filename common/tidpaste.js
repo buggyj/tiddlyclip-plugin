@@ -161,7 +161,7 @@ tiddlyclip.modules.tPaste = (function () {
 					if (i==1) throw new Error('Invlid Rule');//must define a name for the tid
 				} else 	if (i!=3 && isLinked.test(pieces[i])) { // -there is a definition in a seperated tiddler - go get it
 				    var temp=pieces[i].replace (/^\[\[([\s|\S]*)\]\]$/,"$1"); //remove  brackets
-						 temp =twobj.getTidContents(temp); //this.body contains the name of the tiddler
+						 temp =twobj.getTidrules(temp); //this.body contains the name of the tiddler
 						 if (temp != null) pieces[i] = temp;						
 				} else{
 					
@@ -281,7 +281,7 @@ tiddlyclip.modules.tPaste = (function () {
 		if(hasMode(cat,"nosub")) return;
 		//now loop over each tiddler to be created(defined in the category's extension entry)
 		//if a list of tiddlers are to be copied from a page then we will have to loop over them as well
-
+		tiddlerAPI.parserReset();
 		status ("before subst loop");
 		if (!hasModeBegining(cat,"tiddler"))  { //user has not selected  tiddler mode
 			for(var i=startrule; i<patterns.length; i++)  {	
@@ -401,7 +401,8 @@ tiddlyclip.modules.twobj = (function () {
 		onLoad:onLoad, 			tiddlerExists:tiddlerExists,
 		modifyTW:modifyTW,		getTiddler:getTiddler,
 		getTidContents:getTidContents,finish:finish,
-		importtids:importtids,	getNewTitle:getNewTitle	
+		importtids:importtids,	getNewTitle:getNewTitle,
+		getTidrules:getTidrules
 	}
 	var   tiddlerAPI;
 	function onLoad () {
@@ -412,7 +413,11 @@ tiddlyclip.modules.twobj = (function () {
 
 	function getTidContents(tidname) {
 			return tiddlyclip.getTidContents(tidname);
-	}	
+	}
+	function getTidrules(tidname) {
+			return tiddlyclip.getTidrules(tidname);
+	}
+		
 	function getNewTitle(tidname) {
 			return tiddlyclip.getNewTitle(tidname);
 	}
@@ -459,7 +464,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 
 	var api = 
 	{
-		onLoad:onLoad, Tiddler:Tiddler
+		onLoad:onLoad, Tiddler:Tiddler, parserReset:parserReset
 	}
 	var tcBrowser, twobj,pref, util, table;
 	
@@ -467,6 +472,9 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		tcBrowser	= tiddlyclip.modules.tcBrowser;
 		twobj		= tiddlyclip.modules.twobj;	
 		defaults	= tiddlyclip.modules.defaults;
+	}
+	function parserReset() {
+		table={'%':{}};
 	}
 	function createDiv(){
 		return document.createElement("div");
@@ -668,7 +676,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		pageData.data.category1stWord=pageData.data.category.replace(/(.*) (.*)/,"$1");
 
 		var macrosx =defaults.getDefs();
-		table={$:{}};table['#']={};table['@']={};
+		table['$']={};table['#']={};table['@']={};
 		for (var n in pageData.data) {table['@'][n]= pageData.data[n];}
 		for (var n in macrosx) {table['@'][n]= macrosx[n];}
 	}
@@ -760,12 +768,12 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 	function getSimpleVarFrom (n ) {
 		n = n.trim();
 		var type = n.substring(0,1);
-		if (type !== '#' &&type !=='$' && type !=='@') error("variable: invalid name "+n);
+		if (type !== '#' &&type !=='$' && type !=='@'&& type !=='%') error("variable: invalid name "+n);
         else return {type:type, leftSide:n.substring(1)};
 	}
 	function valOf(n, test) {
 		var val, type = n.substring(0,1);
-		if (type !== '#' &&type !=='$'&&type !=='@'){
+		if (type !== '#' &&type !=='$'&&type !=='@'&& type !=='%'){
 			error("source: invalid name"+n);
 			return null;
 		}
@@ -819,7 +827,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 				var returedVals =  getSimpleVarFrom (n);
 				var leftSide =  returedVals.leftSide;
 				var type 	 =  returedVals.type;
-				if (type !== '#' &&type !=='$') error("target: invalid name "+n);			
+				if (type !== '#' &&type !=='$' &&type !=='%') error("target: invalid name "+n);			
 				if (!localonly)  table[type][leftSide] = rightSide;
 				else {
 					if (type=='#') table[type][leftSide] = rightSide;

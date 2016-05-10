@@ -153,6 +153,30 @@ CreateTiddlerWidget.prototype.execute = function() {
 			return tiddler.fields.text;
 		}
 	}
+	
+	tiddlyclip.getTidrules= function(tidname) {
+		var tiddler = this.getMultiTidTitle(tidname), data;
+		if(tiddler.container) {
+			tiddler = $tw.wiki.getSubTiddler(tiddler.container,tiddler.title);
+		} else {
+			tiddler = $tw.wiki.getTiddler(tiddler.title);
+		}
+		if (tiddler && tiddler.fields) {
+			if (tiddler.fields.type == "application/x-tiddler-dictionary")	{
+				var tot = [], f = $tw.utils.parseFields(tiddler.fields.text,{});
+				for (var i in f) {
+					var x = {};
+					x[i]=f[i]
+					tot.push(x)
+				}
+			data = JSON.stringify(tot);
+		} else {
+			data = tiddler.fields.text;
+		}
+		alert(data)
+			return data;
+		}
+	}
 	//$tw.wiki.my.logEnable= function() {tiddlyclip.logit=true};
 	//$tw.wiki.my.logDisable= function() {tiddlyclip.logit=false};
 	tiddlyclip.log= function(x) {
