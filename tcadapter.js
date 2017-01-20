@@ -47,6 +47,11 @@ Compute the internal state of the widget
 */
 CreateTiddlerWidget.prototype.execute = function() {
 	var self = this;
+	
+	var $b = {utils:{}};
+	
+	$b.utils.stringifyDate = $tw.utils.stringifyDate||function(){return "notsupport"};
+	$b.utils.formatDateString = $tw.utils.formatDateString||function(){return "notsupport"};
 	// Get our parameters here we could allow an module to modify the plugin
 	// Get the commands and place them in the tiddlyclip structure to expose them to the user
 	tiddlyclip.dates=function(){
@@ -57,11 +62,11 @@ CreateTiddlerWidget.prototype.execute = function() {
 		var dateTimeShort=   'YYYY/MM/DD 0hh:0mm:0ss';//journal form
 		
 		dates.yearMonth=$tw.utils.stringifyDate(new Date()).replace(/(.*)\.(.*)/,"$1").substr(0,6);
-		dates.dateTimeLong=   $tw.utils.formatDateString(new Date(),dateTimeLong);	
-		dates.dateLong=       $tw.utils.formatDateString(new Date(),dateLong);		
-		dates.dateShort=      $tw.utils.formatDateString(new Date(),dateShort);	       
+		dates.dateTimeLong=   $b.utils.formatDateString(new Date(),dateTimeLong);	
+		dates.dateLong=       $b.utils.formatDateString(new Date(),dateLong);		
+		dates.dateShort=      $b.utils.formatDateString(new Date(),dateShort);	       
 		dates.dateComma=     dates.dateShort.toString().replace(/ /g,':');
-		dates.dateTimeShort=  $tw.utils.formatDateString(new Date(),dateTimeShort);
+		dates.dateTimeShort=  $b.utils.formatDateString(new Date(),dateTimeShort);
 		return dates;
 	}
 	tiddlyclip.getDefaultRule=function (ruleName) {
@@ -96,7 +101,10 @@ CreateTiddlerWidget.prototype.execute = function() {
 		return {container:container, title:tid};
 	}
 	tiddlyclip.newProtoTiddler = function (){
-		var tid = new $tw.Tiddler($tw.wiki.getCreationFields(),$tw.wiki.getModificationFields());
+		var creationFields = $tw.wiki.getCreationFields?$tw.wiki.getCreationFields():{};
+		var modificationFields= $tw.wiki.getModificationFields?$tw.wiki.getModificationFields():{};
+
+		var tid = new $tw.Tiddler(creationFields,modificationFields);
 		var current = {fields:{}};
 		for (var atr in tid.fields){ 
 			current.fields[atr]=tid.getFieldString(atr);	
@@ -129,7 +137,8 @@ CreateTiddlerWidget.prototype.execute = function() {
 
 	}
 	tiddlyclip.modifyTWsimple= function(fields){	
-			$tw.wiki.addTiddler(new $tw.Tiddler(fields,$tw.wiki.getModificationFields()));
+		var modificationFields= $tw.wiki.getModificationFields?$tw.wiki.getModificationFields():{};
+		$tw.wiki.addTiddler(new $tw.Tiddler(fields,modificationFields));
 	}
 	tiddlyclip.getNewTitle= function(baseTitle,options) {
 		options = options || {};
@@ -173,7 +182,6 @@ CreateTiddlerWidget.prototype.execute = function() {
 		} else {
 			data = tiddler.fields.text;
 		}
-		alert(data)
 			return data;
 		}
 	}
@@ -181,7 +189,7 @@ CreateTiddlerWidget.prototype.execute = function() {
 	//$tw.wiki.my.logDisable= function() {tiddlyclip.logit=false};
 	tiddlyclip.log= function(x) {
 		//if (tiddlyclip.logit) 
-		//alert(x);
+		//alert(x);// BJ uncomment to display status messages
 	};
 	tiddlyclip.tiddlerExists= function(tidname) {
 		var tiddler = this.getMultiTidTitle(tidname);

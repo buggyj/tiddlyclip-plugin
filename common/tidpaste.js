@@ -37,7 +37,7 @@ tiddlyclip.modules.tPaste = (function () {
 		var categoryRows = tableOfCats.split("\n");
 		var cat = {}, tagsAndModes, pieces, catFound=false;
 		var hasExt = false;
-		
+		status ("cat table: "+tableOfCats)
 		for (var i=0; i<categoryRows.length; i++) { 
 			pieces = categoryRows[i].split("|");// row is = |Category|Tip|Tags|Rules Tid|Modes|
 			if (pieces.length==1) continue; 	//ingore blanklines
@@ -694,6 +694,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		this.parseStructure(rule.modes);			 
 		this.modes=extractModes(table['#']['newdata']);
 		//---modes are now determined 
+		if (this.hasMode('uselocaltid')) this.setNormal(rule,pageData);
 	}
 	
 	Tiddler.prototype.setNormal  =	function (rule,pageData){
