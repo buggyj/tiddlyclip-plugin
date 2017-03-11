@@ -765,6 +765,10 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		 alert(message);
 	}
 
+    function setStatus(x) {
+		table['@']['$$']=x;
+	}
+
 	function getSimpleVarFrom (n ) {
 		n = n.trim();
 		var type = n.substring(0,1);
@@ -980,12 +984,15 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 				var regexBody = regParts.replace(/\/([\s\S]*)\/.*$/,"$1");
 				var regexflags = regParts.replace(/.*\/(.*?)$/,"$1");
 				var pattern=new RegExp(regexBody,regexflags);
-			return vals[0].replace(pattern, vals[2]);
+				setStatus(null);
+			return vals[0].replace(pattern, function(match){setStatus("r"); return match.replace(pattern, vals[2]);});
 			}
 			// substitute
 			if ((parts = key.split(":")).length ==3) {
 				if ((vals = toValues(parts)) == null) return m;		
-				return vals[0].replace(vals[1], vals[2]);
+				//var strg = str.replace(/i/g, function(token){replaced = true; return '!';});
+				setStatus(null);
+				return vals[0].replace(vals[1], function(token){setStatus("r"); return vals[2];});
 			}
 			// add 
 			if ((parts = key.split("+")).length == 2) {
