@@ -153,6 +153,26 @@ CreateTiddlerWidget.prototype.execute = function() {
 			return tiddler.fields.text;
 		}
 	}
+
+tiddlyclip.parseListFields = function(text) {
+	var fields = [];
+	text.split(/\r?\n/mg).forEach(function(line) {
+
+		var p = line.indexOf("=");
+		if(p !== -1) {
+			var field = line.substr(0, p).trim(),
+				value = line.substr(p+1);
+			if(field) {
+				var x ={};
+				x[field] = value;
+				fields.push(x);
+			}
+
+		}
+	});
+	return fields;
+};
+
 	
 	tiddlyclip.getTidrules= function(tidname) {
 		var tiddler = this.getMultiTidTitle(tidname), data;
@@ -162,18 +182,12 @@ CreateTiddlerWidget.prototype.execute = function() {
 			tiddler = $tw.wiki.getTiddler(tiddler.title);
 		}
 		if (tiddler && tiddler.fields) {
-			if (tiddler.fields.type == "application/x-tiddler-dictionary")	{
-				var tot = [], f = $tw.utils.parseFields(tiddler.fields.text,{});
-				for (var i in f) {
-					var x = {};
-					x[i]=f[i]
-					tot.push(x)
-				}
+			if (tiddler.fields.type == "application/x-bclip")	{
+				var tot =  this.parseListFields(tiddler.fields.text);
 			data = JSON.stringify(tot);
 		} else {
 			data = tiddler.fields.text;
 		}
-		alert(data)
 			return data;
 		}
 	}
