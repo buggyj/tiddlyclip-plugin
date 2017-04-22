@@ -161,7 +161,7 @@ tiddlyclip.parseListFields = function(text) {
 		var p = line.indexOf("=");
 		if(p !== -1) {
 			var field = line.substr(0, p).trim(),
-				value = line.substr(p+1);
+				value = line.substr(p+1).split("\\n").join("\n");//convert \n to newlines
 			if(field) {
 				var x ={};
 				x[field] = value;
