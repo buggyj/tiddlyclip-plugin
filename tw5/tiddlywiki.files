@@ -26,6 +26,24 @@
 				"tags":  "$:/tags/tiddlyclip",
 				"module-type": "library"
 			}
+		},
+		{
+			"file": "newtitle.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/newtitle.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
+			"file": "csaver.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/csaver.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
 		}
 	]
 }
