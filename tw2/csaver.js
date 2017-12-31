@@ -1,3 +1,7 @@
+
+tiddlyclip.macro.csaver  = function(title,text)
+	{
+
 function save (text,method,callback,options) {
 	options = options || {};
 	// Get the current filename
@@ -55,9 +59,7 @@ function save (text,method,callback,options) {
 
 
 
-exports.name ="csaver";
-exports.run  = function(title,text)
-	{
+
 var subdir = "media";
 return csaver(text,title,subdir,function (){alert("dl'ed")});
 

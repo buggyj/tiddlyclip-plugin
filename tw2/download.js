@@ -1,13 +1,5 @@
-exports.name ="download";
-exports.run  = function(title,text)
+tiddlyclip.macro.download  = function(title,text)
 	{
-
-save(text,"download",function (){/*alert("dl'ed")*/},{variables: {filename: title}});
-console.log("download");
-	return "saving";
-};
-
-
 function save (text,method,callback,options) {
 	options = options || {};
 	// Get the current filename
@@ -32,5 +24,10 @@ function save (text,method,callback,options) {
 	document.body.removeChild(link);
 	// Callback that we succeeded
 	callback(null);
-	return true;
+	return "";
+};
+
+save(text,"download",function (){/*alert("downloaded")*/},{variables: {filename: title}});
+console.log("download");
+	return "saving";
 };
