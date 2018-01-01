@@ -61,6 +61,7 @@ function save (text,method,callback,options) {
 
 
 var subdir = "media";
+if (!text) return "";
 return csaver(text,title,subdir,function (){alert("dl'ed")});
 
 

@@ -59,6 +59,7 @@ exports.name ="csaver";
 exports.run  = function(title,text)
 	{
 var subdir = "media";
+if (!text) return "";
 return csaver(text,title,subdir,function (){alert("dl'ed")});
 
 
