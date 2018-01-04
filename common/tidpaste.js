@@ -814,20 +814,33 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			return;
 		}
 		for (var i=0; i < b.length; i++) {
-			var moreThanOne = 0;
+			var moreThanOne = 0,replaceOp;
 			for (var n in b[i]) {//n is our nodes combined target/operator string - eg #x#EQ
 				if (moreThanOne) error ("general:more than one subterm in node");
 				var rightSide =b[i][n];
-				if (typeof rightSide === "object") error("source: invalid type object");
+				if (typeof rightSide === "object") {
+					//lookup parser
+					var parser = tiddlyclip.oparser[rightSide.parser];
+					if (parser) {
+						replaceOp= this.replaceALL(rightSide.text);
+						if (!replaceOp.abort) rightSide = parser (replaceOp.result);
+						else  {
+							moreThanOne++;
+							break;
+						}
+					}
+					else error("source: invalid type object");
+				}
 				else if (typeof rightSide === "string") {
-					var replaceOp= this.replaceALL(rightSide);
+					replaceOp= this.replaceALL(rightSide);
+				
 					if (!replaceOp.abort) rightSide = replaceOp.result;
 					else {
-						moreThanOne++;
-						break;
+							moreThanOne++;
+							break;
 					}
-				}
-				else error("source: invalid type");
+				} else error("source: invalid type");
+				
 				var returedVals =  getSimpleVarFrom (n);
 				var leftSide =  returedVals.leftSide;
 				var type 	 =  returedVals.type;

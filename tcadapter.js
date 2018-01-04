@@ -42,6 +42,11 @@ CreateTiddlerWidget.prototype.getTiddlerList = function() {
 	var defaultFilter = "[all[shadows+tiddlers]tag[$:/tags/tiddlyclip]]";
 	return this.wiki.filterTiddlers(defaultFilter,this);
 }
+
+CreateTiddlerWidget.prototype.getTiddlerOparserList = function() {
+	var defaultFilter = "[all[shadows+tiddlers]tag[$:/tags/tiddlyclipparser]]";
+	return this.wiki.filterTiddlers(defaultFilter,this);
+}
 /*
 Compute the internal state of the widget
 */
@@ -153,21 +158,34 @@ CreateTiddlerWidget.prototype.execute = function() {
 			return tiddler.fields.text;
 		}
 	}
+	
+tiddlyclip.parseListFields = ":<";
 
-tiddlyclip.parseListFields = function(text) {
+tiddlyclip.parseListField = function(text) {
 	var fields = [];
 	text.split(/\r?\n/mg).forEach(function(line) {
 
-		var p = line.indexOf("=");
-		if(p !== -1) {
-			var field = line.substr(0, p).trim(),
-				value = line.substr(p+1).replace("\\n","\n");
+		var p = line.indexOf("="),field,value,text,q,otype=null;
+		if(p > 0) {
+			q = p;
+			otype = line.charAt(p-1);
+			if (tiddlyclip.parseListFields.indexOf(otype)!==-1) { 
+				p--;
+				text = line.substr(q+1).replace("\\n","\n");
+				value = {};
+				value.parser = otype;
+				value.text = text;
+			}
+			else {
+				value = line.substr(q+1).replace("\\n","\n");	
+			}			
+			field = line.substr(0, p).trim();
+
 			if(field) {
 				var x ={};
 				x[field] = value;
 				fields.push(x);
 			}
-
 		}
 	});
 	return fields;
@@ -183,7 +201,7 @@ tiddlyclip.parseListFields = function(text) {
 		}
 		if (tiddler && tiddler.fields) {
 			if (tiddler.fields.type == "application/x-bclip")	{
-				var tot =  this.parseListFields(tiddler.fields.text);
+				var tot =  this.parseListField(tiddler.fields.text);
 			data = JSON.stringify(tot);
 		} else {
 			data = tiddler.fields.text;
@@ -269,6 +287,17 @@ tiddlyclip.parseListFields = function(text) {
 			var func = require(title);
 			
 			tiddlyclip.macro[func.name]=func.run;
+		} catch (e) {
+			alert("tc: problem with command " + title);
+		} 
+	});	
+	this.list = this.getTiddlerOparserList();
+	tiddlyclip.oparser={};
+	$tw.utils.each(this.list,function(title,index) {
+		try {
+			var func = require(title);
+			
+			tiddlyclip.oparser[func.symbol]=func.run;
 		} catch (e) {
 			alert("tc: problem with command " + title);
 		} 
