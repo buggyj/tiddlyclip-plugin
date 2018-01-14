@@ -46,6 +46,15 @@
 			}
 		},
 		{
+			"file": "show.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/show.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
 			"file": "download.js",
 			"fields": {
 				"type": "application/javascript",
