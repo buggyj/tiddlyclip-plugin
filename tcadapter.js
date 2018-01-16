@@ -305,9 +305,31 @@ tiddlyclip.parseListField = function(text) {
 	this.makeChildWidgets();
 };
 
+function settimers (delay, callback) {
+	var next = new Date(), timejson = {}, interval = 0;
+	interval = parseInt(delay);
+	if (interval > 0) {
+		next.setSeconds(next.getSeconds() + interval);	
+		timejson.timeout = next.toJSON() ;
+		timejson.onTimeout = callback;
+		if (!$tw.utils.bjGlogalTimer) {
+			alert ("bjGlogalTimer missing");
+			return;
+		}
+		$tw.utils.bjGlogalTimer.register(timejson);
+	}
+}
+
 CreateTiddlerWidget.prototype.handleTiddlyclipEvent = function(event) {
 	if (event.localsection) {
-		tiddlyclip.modules.tPaste.paste(event.category,event.pagedata,null,event.localsection);
+		if (event.delay) {
+			settimers (event.delay, function (){
+				tiddlyclip.modules.tPaste.paste(event.category,event.pagedata,null,event.localsection);
+			});
+		}
+		else {
+			tiddlyclip.modules.tPaste.paste(event.category,event.pagedata,null,event.localsection);
+		}
 	} else {
 		tiddlyclip.modules.tPaste.paste(event.category,event.pagedata,event.currentsection);	
 	}
@@ -431,6 +453,7 @@ Compute the internal state of the widget
 ToDoWidget.prototype.execute = function() {
 	this.tabletid = this.getAttribute("$tabletid");
 	this.catname = this.getAttribute("$catname");
+	this.delay = this.getAttribute("$delay")||null;
 };
 
 /*
@@ -438,7 +461,7 @@ Refresh the widget by ensuring our attributes are up to date
 */
 ToDoWidget.prototype.refresh = function(changedTiddlers) {
 	var changedAttributes = this.computeAttributes();
-	if(changedAttributes["$tabletid"] || changedAttributes["$catname"]) {
+	if(changedAttributes["$tabletid"] || changedAttributes["$catname"]|| changedAttributes["$delay"]) {
 		this.refreshSelf();
 		return true;
 	}
@@ -458,7 +481,7 @@ ToDoWidget.prototype.invokeAction = function(triggeringWidget,event) {
 		}
 	});
 	pagedata.data.category=this.catname;
-	self.dispatchEvent({type: "tiddlyclip-create", category:this.catname, pagedata: pagedata, currentsection:null, localsection:this.tabletid});
+	self.dispatchEvent({type: "tiddlyclip-create", category:this.catname, pagedata: pagedata, currentsection:null, localsection:this.tabletid, delay:this.delay});
 	return true; // Action was invoked
 };
 
