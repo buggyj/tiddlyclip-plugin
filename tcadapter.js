@@ -42,6 +42,11 @@ CreateTiddlerWidget.prototype.getTiddlerList = function() {
 	var defaultFilter = "[all[shadows+tiddlers]tag[$:/tags/tiddlyclip]]";
 	return this.wiki.filterTiddlers(defaultFilter,this);
 }
+
+CreateTiddlerWidget.prototype.getTiddlerOparserList = function() {
+	var defaultFilter = "[all[shadows+tiddlers]tag[$:/tags/tiddlyclipparser]]";
+	return this.wiki.filterTiddlers(defaultFilter,this);
+}
 /*
 Compute the internal state of the widget
 */
@@ -154,6 +159,39 @@ CreateTiddlerWidget.prototype.execute = function() {
 		}
 	}
 	
+tiddlyclip.parseListFields = ":<";
+
+tiddlyclip.parseListField = function(text) {
+	var fields = [];
+	text.split(/\r?\n/mg).forEach(function(line) {
+
+		var p = line.indexOf("="),field,value,text,q,otype=null;
+		if(p > 0) {
+			q = p;
+			otype = line.charAt(p-1);
+			if (tiddlyclip.parseListFields.indexOf(otype)!==-1) { 
+				p--;
+				text = line.substr(q+1).replace("\\n","\n");
+				value = {};
+				value.parser = otype;
+				value.text = text;
+			}
+			else {
+				value = line.substr(q+1).replace("\\n","\n");	
+			}			
+			field = line.substr(0, p).trim();
+
+			if(field) {
+				var x ={};
+				x[field] = value;
+				fields.push(x);
+			}
+		}
+	});
+	return fields;
+};
+
+	
 	tiddlyclip.getTidrules= function(tidname) {
 		var tiddler = this.getMultiTidTitle(tidname), data;
 		if(tiddler.container) {
@@ -162,18 +200,12 @@ CreateTiddlerWidget.prototype.execute = function() {
 			tiddler = $tw.wiki.getTiddler(tiddler.title);
 		}
 		if (tiddler && tiddler.fields) {
-			if (tiddler.fields.type == "application/x-tiddler-dictionary")	{
-				var tot = [], f = $tw.utils.parseFields(tiddler.fields.text,{});
-				for (var i in f) {
-					var x = {};
-					x[i]=f[i]
-					tot.push(x)
-				}
+			if (tiddler.fields.type == "application/x-bclip")	{
+				var tot =  this.parseListField(tiddler.fields.text);
 			data = JSON.stringify(tot);
 		} else {
 			data = tiddler.fields.text;
 		}
-		alert(data)
 			return data;
 		}
 	}
@@ -258,13 +290,46 @@ CreateTiddlerWidget.prototype.execute = function() {
 		} catch (e) {
 			alert("tc: problem with command " + title);
 		} 
+	});	
+	this.list = this.getTiddlerOparserList();
+	tiddlyclip.oparser={};
+	$tw.utils.each(this.list,function(title,index) {
+		try {
+			var func = require(title);
+			
+			tiddlyclip.oparser[func.symbol]=func.run;
+		} catch (e) {
+			alert("tc: problem with command " + title);
+		} 
 	});		
 	this.makeChildWidgets();
 };
 
+function settimers (delay, callback) {
+	var next = new Date(), timejson = {}, interval = 0;
+	interval = parseInt(delay);
+	if (interval > 0) {
+		next.setSeconds(next.getSeconds() + interval);	
+		timejson.timeout = next.toJSON() ;
+		timejson.onTimeout = callback;
+		if (!$tw.utils.bjGlogalTimer) {
+			alert ("bjGlogalTimer missing");
+			return;
+		}
+		$tw.utils.bjGlogalTimer.register(timejson);
+	}
+}
+
 CreateTiddlerWidget.prototype.handleTiddlyclipEvent = function(event) {
 	if (event.localsection) {
-		tiddlyclip.modules.tPaste.paste(event.category,event.pagedata,null,event.localsection);
+		if (event.delay) {
+			settimers (event.delay, function (){
+				tiddlyclip.modules.tPaste.paste(event.category,event.pagedata,null,event.localsection);
+			});
+		}
+		else {
+			tiddlyclip.modules.tPaste.paste(event.category,event.pagedata,null,event.localsection);
+		}
 	} else {
 		tiddlyclip.modules.tPaste.paste(event.category,event.pagedata,event.currentsection);	
 	}
@@ -312,14 +377,13 @@ tcWidget.prototype.render = function(parent,nextSibling) {
 	{
 		// Inject the message box
 		var messageBox = doc.getElementById("tiddlyclip-message-box");
-		//remove previously setup
-		if(messageBox) messageBox.outerHTML = "";
-
-		messageBox = doc.createElement("div");
-		messageBox.id = "tiddlyclip-message-box";
-		messageBox.style.display = "none";
-		doc.body.appendChild(messageBox);
-
+		
+		if(!messageBox) {
+			messageBox = doc.createElement("div");
+			messageBox.id = "tiddlyclip-message-box";
+			messageBox.style.display = "none";
+			doc.body.appendChild(messageBox);
+		}
 		// Attach the event handler to the message box
 		messageBox.addEventListener("tiddlyclip-save-file", onSaveFile,false);
 	};
@@ -389,6 +453,7 @@ Compute the internal state of the widget
 ToDoWidget.prototype.execute = function() {
 	this.tabletid = this.getAttribute("$tabletid");
 	this.catname = this.getAttribute("$catname");
+	this.delay = this.getAttribute("$delay")||null;
 };
 
 /*
@@ -396,7 +461,7 @@ Refresh the widget by ensuring our attributes are up to date
 */
 ToDoWidget.prototype.refresh = function(changedTiddlers) {
 	var changedAttributes = this.computeAttributes();
-	if(changedAttributes["$tabletid"] || changedAttributes["$catname"]) {
+	if(changedAttributes["$tabletid"] || changedAttributes["$catname"]|| changedAttributes["$delay"]) {
 		this.refreshSelf();
 		return true;
 	}
@@ -416,7 +481,7 @@ ToDoWidget.prototype.invokeAction = function(triggeringWidget,event) {
 		}
 	});
 	pagedata.data.category=this.catname;
-	self.dispatchEvent({type: "tiddlyclip-create", category:this.catname, pagedata: pagedata, currentsection:null, localsection:this.tabletid});
+	self.dispatchEvent({type: "tiddlyclip-create", category:this.catname, pagedata: pagedata, currentsection:null, localsection:this.tabletid, delay:this.delay});
 	return true; // Action was invoked
 };
 
@@ -427,4 +492,3 @@ ToDoWidget.prototype.invokeMsgAction = function(param) {
 exports["action-tiddlydo"] = ToDoWidget;
 
 })();
-

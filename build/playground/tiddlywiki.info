@@ -1,9 +1,6 @@
 {
 	"plugins": [
-		"tiddlywiki/tiddlyweb",
-		"tiddlywiki/filesystem",
-		"bj/tiddlyclip",
-		"bj/node-readability"
+		"bj/tiddlyclip"
 	],
 	"themes": [
 		"tiddlywiki/vanilla",

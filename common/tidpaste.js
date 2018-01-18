@@ -168,8 +168,8 @@ tiddlyclip.modules.tPaste = (function () {
 					if (i==6)  				pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//modes	
 					else if (i==4||i==5)	pieces[i] = '['+pieces[i]+']';	
 					else if (i==3) {
-						  if (pieces[i]) 	pieces[i] = '[{"#space":" "},{"$tags":"((*@exists($tags)*??*$tags*))((*@exists($tags)*??*#space*))'+pieces[i]+'"}]'; 
-						  else 				pieces[i] ='[]'; // don't modify/create
+						  if (pieces[i]) 	pieces[i] = '[{"#space":" "},{"$tags":"((*@exists($tags)*??*$tags*))((*@exists($tags)*??*#space*))((*@exists(@extraTags)*??*@extraTags*)) '+pieces[i]+'"}]'; 
+						  else 				pieces[i] ='[{"$tags":"((*@exists(@extraTags)*??*@extraTags*)) ((*@abort(@extraTags)*)) ((*@exists($tags)*??*$tags*))"}]'; 
 					   }
 					else if (i==2)  		pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//text		
 					else if (i==1){
@@ -765,6 +765,10 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		 alert(message);
 	}
 
+    function setStatus(x) {
+		table['@']['$$']=x;
+	}
+
 	function getSimpleVarFrom (n ) {
 		n = n.trim();
 		var type = n.substring(0,1);
@@ -810,20 +814,33 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			return;
 		}
 		for (var i=0; i < b.length; i++) {
-			var moreThanOne = 0;
+			var moreThanOne = 0,replaceOp;
 			for (var n in b[i]) {//n is our nodes combined target/operator string - eg #x#EQ
 				if (moreThanOne) error ("general:more than one subterm in node");
 				var rightSide =b[i][n];
-				if (typeof rightSide === "object") error("source: invalid type object");
+				if (typeof rightSide === "object") {
+					//lookup parser
+					var parser = tiddlyclip.oparser[rightSide.parser];
+					if (parser) {
+						replaceOp= this.replaceALL(rightSide.text);
+						if (!replaceOp.abort) rightSide = parser (replaceOp.result);
+						else  {
+							moreThanOne++;
+							break;
+						}
+					}
+					else error("source: invalid type object");
+				}
 				else if (typeof rightSide === "string") {
-					var replaceOp= this.replaceALL(rightSide);
+					replaceOp= this.replaceALL(rightSide);
+				
 					if (!replaceOp.abort) rightSide = replaceOp.result;
 					else {
-						moreThanOne++;
-						break;
+							moreThanOne++;
+							break;
 					}
-				}
-				else error("source: invalid type");
+				} else error("source: invalid type");
+				
 				var returedVals =  getSimpleVarFrom (n);
 				var leftSide =  returedVals.leftSide;
 				var type 	 =  returedVals.type;
@@ -980,12 +997,15 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 				var regexBody = regParts.replace(/\/([\s\S]*)\/.*$/,"$1");
 				var regexflags = regParts.replace(/.*\/(.*?)$/,"$1");
 				var pattern=new RegExp(regexBody,regexflags);
-			return vals[0].replace(pattern, vals[2]);
+				setStatus(null);
+			return vals[0].replace(pattern, function(match){setStatus("r"); return match.replace(pattern, vals[2]);});
 			}
 			// substitute
 			if ((parts = key.split(":")).length ==3) {
 				if ((vals = toValues(parts)) == null) return m;		
-				return vals[0].replace(vals[1], vals[2]);
+				//var strg = str.replace(/i/g, function(token){replaced = true; return '!';});
+				setStatus(null);
+				return vals[0].replace(vals[1], function(token){setStatus("r"); return vals[2];});
 			}
 			// add 
 			if ((parts = key.split("+")).length == 2) {
