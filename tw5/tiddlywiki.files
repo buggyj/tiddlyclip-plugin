@@ -55,6 +55,15 @@
 			}
 		},
 		{
+			"file": "dock.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/dock.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
 			"file": "download.js",
 			"fields": {
 				"type": "application/javascript",
