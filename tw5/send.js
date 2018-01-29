@@ -1,4 +1,4 @@
- function show(action,text,aux,extra) {
+ function send(action,text,aux,extra) {
 	var message = document.createElement("div") ,messageBox = document.getElementById("tiddlyclip-message-box");
 	if(messageBox) {
 		message.setAttribute("data-action",action);
@@ -11,7 +11,7 @@
 		var event = document.createEvent("Events");
 		event.initEvent("tc-send-event",true,false);
 		message.dispatchEvent(event);
-     return "shown";
+     return "sent";
 	} else {
 		return "error no  extension found";
 	}
@@ -20,12 +20,14 @@
 
 
 
-exports.name ="show";
+exports.name ="send";
 exports.run  = function(action,text,aux,extra) {
-
-if (!action) return "nothing to do!";
-
-return  show(action,text,aux,extra);
-
-
+	if (!action) return "nothing to do!";
+	//if docking, set the config to this table for mapping returned clips
+	if (action === "dock") {
+		var ob = JSON.parse(text);
+		tiddlyclip.modules.tPaste.setconfig(ob.text,ob.title);
+		extra = extra || document.title;
+	}
+	return  send(action,text,aux,extra);
 };

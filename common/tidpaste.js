@@ -18,7 +18,8 @@ tiddlyclip.modules.tPaste = (function () {
 	var api = 
 	{
 		onLoad:onLoad,				paste:paste,				
-		hasMode:hasMode,			
+		hasMode:hasMode,			setconfig:setconfig,
+		getconfig:getconfig,
 		hasModeBegining:hasModeBegining
 	};
 	var   tiddlerObj, twobj,   defaults;
@@ -29,6 +30,7 @@ tiddlyclip.modules.tPaste = (function () {
 		defaults	= tiddlyclip.modules.defaults;
 	}
 /////////////////////////////////////////////////////////////////////////////
+    var configName="", config="";
 	function findDefaultRule(rule) {
 		return (rule.substring(0,7)==='default') ? defaults.getDefaultRule(rule):null;
 	}
@@ -248,6 +250,16 @@ tiddlyclip.modules.tPaste = (function () {
     function performAction(cat,pageData) {
 		defaults.defaultCommands[cat].command(pageData);
 	}
+	function getconfig() {
+		if (config) return config;
+		if (!configName) return twobj.getTidContents("TiddlyClipConfig");
+		return twobj.getTidContents(configName)||null; 
+	}
+	function setconfig (text,name) {
+		config = text;
+		configname = name;
+	}
+	
 	// This is the function called when clicking the context menu item.
 	function paste(catName,pageData, section, substitutionTiddler)
 	{  
@@ -260,7 +272,7 @@ tiddlyclip.modules.tPaste = (function () {
 		if (substitutionTiddler) {
 			cat = findCategory (twobj.getTidContents(substitutionTiddler), catName);
 		} else {
-			cat = findCategory (findSection(section,twobj.getTidContents("TiddlyClipConfig")), catName);
+			cat = findCategory (findSection(section,getconfig()), catName);
 		}
 		//find the table denoted by the section (a header in the TiddlyClipConfig ), then find the row (cat)
 		if (!cat.valid) {
@@ -823,7 +835,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 					var parser = tiddlyclip.oparser[rightSide.parser];
 					if (parser) {
 						replaceOp= this.replaceALL(rightSide.text);
-						if (!replaceOp.abort) rightSide = parser (replaceOp.result);
+						if (!replaceOp.abort) rightSide =  this.replaceALL(parser (replaceOp.result)).result;
 						else  {
 							moreThanOne++;
 							break;

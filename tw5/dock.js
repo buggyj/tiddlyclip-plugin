@@ -11,19 +11,20 @@
 		var event = document.createEvent("Events");
 		event.initEvent("tc-send-event",true,false);
 		message.dispatchEvent(event);
+		//set the config to this table for mapping returned clips
+		tiddlyclip.modules.tPaste.setconfig(text,aux);
      return "docked";
 	} else {
 		return "error no  extension found";
 	}
 };
 
-
-
-
 exports.name ="dock";
-exports.run  = function(text,aux,extra) {
-
-return dodock(JSON.stringify($tw.wiki.getTiddler(text).fields),aux,JSON.stringify($tw.wiki.getTiddler(extra).fields));
- 
+exports.run  = function(configobj,aux,name) {
+var config = $tw.wiki.getTiddler(configobj) || {fields:{}};
+var other =  $tw.wiki.getTiddler(aux) || {fields:{}};
+name = name || document.title;
+tiddlyclip.modules.tPaste.setconfig(config.fields.text,config.fields.title);
+return dodock(JSON.stringify(config.fields),name,JSON.stringify(other.fields));
 
 };

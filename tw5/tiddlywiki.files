@@ -46,10 +46,19 @@
 			}
 		},
 		{
-			"file": "show.js",
+			"file": "send.js",
 			"fields": {
 				"type": "application/javascript",
-				"title": "$:/plugins/bj/tiddlyclip/show.js",
+				"title": "$:/plugins/bj/tiddlyclip/send.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
+			"file": "makeobj.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/makeobj.js",
 				"tags":  "$:/tags/tiddlyclip",
 				"module-type": "library"
 			}
