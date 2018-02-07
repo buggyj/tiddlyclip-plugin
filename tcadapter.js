@@ -171,13 +171,13 @@ tiddlyclip.parseListField = function(text) {
 			otype = line.charAt(p-1);
 			if (tiddlyclip.parseListFields.indexOf(otype)!==-1) { 
 				p--;
-				text = line.substr(q+1).replace("\\n","\n");
+				text = line.substr(q+1).replace(/\\n/g,"\n");
 				value = {};
 				value.parser = otype;
 				value.text = text;
 			}
 			else {
-				value = line.substr(q+1).replace("\\n","\n");	
+				value = line.substr(q+1).replace(/\\n/g,"\n");	
 			}			
 			field = line.substr(0, p).trim();
 
