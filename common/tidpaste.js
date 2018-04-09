@@ -95,8 +95,16 @@ tiddlyclip.modules.tPaste = (function () {
 			} else { 
 				status("found straight config format");
 				sectionStrgs = content.split('\n!'); //sections begin with a title, eg !mysection, followed by a table of categories
-				//only load active categories
-				return (sectionStrgs[activeSection].replace(/(^\|)*\n/,''));//strip of section name from first line
+				for (var  j = activeSection; j < sectionStrgs.length;  j++) { 
+					if ( sectionStrgs[j].indexOf('|') !== -1) {
+						// assumes that '|' means there is a def table otherwise move to next sections def table
+						//only load active categories
+						return (sectionStrgs[j].replace(/(^\|)*\n/,''));//strip of section name from first line
+					}
+							
+				}
+				status("config tiddler missing table");
+				return ([]);//not found
 			}
 
 		}else {
