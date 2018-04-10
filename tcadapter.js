@@ -166,6 +166,10 @@ CreateTiddlerWidget.prototype.execute = function() {
 		}
 	}
 	
+	tiddlyclip.getTiddlerData = $tw.wiki.getTiddlerData;
+	
+	
+	
 tiddlyclip.parseListFields = ":<";
 
 tiddlyclip.parseListField = function(text) {

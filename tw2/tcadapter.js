@@ -62,6 +62,9 @@
 	tiddlyclip.getTidContents= function(tidname) {
 			return store.getTiddlerText(tidname);
 	}
+	
+	tiddlyclip.getTiddlerData = function (){return null;}
+	
 	tiddlyclip.getTidrules= function(tidname) {
 			return store.getTiddlerText(tidname);
 	}

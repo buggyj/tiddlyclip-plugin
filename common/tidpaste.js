@@ -178,8 +178,15 @@ tiddlyclip.modules.tPaste = (function () {
 					if (i==6)  				pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//modes	
 					else if (i==4||i==5)	pieces[i] = '['+pieces[i]+']';	
 					else if (i==3) {
-						  if (pieces[i]) 	pieces[i] = '[{"#space":" "},{"$tags":"((*@exists($tags)*??*$tags*))((*@exists($tags)*??*#space*))((*@exists(@extraTags)*??*@extraTags*)) '+pieces[i]+'"}]'; 
-						  else 				pieces[i] ='[{"$tags":"((*@exists(@extraTags)*??*@extraTags*)) ((*@abort(@extraTags)*)) ((*@exists($tags)*??*$tags*))"}]'; 
+						  var tidops = twobj.getTiddlerData("TiddlyClipOpts");
+						  if (tidops && tidops.noautoextratags && tidops.noautoextratags === "yes") {
+							  if (pieces[i]) 	pieces[i] = '[{"#space":" "},{"$tags":"((*@exists($tags)*??*$tags*))((*@exists($tags)*??*#space*))'+pieces[i]+'"}]'; 
+							  else 				pieces[i] ='[]'; // don't modify/create
+						  } else {
+							  if (pieces[i]) 	pieces[i] = '[{"#space":" "},{"$tags":"((*@exists($tags)*??*$tags*))((*@exists($tags)*??*#space*))((*@exists(@extraTags)*??*@extraTags*)) '+pieces[i]+'"}]'; 
+							  else 				pieces[i] ='[{"$tags":"((*@exists(@extraTags)*??*@extraTags*)) ((*@abort(@extraTags)*)) ((*@exists($tags)*??*$tags*))"}]'; 							  
+						  }
+						  
 					   }
 					else if (i==2)  		pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//text		
 					else if (i==1){
@@ -422,7 +429,7 @@ tiddlyclip.modules.twobj = (function () {
 		modifyTW:modifyTW,		getTiddler:getTiddler,
 		getTidContents:getTidContents,finish:finish,
 		importtids:importtids,	getNewTitle:getNewTitle,
-		getTidrules:getTidrules
+		getTidrules:getTidrules, getTiddlerData:getTiddlerData
 	}
 	var   tiddlerAPI;
 	function onLoad () {
@@ -434,6 +441,11 @@ tiddlyclip.modules.twobj = (function () {
 	function getTidContents(tidname) {
 			return tiddlyclip.getTidContents(tidname);
 	}
+    
+    function getTiddlerData(tid) {
+			return tiddlyclip.getTiddlerData(tid);
+	}
+	
 	function getTidrules(tidname) {
 			return tiddlyclip.getTidrules(tidname);
 	}
