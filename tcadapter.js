@@ -188,7 +188,7 @@ tiddlyclip.parseListField = function(text) {
 				value.text = text;
 			}
 			else {
-				value = line.substr(q+1).replace("\\n","\n");	
+				value = line.substr(q+1).replace(/\\n/g,"\n");
 			}			
 			field = line.substr(0, p).trim();
 

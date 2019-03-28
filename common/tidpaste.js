@@ -1,4 +1,3 @@
-
 tiddlyclip={hello:"hello"};
 
 (function(){
@@ -937,7 +936,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 					return "false"
 			}
 			if (key1=="alert") {
-				if (valOf(key2) == null)
+				if (valOf(key2,true) == null)
 					alert(key2+" null");
 				else
 					alert(valOf(key2));
@@ -1057,7 +1056,8 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			if ((res = returned.result) != null) return res;
 			else 
 			// vanilla variable
-			if ((res = valOf(key)) != null) return res;
+			if ((res = valOf(key,true)) != null) return res;
+                        else return "";
 			// error
 			return m;
 		}),abort:abort};
