@@ -285,6 +285,8 @@ tiddlyclip.modules.tPaste = (function () {
 		
 		if (substitutionTiddler) {
 			cat = findCategory (twobj.getTidContents(substitutionTiddler), catName);
+		} else if (pageData.data.section === "__sys__") {
+			cat = findCategory (findSection(section,twobj.getTidContents("TiddlyClipSys")), catName);
 		} else {
 			cat = findCategory (findSection(section,getconfig()), catName);
 		}

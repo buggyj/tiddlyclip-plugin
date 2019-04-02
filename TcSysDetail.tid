@@ -1,0 +1,8 @@
+title: TcSysDetail
+type: text/vnd.tiddlywiki
+
+\rules only table wikilink prettylink
+
+|!Title|!Body|!Tags|!Fields modifiers|!field initials|!Modes|
+|LogClip|((*@dateTimeShort*))\n\n((*@wikifile*))\n\n((*@wikititle*))\n\n||{"$when":"((*@dateTimeShort*))"}||append add nosave|
+			
