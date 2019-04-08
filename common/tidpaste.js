@@ -18,7 +18,7 @@ tiddlyclip.modules.tPaste = (function () {
 	{
 		onLoad:onLoad,				paste:paste,				
 		hasMode:hasMode,			setconfig:setconfig,
-		getconfig:getconfig,
+		getconfig:getconfig,		dodock:dodock,
 		hasModeBegining:hasModeBegining
 	};
 	var   tiddlerObj, twobj,   defaults;
@@ -29,6 +29,29 @@ tiddlyclip.modules.tPaste = (function () {
 		defaults	= tiddlyclip.modules.defaults;
 	}
 /////////////////////////////////////////////////////////////////////////////
+
+ function dodock(text,aux,extra) {
+	var message = document.createElement("div") ,messageBox = document.getElementById("tiddlyclip-message-box");
+	if(messageBox) {
+		message.setAttribute("data-action","dock");
+		message.setAttribute("data-text",text||"");
+		message.setAttribute("data-aux",aux||"");
+		message.setAttribute("data-extra",extra||document.title);
+		messageBox.appendChild(message);
+		
+		// Create and dispatch the custom event to the extension
+		var event = document.createEvent("Events");
+		event.initEvent("tc-send-event",true,false);
+		message.dispatchEvent(event);
+		//set the config to this table for mapping returned clips
+		tiddlyclip.modules.tPaste.setconfig(text,aux);
+     return "docked";
+	} else {
+		return "error no  extension found";
+	}
+};
+
+
     var configName="", config="";
 	function findDefaultRule(rule) {
 		return (rule.substring(0,7)==='default') ? defaults.getDefaultRule(rule):null;
@@ -285,8 +308,14 @@ tiddlyclip.modules.tPaste = (function () {
 		
 		if (substitutionTiddler) {
 			cat = findCategory (twobj.getTidContents(substitutionTiddler), catName);
-		} else if (pageData.data.section === "__sys__") {
+		} else if (pageData.data.section === "__sys__") { //from addon - change of focused tw
 			cat = findCategory (findSection(section,twobj.getTidContents("TiddlyClipSys")), catName);
+		} else if (pageData.data.section === "__sysdock__") {//from addon to solicite dock 
+			var tidclipconfigtext = twobj.getTidContents("TiddlyClipConfig");
+			var tcconf = JSON.stringify({text:tidclipconfigtext,title:'TiddlyClipConfig'});
+			tiddlyclip.modules.tPaste.setconfig(tidclipconfigtext,'TiddlyClipConfig');
+			status (dodock(tcconf));
+			return;
 		} else {
 			cat = findCategory (findSection(section,getconfig()), catName);
 		}
