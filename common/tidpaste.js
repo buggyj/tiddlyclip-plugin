@@ -19,7 +19,8 @@ tiddlyclip.modules.tPaste = (function () {
 		onLoad:onLoad,				paste:paste,				
 		hasMode:hasMode,			setconfig:setconfig,
 		getconfig:getconfig,		dodock:dodock,
-		hasModeBegining:hasModeBegining
+		hasModeBegining:hasModeBegining,setopts:setopts,
+		getopts:getopts
 	};
 	var   tiddlerObj, twobj,   defaults;
 
@@ -52,7 +53,7 @@ tiddlyclip.modules.tPaste = (function () {
 };
 
 
-    var configName="", config="";
+    var configName="", config="",optsName="", opts="";
 	function findDefaultRule(rule) {
 		return (rule.substring(0,7)==='default') ? defaults.getDefaultRule(rule):null;
 	}
@@ -200,7 +201,7 @@ tiddlyclip.modules.tPaste = (function () {
 					if (i==6)  				pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//modes	
 					else if (i==4||i==5)	pieces[i] = '['+pieces[i]+']';	
 					else if (i==3) {
-						  var tidops = twobj.getTiddlerData("TiddlyClipOpts");
+						  var tidops = getopts();
 						  if (tidops && tidops.noautoextratags && tidops.noautoextratags === "yes") {
 							  if (pieces[i]) 	pieces[i] = '[{"#space":" "},{"$tags":"((*@exists($tags)*??*$tags*))((*@exists($tags)*??*#space*))'+pieces[i]+'"}]'; 
 							  else 				pieces[i] ='[]'; // don't modify/create
@@ -291,12 +292,40 @@ tiddlyclip.modules.tPaste = (function () {
 		if (config) return config;
 		if (!configName) return twobj.getTidContents("TiddlyClipConfig");
 		return twobj.getTidContents(configName)||null; 
+		
 	}
 	function setconfig (text,name) {
 		config = text;
-		configname = name;
+		configName = name;
 	}
-	
+	function loadOpts(ClipOpts) {
+			//load additional prefs from targetTW		
+			var pieces =ClipOpts, opts={};
+			if (!pieces) {
+			return;
+			}
+			pieces.split(/\r?\n/mg).forEach(function(line) {
+				if(line.charAt(0) !== "#") {
+					var p = line.indexOf(":");
+					if(p !== -1) {
+						var field = line.substr(0, p).trim(),
+							value = line.substr(p+1).trim();
+						opts[field] = value;
+					}
+				}
+			});
+			return opts;
+		 };
+		 
+	function getopts() {
+		if (opts) return opts;
+		if (!optsName) return twobj.getTiddlerData("TiddlyClipOpts");
+		return twobj.getTiddlerData(optsName)||null; 
+	}
+	function setopts (op,name) {
+		opts = loadOpts(op);
+		optsName = name;
+	}	
 	// This is the function called when clicking the context menu item.
 	function paste(catName,pageData, section, substitutionTiddler)
 	{  
@@ -313,8 +342,11 @@ tiddlyclip.modules.tPaste = (function () {
 		} else if (pageData.data.section === "__sysdock__") {//from addon to solicite dock 
 			var tidclipconfigtext = twobj.getTidContents("TiddlyClipConfig");
 			var tcconf = JSON.stringify({text:tidclipconfigtext,title:'TiddlyClipConfig'});
+			var tidclipconfigopts = twobj.getTidContents("TiddlyClipOpts");
+			var tcopts = JSON.stringify({text:tidclipconfigopts,title:'TiddlyClipOpts'});
 			tiddlyclip.modules.tPaste.setconfig(tidclipconfigtext,'TiddlyClipConfig');
-			status (dodock(tcconf));
+			tiddlyclip.modules.tPaste.setopts(tidclipconfigopts,'TiddlyClipOpts');
+			status (dodock(tcconf,tcopts));
 			return;
 		} else {
 			cat = findCategory (findSection(section,getconfig()), catName);

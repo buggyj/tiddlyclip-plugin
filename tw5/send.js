@@ -25,8 +25,9 @@ exports.run  = function(action,text,aux,extra) {
 	if (!action) return "nothing to do!";
 	//if docking, set the config to this table for mapping returned clips
 	if (action === "dock") {
-		var ob = JSON.parse(text);
+		var ob = JSON.parse(text),opts = JSON.parse(aux);
 		tiddlyclip.modules.tPaste.setconfig(ob.text,ob.title);
+		tiddlyclip.modules.tPaste.setopts(opts.text,opts.title);
 		extra = extra || document.title;
 	}
 	return  send(action,text,aux,extra);
