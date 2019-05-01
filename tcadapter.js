@@ -382,6 +382,8 @@ tcWidget.prototype = new Widget();
 /*
 Render this widget into the DOM
 */
+var onSaveFileBound = null;
+
 tcWidget.prototype.render = function(parent,nextSibling) {
 	var doc = document;
 	var self =this;
@@ -396,9 +398,13 @@ tcWidget.prototype.render = function(parent,nextSibling) {
 			doc.body.appendChild(messageBox);
 		}
 		// Attach the event handler to the message box
-		messageBox.addEventListener("tiddlyclip-save-file", onSaveFile,false);
+		messageBox.removeEventListener("tiddlyclip-save-file",onSaveFileBound,false);//if the widget is re-render remove old version
+		messageBox.addEventListener("tiddlyclip-save-file", onSaveFileBound = this.onSaveFile.bind(self),false);
 	};
-	function onSaveFile(event) {
+	
+}
+
+tcWidget.prototype.onSaveFile = function(event) {
 		//tiddlyclip.log("savefile at last!");
 		// Get the details from the message
 		var message = event.target;
@@ -406,10 +412,10 @@ tcWidget.prototype.render = function(parent,nextSibling) {
 	    var pageData = message.getAttribute("data-tiddlyclip-pageData");
 	    var transformed =  JSON.parse(pageData);
 	    if (!transformed.data) alert("not data");
-	    var currentsection = message.getAttribute("data-tiddlyclip-currentsection");	
-		self.dispatchEvent({type: "tiddlyclip-create", category:category, pagedata: transformed, currentsection:currentsection});	
+	    var currentsection = message.getAttribute("data-tiddlyclip-currentsection");
+	    message.parentNode.removeChild(message);
+		this.dispatchEvent({type: "tiddlyclip-create", category:category, pagedata: transformed, currentsection:currentsection});	
 	}
-};
 
 /*
 Compute the internal state of the widget
@@ -417,7 +423,6 @@ Compute the internal state of the widget
 tcWidget.prototype.execute = function() {
 
 };
-
 /*
 Selectively refreshes the widget if needed. Returns true if the widget or any of its children needed re-rendering
 */
@@ -430,8 +435,6 @@ tcWidget.prototype.refresh = function(changedTiddlers) {
 exports["tcadapter"] = tcWidget;
 
 })();
-
-
 
 (function(){
 
