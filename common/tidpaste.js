@@ -44,8 +44,6 @@ tiddlyclip.modules.tPaste = (function () {
 		var event = document.createEvent("Events");
 		event.initEvent("tc-send-event",true,false);
 		message.dispatchEvent(event);
-		//set the config to this table for mapping returned clips
-		tiddlyclip.modules.tPaste.setconfig(text,aux);
      return "docked";
 	} else {
 		return "error no  extension found";
