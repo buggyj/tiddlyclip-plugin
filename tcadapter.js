@@ -22,7 +22,10 @@ var CreateTiddlerWidget = function(parseTreeNode,options) {
 	]);
 };
 
-
+function getModificationFields(fields) {
+	if(fields && typeof fields.modified === "string") return {};
+	return $tw.wiki.getModificationFields();
+}
 /*
 Inherit from the base widget class
 */
@@ -60,6 +63,8 @@ CreateTiddlerWidget.prototype.execute = function() {
 		var dateTimeLong='DDD, MMM DDth, YYYY at hh12:0mm:0ss am';	
 		var dateShort=   'DD MMM YYYY';//journal form
 		var dateTimeShort=   'YYYY/MM/DD 0hh:0mm:0ss';//journal form
+		var hours = "0hh";
+		var minutes = "0mm";
 		
 		dates.yearMonth=$tw.utils.stringifyDate(new Date()).replace(/(.*)\.(.*)/,"$1").substr(0,6);
 		dates.dateTimeLong=   $tw.utils.formatDateString(new Date(),dateTimeLong);	
@@ -67,6 +72,8 @@ CreateTiddlerWidget.prototype.execute = function() {
 		dates.dateShort=      $tw.utils.formatDateString(new Date(),dateShort);	       
 		dates.dateComma=     dates.dateShort.toString().replace(/ /g,':');
 		dates.dateTimeShort=  $tw.utils.formatDateString(new Date(),dateTimeShort);
+		dates.nowhours=  	$tw.utils.formatDateString(new Date(),hours);
+		dates.nowminutes=  	$tw.utils.formatDateString(new Date(),minutes);
 		return dates;
 	}
 	tiddlyclip.getDefaultRule=function (ruleName) {
@@ -101,7 +108,7 @@ CreateTiddlerWidget.prototype.execute = function() {
 		return {container:container, title:tid};
 	}
 	tiddlyclip.newProtoTiddler = function (){
-		var tid = new $tw.Tiddler($tw.wiki.getCreationFields(),$tw.wiki.getModificationFields());
+		var tid = new $tw.Tiddler($tw.wiki.getCreationFields(),getModificationFields({}));
 		var current = {fields:{}};
 		for (var atr in tid.fields){ 
 			current.fields[atr]=tid.getFieldString(atr);	
@@ -130,11 +137,11 @@ CreateTiddlerWidget.prototype.execute = function() {
 			title: tiddler.container,
 			text: JSON.stringify(text)
 		};	
-		$tw.wiki.addTiddler(new $tw.Tiddler($tw.wiki.getCreationFields(),container,updateFields,$tw.wiki.getModificationFields()));	
+		$tw.wiki.addTiddler(new $tw.Tiddler($tw.wiki.getCreationFields(),container,updateFields,getModificationFields()));	
 
 	}
 	tiddlyclip.modifyTWsimple= function(fields){	
-			$tw.wiki.addTiddler(new $tw.Tiddler(fields,$tw.wiki.getModificationFields()));
+			$tw.wiki.addTiddler(new $tw.Tiddler(fields,getModificationFields(fields)));
 	}
 	tiddlyclip.getNewTitle= function(baseTitle,options) {
 		options = options || {};
@@ -159,6 +166,10 @@ CreateTiddlerWidget.prototype.execute = function() {
 		}
 	}
 	
+	tiddlyclip.getTiddlerData = $tw.wiki.getTiddlerData;
+	
+	
+	
 tiddlyclip.parseListFields = ":<";
 
 tiddlyclip.parseListField = function(text) {
@@ -171,13 +182,13 @@ tiddlyclip.parseListField = function(text) {
 			otype = line.charAt(p-1);
 			if (tiddlyclip.parseListFields.indexOf(otype)!==-1) { 
 				p--;
-				text = line.substr(q+1).replace(/\\n/g,"\n");
+				text = line.substr(q+1).replace("\\n","\n");
 				value = {};
 				value.parser = otype;
 				value.text = text;
 			}
 			else {
-				value = line.substr(q+1).replace(/\\n/g,"\n");	
+				value = line.substr(q+1).replace(/\\n/g,"\n");
 			}			
 			field = line.substr(0, p).trim();
 
@@ -269,7 +280,7 @@ tiddlyclip.parseListField = function(text) {
 			title: tiddler.container,
 			text: JSON.stringify(text)
 		};	
-		var tid = new $tw.Tiddler($tw.wiki.getCreationFields(),container,updateFields,$tw.wiki.getModificationFields());	
+		var tid = new $tw.Tiddler($tw.wiki.getCreationFields(),container,updateFields,getModificationFields());	
 		//alert(JSON.stringify(tid))
         var tiddlerFieldsArray = [tid.fields];					
 		self.dispatchEvent({type: "tm-import-tiddlers", param: JSON.stringify(tiddlerFieldsArray)});	
@@ -371,6 +382,8 @@ tcWidget.prototype = new Widget();
 /*
 Render this widget into the DOM
 */
+var onSaveFileBound = null;
+
 tcWidget.prototype.render = function(parent,nextSibling) {
 	var doc = document;
 	var self =this;
@@ -385,9 +398,13 @@ tcWidget.prototype.render = function(parent,nextSibling) {
 			doc.body.appendChild(messageBox);
 		}
 		// Attach the event handler to the message box
-		messageBox.addEventListener("tiddlyclip-save-file", onSaveFile,false);
+		messageBox.removeEventListener("tiddlyclip-save-file",onSaveFileBound,false);//if the widget is re-render remove old version
+		messageBox.addEventListener("tiddlyclip-save-file", onSaveFileBound = this.onSaveFile.bind(self),false);
 	};
-	function onSaveFile(event) {
+	
+}
+
+tcWidget.prototype.onSaveFile = function(event) {
 		//tiddlyclip.log("savefile at last!");
 		// Get the details from the message
 		var message = event.target;
@@ -395,10 +412,10 @@ tcWidget.prototype.render = function(parent,nextSibling) {
 	    var pageData = message.getAttribute("data-tiddlyclip-pageData");
 	    var transformed =  JSON.parse(pageData);
 	    if (!transformed.data) alert("not data");
-	    var currentsection = message.getAttribute("data-tiddlyclip-currentsection");	
-		self.dispatchEvent({type: "tiddlyclip-create", category:category, pagedata: transformed, currentsection:currentsection});	
+	    var currentsection = message.getAttribute("data-tiddlyclip-currentsection");
+	    message.parentNode.removeChild(message);
+		this.dispatchEvent({type: "tiddlyclip-create", category:category, pagedata: transformed, currentsection:currentsection});	
 	}
-};
 
 /*
 Compute the internal state of the widget
@@ -406,7 +423,6 @@ Compute the internal state of the widget
 tcWidget.prototype.execute = function() {
 
 };
-
 /*
 Selectively refreshes the widget if needed. Returns true if the widget or any of its children needed re-rendering
 */
@@ -419,8 +435,6 @@ tcWidget.prototype.refresh = function(changedTiddlers) {
 exports["tcadapter"] = tcWidget;
 
 })();
-
-
 
 (function(){
 
@@ -454,6 +468,7 @@ ToDoWidget.prototype.execute = function() {
 	this.tabletid = this.getAttribute("$tabletid");
 	this.catname = this.getAttribute("$catname");
 	this.delay = this.getAttribute("$delay")||null;
+	if (this.delay) this.delay *= 60; //mins to seconds
 };
 
 /*

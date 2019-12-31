@@ -8,7 +8,6 @@ widget.wiki = $tw.wiki;
 var doAssign = function(str) {
 var contents = str.replace(/\{\{(.+)\}\}/,"$1").trim();
 	
-alert(contents+"="+compute(contents,widget));
 	return compute(contents,widget)||str+" is undefined";
 };
 

@@ -46,10 +46,37 @@
 			}
 		},
 		{
-			"file": "show.js",
+			"file": "send.js",
 			"fields": {
 				"type": "application/javascript",
-				"title": "$:/plugins/bj/tiddlyclip/show.js",
+				"title": "$:/plugins/bj/tiddlyclip/send.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
+			"file": "makeobj.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/makeobj.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
+			"file": "addsets.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/addsets.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
+			"file": "dock.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/dock.js",
 				"tags":  "$:/tags/tiddlyclip",
 				"module-type": "library"
 			}

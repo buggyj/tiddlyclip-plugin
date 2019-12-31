@@ -1,4 +1,3 @@
-
 tiddlyclip={hello:"hello"};
 
 (function(){
@@ -18,8 +17,10 @@ tiddlyclip.modules.tPaste = (function () {
 	var api = 
 	{
 		onLoad:onLoad,				paste:paste,				
-		hasMode:hasMode,			
-		hasModeBegining:hasModeBegining
+		hasMode:hasMode,			setconfig:setconfig,
+		getconfig:getconfig,		dodock:dodock,
+		hasModeBegining:hasModeBegining,setopts:setopts,
+		getopts:getopts
 	};
 	var   tiddlerObj, twobj,   defaults;
 
@@ -29,6 +30,28 @@ tiddlyclip.modules.tPaste = (function () {
 		defaults	= tiddlyclip.modules.defaults;
 	}
 /////////////////////////////////////////////////////////////////////////////
+
+ function dodock(text,aux,extra) {
+	var message = document.createElement("div") ,messageBox = document.getElementById("tiddlyclip-message-box");
+	if(messageBox) {
+		message.setAttribute("data-action","dock");
+		message.setAttribute("data-text",text||"");
+		message.setAttribute("data-aux",aux||"");
+		message.setAttribute("data-extra",extra||document.title);
+		messageBox.appendChild(message);
+		
+		// Create and dispatch the custom event to the extension
+		var event = document.createEvent("Events");
+		event.initEvent("tc-send-event",true,false);
+		message.dispatchEvent(event);
+     return "docked";
+	} else {
+		return "error no  extension found";
+	}
+};
+
+
+    var configName="", config="",optsName="", opts="";
 	function findDefaultRule(rule) {
 		return (rule.substring(0,7)==='default') ? defaults.getDefaultRule(rule):null;
 	}
@@ -93,8 +116,16 @@ tiddlyclip.modules.tPaste = (function () {
 			} else { 
 				status("found straight config format");
 				sectionStrgs = content.split('\n!'); //sections begin with a title, eg !mysection, followed by a table of categories
-				//only load active categories
-				return (sectionStrgs[activeSection].replace(/(^\|)*\n/,''));//strip of section name from first line
+				for (var  j = activeSection; j < sectionStrgs.length;  j++) { 
+					if ( sectionStrgs[j].indexOf('|') !== -1) {
+						// assumes that '|' means there is a def table otherwise move to next sections def table
+						//only load active categories
+						return (sectionStrgs[j].replace(/(^\|)*\n/,''));//strip of section name from first line
+					}
+							
+				}
+				status("config tiddler missing table");
+				return ([]);//not found
 			}
 
 		}else {
@@ -168,8 +199,15 @@ tiddlyclip.modules.tPaste = (function () {
 					if (i==6)  				pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//modes	
 					else if (i==4||i==5)	pieces[i] = '['+pieces[i]+']';	
 					else if (i==3) {
-						  if (pieces[i]) 	pieces[i] = '[{"#space":" "},{"$tags":"((*@exists($tags)*??*$tags*))((*@exists($tags)*??*#space*))((*@exists(@extraTags)*??*@extraTags*)) '+pieces[i]+'"}]'; 
-						  else 				pieces[i] ='[{"$tags":"((*@exists(@extraTags)*??*@extraTags*)) ((*@abort(@extraTags)*)) ((*@exists($tags)*??*$tags*))"}]'; 
+						  var tidops = getopts();
+						  if (tidops && tidops.noautoextratags && tidops.noautoextratags === "yes") {
+							  if (pieces[i]) 	pieces[i] = '[{"#space":" "},{"$tags":"((*@exists($tags)*??*$tags*))((*@exists($tags)*??*#space*))'+pieces[i]+'"}]'; 
+							  else 				pieces[i] ='[]'; // don't modify/create
+						  } else {
+							  if (pieces[i]) 	pieces[i] = '[{"#space":" "},{"$tags":"((*@exists($tags)*??*$tags*))((*@exists($tags)*??*#space*))((*@exists(@extraTags)*??*@extraTags*)) '+pieces[i]+'"}]'; 
+							  else 				pieces[i] ='[{"$tags":"((*@exists(@extraTags)*??*@extraTags*)) ((*@abort(@extraTags)*)) ((*@exists($tags)*??*$tags*))"}]'; 							  
+						  }
+						  
 					   }
 					else if (i==2)  		pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//text		
 					else if (i==1){
@@ -248,6 +286,44 @@ tiddlyclip.modules.tPaste = (function () {
     function performAction(cat,pageData) {
 		defaults.defaultCommands[cat].command(pageData);
 	}
+	function getconfig() {
+		if (config) return config;
+		if (!configName) return twobj.getTidContents("TiddlyClipConfig");
+		return twobj.getTidContents(configName)||null; 
+		
+	}
+	function setconfig (text,name) {
+		config = text;
+		configName = name;
+	}
+	function loadOpts(ClipOpts) {
+			//load additional prefs from targetTW		
+			var pieces =ClipOpts, opts={};
+			if (!pieces) {
+			return;
+			}
+			pieces.split(/\r?\n/mg).forEach(function(line) {
+				if(line.charAt(0) !== "#") {
+					var p = line.indexOf(":");
+					if(p !== -1) {
+						var field = line.substr(0, p).trim(),
+							value = line.substr(p+1).trim();
+						opts[field] = value;
+					}
+				}
+			});
+			return opts;
+		 };
+		 
+	function getopts() {
+		if (opts) return opts;
+		if (!optsName) return twobj.getTiddlerData("TiddlyClipOpts");
+		return twobj.getTiddlerData(optsName)||null; 
+	}
+	function setopts (op,name) {
+		opts = loadOpts(op);
+		optsName = name;
+	}	
 	// This is the function called when clicking the context menu item.
 	function paste(catName,pageData, section, substitutionTiddler)
 	{  
@@ -259,8 +335,19 @@ tiddlyclip.modules.tPaste = (function () {
 		
 		if (substitutionTiddler) {
 			cat = findCategory (twobj.getTidContents(substitutionTiddler), catName);
+		} else if (pageData.data.section === "__sys__") { //from addon - change of focused tw
+			cat = findCategory (findSection(section,twobj.getTidContents("TiddlyClipSys")), catName);
+		} else if (pageData.data.section === "__sysdock__") {//from addon to solicite dock 
+			var tidclipconfigtext = twobj.getTidContents("TiddlyClipConfig");
+			var tcconf = JSON.stringify({text:tidclipconfigtext,title:'TiddlyClipConfig'});
+			var tidclipconfigopts = twobj.getTidContents("TiddlyClipOpts");
+			var tcopts = JSON.stringify({text:tidclipconfigopts,title:'TiddlyClipOpts'});
+			tiddlyclip.modules.tPaste.setconfig(tidclipconfigtext,'TiddlyClipConfig');
+			tiddlyclip.modules.tPaste.setopts(tidclipconfigopts,'TiddlyClipOpts');
+			status (dodock(tcconf,tcopts));
+			return;
 		} else {
-			cat = findCategory (findSection(section,twobj.getTidContents("TiddlyClipConfig")), catName);
+			cat = findCategory (findSection(section,getconfig()), catName);
 		}
 		//find the table denoted by the section (a header in the TiddlyClipConfig ), then find the row (cat)
 		if (!cat.valid) {
@@ -402,7 +489,7 @@ tiddlyclip.modules.twobj = (function () {
 		modifyTW:modifyTW,		getTiddler:getTiddler,
 		getTidContents:getTidContents,finish:finish,
 		importtids:importtids,	getNewTitle:getNewTitle,
-		getTidrules:getTidrules
+		getTidrules:getTidrules, getTiddlerData:getTiddlerData
 	}
 	var   tiddlerAPI;
 	function onLoad () {
@@ -414,6 +501,11 @@ tiddlyclip.modules.twobj = (function () {
 	function getTidContents(tidname) {
 			return tiddlyclip.getTidContents(tidname);
 	}
+    
+    function getTiddlerData(tid) {
+			return tiddlyclip.getTiddlerData(tid);
+	}
+	
 	function getTidrules(tidname) {
 			return tiddlyclip.getTidrules(tidname);
 	}
@@ -823,7 +915,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 					var parser = tiddlyclip.oparser[rightSide.parser];
 					if (parser) {
 						replaceOp= this.replaceALL(rightSide.text);
-						if (!replaceOp.abort) rightSide = parser (replaceOp.result);
+						if (!replaceOp.abort) rightSide =  this.replaceALL(parser (replaceOp.result)).result;
 						else  {
 							moreThanOne++;
 							break;
@@ -905,7 +997,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 					return "false"
 			}
 			if (key1=="alert") {
-				if (valOf(key2) == null)
+				if (valOf(key2,true) == null)
 					alert(key2+" null");
 				else
 					alert(valOf(key2));
@@ -1025,7 +1117,8 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			if ((res = returned.result) != null) return res;
 			else 
 			// vanilla variable
-			if ((res = valOf(key)) != null) return res;
+			if ((res = valOf(key,true)) != null) return res;
+                        else return "";
 			// error
 			return m;
 		}),abort:abort};
