@@ -182,7 +182,7 @@ tiddlyclip.parseListField = function(text) {
 			otype = line.charAt(p-1);
 			if (tiddlyclip.parseListFields.indexOf(otype)!==-1) { 
 				p--;
-				text = line.substr(q+1).replace(/\\n/g,"\n");
+				text = line.substr(q+1).replace("\\n","\n");
 				value = {};
 				value.parser = otype;
 				value.text = text;
