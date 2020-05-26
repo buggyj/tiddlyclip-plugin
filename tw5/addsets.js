@@ -1,8 +1,13 @@
 exports.name ="addsets";
 exports.run  = function(base,ext) {
-	var i, list=ext.split(' ');
+	var found, i, j, list=ext.split(' '), oldbase=base.split(' ');
 	for (i=0;i<list.length;i++) {
-            if (base.indexOf(list[i]) === -1) base = base + ' ' + list[i];
-         }
-	return base;
+              found = false;
+               for (j=0;j<oldbase.length;j++) {
+                      if (oldbase[j].trim()===list[i].trim()) found = true;
+               }
+              if (!found) base = base + ' ' + list[i];
+}
+
+	return base.trim();
 }
