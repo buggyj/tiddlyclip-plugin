@@ -73,6 +73,15 @@
 			}
 		},
 		{
+			"file": "subtractset.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/subtractset.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
 			"file": "dock.js",
 			"fields": {
 				"type": "application/javascript",
