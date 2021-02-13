@@ -313,6 +313,37 @@ tiddlyclip.parseListField = function(text) {
 			alert("tc: problem with command " + title);
 		} 
 	});		
+	this.tabletid = this.getAttribute("$tabletid");
+	this.catname = this.getAttribute("$catname");
+	this.cattid = this.getAttribute("$cattid");
+    this.localrefresh = [];
+	if ((this.tabletid && this.catname)||this.cattid) {
+		var pagedata = {data:{}},cat,self = this;
+		$tw.utils.each(this.attributes,function(attribute,name) {
+			if(name.charAt(0) !== "$") {
+                if (attribute.charAt(0) === "@" && attribute.charAt(attribute.length-1) === "@"){//tiddler ref
+                    attribute = attribute.substring (1,attribute.length-1);
+                    self.localrefresh.push(attribute);
+                }
+				pagedata.data[name] = attribute;
+			}
+		});
+		if (this.cattid) {
+			cat = {title:this.cattid,modes:["immediate"]};
+		}
+		pagedata.data.category=this.catname;
+		var temptids = tiddlyclip.modules.tPaste.paste(this.catname,pagedata,null,this.tabletid,cat);
+		for (var i =0; i< temptids.length; i++) {	
+			var title = temptids[i].title;
+			self.setVariable(title,temptids[i].text);	
+			$tw.utils.each(temptids[i],function(val,key) {
+				//build tiddler field references 
+				var newkey = title+'!!'+key;
+				self.setVariable(newkey,val);
+			});
+		}
+	}
+	
 	this.makeChildWidgets();
 };
 
@@ -351,13 +382,18 @@ CreateTiddlerWidget.prototype.handleTiddlyclipEvent = function(event) {
 Selectively refreshes the widget if needed. Returns true if the widget or any of its children needed re-rendering
 */
 CreateTiddlerWidget.prototype.refresh = function(changedTiddlers) {
-	//var changedAttributes = this.computeAttributes();
-	if(false) {
+	var changedAttributes = this.computeAttributes();
+	if(Object.keys(changedAttributes).length) {
 		this.refreshSelf();
 		return true;
-	} else {
-		return this.refreshChildren(changedTiddlers);		
 	}
+    for (var atr in changedTiddlers){
+        if (this.localrefresh.indexOf(atr) !== -1) {
+            this.refreshSelf();
+            return true;
+        }
+    }
+	return this.refreshChildren(changedTiddlers);
 };
 exports.createclip = CreateTiddlerWidget;
 

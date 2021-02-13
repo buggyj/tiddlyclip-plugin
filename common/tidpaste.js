@@ -103,6 +103,31 @@ tiddlyclip.modules.tPaste = (function () {
 		return {valid:false}; 
 	}
 
+
+	function setRules(cat)
+	{
+		var ruleDefs =  twobj.getTidContents(cat.title);
+		//if rule is not found use the default rules
+		if (!ruleDefs) {
+			status ("rules not found for cat: "+category+" was "+cat.title);
+			ruleDefs = findDefaultRule(cat.tile);
+			
+			}
+		if (!!ruleDefs)  {	
+			try {	
+				cat.rules=addSequenceOfRules(ruleDefs);//one or more
+				status("found cat: ");
+				cat.valid =true;
+				return cat;
+			} catch(e) {
+				status("caught error while adding rules for cat: ");
+				return {valid:false};
+			}
+		}
+		status ("rules not found for cat: "+category);
+		return {valid:false}; 
+	}
+
 	function findSection(activeSection,configTable) {
         var sectionStrgs;
 		var content = configTable;
@@ -325,33 +350,34 @@ tiddlyclip.modules.tPaste = (function () {
 		optsName = name;
 	}	
 	// This is the function called when clicking the context menu item.
-	function paste(catName,pageData, section, substitutionTiddler)
+	function paste(catName,pageData, section, substitutionTiddler ,setCat)
 	{  
-		//BJ: if atHome exists, then catName should be the name of a tiddler containing the cat, if this is ""
-		//then use build in 'dummy' rule and use substitutionTiddler as input to the substitution engine
 		var cat;
 		
 		status ("paste enter");
-		
-		if (substitutionTiddler) {
-			cat = findCategory (twobj.getTidContents(substitutionTiddler), catName);
-		} else if (pageData.data.section === "__sys__") { //from addon - change of focused tw
-			cat = findCategory (findSection(section,twobj.getTidContents("TiddlyClipSys")), catName);
-		} else if (pageData.data.section === "__sysdock__") {//from addon to solicite dock 
-			var tidclipconfigtext = twobj.getTidContents("TiddlyClipConfig");
-			var tcconf = JSON.stringify({text:tidclipconfigtext,title:'TiddlyClipConfig'});
-			var tidclipconfigopts = twobj.getTidContents("TiddlyClipOpts");
-			var tcopts = JSON.stringify({text:tidclipconfigopts,title:'TiddlyClipOpts'});
-			tiddlyclip.modules.tPaste.setconfig(tidclipconfigtext,'TiddlyClipConfig');
-			tiddlyclip.modules.tPaste.setopts(tidclipconfigopts,'TiddlyClipOpts');
-			status (dodock(tcconf,tcopts));
-			return;
-		} else {
-			cat = findCategory (findSection(section,getconfig()), catName);
-		}
-		//find the table denoted by the section (a header in the TiddlyClipConfig ), then find the row (cat)
-		if (!cat.valid) {
-				cat = findCategory (findSection(section), catName);//look for default rule
+		if (!setCat) {
+			if (substitutionTiddler) {
+				cat = findCategory (twobj.getTidContents(substitutionTiddler), catName);
+			} else if (pageData.data.section === "__sys__") { //from addon - change of focused tw
+				cat = findCategory (findSection(section,twobj.getTidContents("TiddlyClipSys")), catName);
+			} else if (pageData.data.section === "__sysdock__") {//from addon to solicite dock 
+				var tidclipconfigtext = twobj.getTidContents("TiddlyClipConfig");
+				var tcconf = JSON.stringify({text:tidclipconfigtext,title:'TiddlyClipConfig'});
+				var tidclipconfigopts = twobj.getTidContents("TiddlyClipOpts");
+				var tcopts = JSON.stringify({text:tidclipconfigopts,title:'TiddlyClipOpts'});
+				tiddlyclip.modules.tPaste.setconfig(tidclipconfigtext,'TiddlyClipConfig');
+				tiddlyclip.modules.tPaste.setopts(tidclipconfigopts,'TiddlyClipOpts');
+				status (dodock(tcconf,tcopts));
+				return;
+			} else {
+				cat = findCategory (findSection(section,getconfig()), catName);
+			}
+			//find the table denoted by the section (a header in the TiddlyClipConfig ), then find the row (cat)
+			if (!cat.valid) {
+					cat = findCategory (findSection(section), catName);//look for default rule
+			}
+		}else {
+			cat = setRules(setCat);
 		}
 		if (!cat.valid) {			
 			status("not valid category");
@@ -424,6 +450,14 @@ tiddlyclip.modules.tPaste = (function () {
 			}
 
 		}
+		if(hasMode(cat,"immediate")) {
+			status ("before immediate tids to tw");
+			var tidimmdiate=[];
+			for (var i =0; i< tiddlers.length; i++) {
+				tidimmdiate.push(twobj.immediatetids(tiddlers[i]));
+			}
+			return tidimmdiate;
+		}
 		if(hasMode(cat,"nosave")) return;
 		status ("before adding to tw");
 		var tidnames=[];
@@ -489,7 +523,8 @@ tiddlyclip.modules.twobj = (function () {
 		modifyTW:modifyTW,		getTiddler:getTiddler,
 		getTidContents:getTidContents,finish:finish,
 		importtids:importtids,	getNewTitle:getNewTitle,
-		getTidrules:getTidrules, getTiddlerData:getTiddlerData
+		getTidrules:getTidrules, getTiddlerData:getTiddlerData,
+		immediatetids:immediatetids
 	}
 	var   tiddlerAPI;
 	function onLoad () {
@@ -538,6 +573,15 @@ tiddlyclip.modules.twobj = (function () {
 		}
 		tiddlyclip.importTids(fields);
 	}	
+	
+	function immediatetids(t){
+	    var fields={}; 
+		t.attribs = t.attribs.filter(function(i) {return t.toRemove.indexOf(i) < 0;});
+		for (var i = 0; i < t.attribs.length;i++) {
+				fields[t.attribs[i]]=t.fields[t.attribs[i]];//put fields into a group
+		}
+		return fields;
+	}
 		   			   
 	function tiddlerExists(title) {
 			return tiddlyclip.tiddlerExists(title);
@@ -765,8 +809,9 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		for (var atr in dates){ 
 			pageData.data[atr]=dates[atr];
 		}
-		pageData.data.category1stWord=pageData.data.category.replace(/(.*) (.*)/,"$1");
-
+		if (!!pageData.data.category) {
+			pageData.data.category1stWord=pageData.data.category.replace(/(.*) (.*)/,"$1");
+		}
 		var macrosx =defaults.getDefs();
 		table['$']={};table['#']={};table['@']={};
 		for (var n in pageData.data) {table['@'][n]= pageData.data[n];}
