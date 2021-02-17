@@ -1135,7 +1135,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 				var regexflags = regParts.replace(/.*\/(.*?)$/,"$1");
 				var pattern=new RegExp(regexBody,regexflags);
 				setStatus(null);
-			return vals[0].replace(pattern, function(match){setStatus("r"); return match.replace(pattern, vals[2]);});
+			return vals[0].replace(pattern, function(match){setStatus("r"); return match.replace(new RegExp(regexBody,regexflags), vals[2]);});
 			}
 			// substitute
 			if ((parts = key.split(":")).length ==3) {
