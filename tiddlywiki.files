@@ -1,0 +1,14 @@
+{
+	"tiddlers": [{
+		"file": "LICENSE",
+		"fields": {
+			"type": "text/plain",
+			"title": "$:/plugins/bj/tiddlyclip/LICENSE"
+		}
+	}],
+	 "directories": [
+		"common",
+		"tw5",
+		"tw5more"
+	 ]
+}
