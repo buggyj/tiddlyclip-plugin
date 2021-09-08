@@ -107,6 +107,15 @@
 				"tags":  "$:/tags/tiddlyclipparser",
 				"module-type": "library"
 			}
+		},
+		{
+			"file": "makejsontids.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/makejsontids.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
 		}
 	]
 }

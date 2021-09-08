@@ -1,0 +1,6 @@
+title: $:/bj/tcfilterrequest
+type: application/x-bclip
+
+#txt=((*@mkjsontids(@name)*))
+#aux=
+$test=((*@send(@callback,#txt,#aux)*))

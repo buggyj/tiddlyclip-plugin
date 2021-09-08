@@ -38,6 +38,12 @@ tiddlyclip.modules.tPaste = (function () {
 		message.setAttribute("data-text",text||"");
 		message.setAttribute("data-aux",aux||"");
 		message.setAttribute("data-extra",extra||document.title);
+		//add in the version - thru tcadapter
+		var tidops = getopts();
+		var noshowtids = tidops && tidops.noshowtids && tidops.noshowtids === "yes";
+		if (tiddlyclip.version && !noshowtids) {
+			message.setAttribute("data-version",tiddlyclip.version());
+		}
 		messageBox.appendChild(message);
 		
 		// Create and dispatch the custom event to the extension

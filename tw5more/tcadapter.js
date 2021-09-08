@@ -343,7 +343,13 @@ tiddlyclip.parseListField = function(text) {
 			});
 		}
 	}
-	
+	tiddlyclip.version = function () {
+		var versiontid = this.getTiddler("$:/plugins/bj/tiddlyclip");
+		if (versiontid && versiontid.fields && versiontid.fields.version){
+			return versiontid.fields.version
+		}
+		return null;
+	}	
 	this.makeChildWidgets();
 };
 
