@@ -686,6 +686,19 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		current.fields = {};
 		current.fields.text ="";
 		//current.fields.title ="";	
+		
+		function convertedFromJSON(el) {
+				try {
+					var tid =JSON.parse(el);
+					for (var atr in tid){
+						current.fields[atr]=tid[atr];
+						current.attribs.push(atr);		
+					}
+					return true;
+				} catch(e){
+					return false;
+				}
+		}
 		if (!el) { 
 			el =  tiddlyclip.newProtoTiddler();
 			for (var atr in el.fields){ 
@@ -695,7 +708,9 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 
 		    this.fields.tags="";//BJ FIX remove or move to adapter
 		} else if (!truetid) {
-			if((typeof el) ==="string"){ //convert html to dom ;
+			if((typeof el) ==="string"){ 
+				if (convertedFromJSON()) return this; //conversion complete
+				//convert html to dom ;
 				var wrapper= createDiv();
 				wrapper.innerHTML= el;
 				el= wrapper.firstChild;
