@@ -168,7 +168,7 @@ CreateTiddlerWidget.prototype.execute = function() {
 	
 	tiddlyclip.getTiddlerData = $tw.wiki.getTiddlerData;
 	
-	
+	tiddlyclip.deleteTiddler = function (tid){$tw.wiki.deleteTiddler(tid);}
 	
 tiddlyclip.parseListFields = ":<";
 

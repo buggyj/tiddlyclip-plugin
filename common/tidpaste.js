@@ -2,14 +2,13 @@ tiddlyclip={hello:"hello"};
 
 (function(){
 tiddlyclip.modules={};
-
+ 
 var log = function (x) {
 	alert(x);
 }
 	function status (param) {
 		tiddlyclip.log(param);
 		}
-
 if (true) {
 
 tiddlyclip.modules.tPaste = (function () {
@@ -512,6 +511,9 @@ tiddlyclip.modules.tPaste = (function () {
 				tiddlerObj.fields.title = twobj.getNewTitle(tiddlerObj.fields.title); 
 				save(tiddlerObj);
 				break;
+			case 'delete':
+				tiddlerObj.fields.title = twobj.deleteTiddler(tiddlerObj.fields.title); 
+				break;
 			default: //import
 				save(tiddlerObj);
 
@@ -530,7 +532,7 @@ tiddlyclip.modules.twobj = (function () {
 		getTidContents:getTidContents,finish:finish,
 		importtids:importtids,	getNewTitle:getNewTitle,
 		getTidrules:getTidrules, getTiddlerData:getTiddlerData,
-		immediatetids:immediatetids
+		immediatetids:immediatetids,deleteTiddler:deleteTiddler
 	}
 	var   tiddlerAPI;
 	function onLoad () {
@@ -545,6 +547,10 @@ tiddlyclip.modules.twobj = (function () {
     
     function getTiddlerData(tid) {
 			return tiddlyclip.getTiddlerData(tid);
+	}
+
+    function deleteTiddler(tid) {
+			return tiddlyclip.deleteTiddler(tid);
 	}
 	
 	function getTidrules(tidname) {
@@ -709,7 +715,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		    this.fields.tags="";//BJ FIX remove or move to adapter
 		} else if (!truetid) {
 			if((typeof el) ==="string"){ 
-				if (convertedFromJSON()) return this; //conversion complete
+				if (convertedFromJSON(el)) return this; //conversion complete
 				//convert html to dom ;
 				var wrapper= createDiv();
 				wrapper.innerHTML= el;
@@ -726,7 +732,6 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 				this.attribs.push(m);
 				this.fields[m] = undoHtmlEncode(v) ;
 			}
-
 		} else {
 			for (var atr in el.fields){ 
 				current.fields[atr]=el.fields[atr];
@@ -793,6 +798,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		if (this.hasMode("move")) return "move";
 		else if (this.hasMode("once")) return "once";
 		else if (this.hasMode("inc")) return "inc";
+		else if (this.hasMode("delete")) return "delete";
 		return writeMode;
 	}
 	
