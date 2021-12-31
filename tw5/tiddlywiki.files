@@ -55,6 +55,15 @@
 			}
 		},
 		{
+			"file": "senddelayed.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/senddelayed.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
 			"file": "makeobj.js",
 			"fields": {
 				"type": "application/javascript",

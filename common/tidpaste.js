@@ -433,6 +433,11 @@ tiddlyclip.modules.tPaste = (function () {
 						
 						tiddlerObj.setPageVars(pageData);
 						tiddlerObj.setTids(patterns[i],pageData);
+						if (tiddlerObj.hasMode("nontid")) {
+							tiddlerObj.fields={};
+							tiddlerObj.setPageVars(pageData);
+							tiddlerObj.setNormal(patterns[i],pageData);
+						} 
 						tiddlerObj.subst(patterns[i],pageData);
 						status ("after subst");	
 						//tiddlerObj.text=userInput(tiddlerObj.text); //not used at present

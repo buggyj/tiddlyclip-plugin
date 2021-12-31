@@ -3,6 +3,5 @@ tags: $:/tags/PageTemplate
 
 <$createclip>
 <$tcadapter>
-</$createclip>
 </$tcadapter>
-
+</$createclip>
