@@ -924,7 +924,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 
 		table['#']={};
 		table['@'].fields=table['$'];
-		this.parseStructure(rule.fields);
+		if (table['@']['#nofieldupdates'] !=='true') this.parseStructure(rule.fields);
 		//---move data from parser table into tiddler
 		this.applyEdits(table['$']);
 		return this;
@@ -1013,7 +1013,10 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 				var returedVals =  getSimpleVarFrom (n);
 				var leftSide =  returedVals.leftSide;
 				var type 	 =  returedVals.type;
-				if (type !== '#' &&type !=='$' &&type !=='%') error("target: invalid name "+n);			
+				if (type !== '#' &&type !=='$' &&type !=='%' &&type !=='@'){ 
+					error("target: invalid name "+n);	
+					continue;
+				}		
 				if (!localonly)  table[type][leftSide] = rightSide;
 				else {
 					if (type=='#') table[type][leftSide] = rightSide;
