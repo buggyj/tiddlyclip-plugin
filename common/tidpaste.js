@@ -947,7 +947,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 	function valOf(n, test) {
 		var val, type = n.substring(0,1);
 		if (type !== '#' &&type !=='$'&&type !=='@'&& type !=='%'){
-			error("source: invalid name"+n);
+			if (!test) error("source: invalid name"+n);
 			return null;
 		}
 		else {
@@ -959,10 +959,10 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			return val;
 		}
 	 }
-	function toValues(sources) {
+	function toValues(sources,test) {
 		var values = [], returned;
 		for (var i = 0 ; i < sources.length ;i++) {
-			if ((values[i]= valOf(sources[i]))==null) return null;
+			if ((values[i]= valOf(sources[i],test))==null) return null;
 		}
 		return  values;
 	}
@@ -1187,9 +1187,10 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			}	
 			// subtract	
 			if ((parts= key.split("-")).length ==2) {
-				if ((vals = toValues(parts)) == null) return m;
-				if ((res = handleBinaryForm(vals[0],"PS",vals[1])) == null) return m;
-				return res.toString();
+				if ((vals = toValues(parts,true)) != null) {
+					if ((res = handleBinaryForm(vals[0],"MS",vals[1])) == null) return m;
+					return res.toString();
+				}
 			}
 			// macro
 			var returned = self.handleFunction(key);
