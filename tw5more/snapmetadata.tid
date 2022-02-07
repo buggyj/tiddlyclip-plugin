@@ -1,0 +1,7 @@
+title: $:/bj/tc/snapmetadata
+type: application/x-bclip
+
+$type=image/png
+$when=((*@dateTimeShort*))
+$location=((*@pageRef*))
+$caption=((*@pageTitle*))

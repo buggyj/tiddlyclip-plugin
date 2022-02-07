@@ -1,0 +1,6 @@
+title: $:/bj/tc/snipmetadata
+type: application/x-bclip
+
+$when=((*@dateTimeShort*))
+$location=((*@pageRef*))
+$caption=((*@pageTitle*))

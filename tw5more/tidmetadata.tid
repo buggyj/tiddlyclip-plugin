@@ -1,0 +1,5 @@
+title: $:/bj/tc/tidmetadata
+type: application/x-bclip
+
+#type=text/x-tiddlywiki
+$type=((*@classic*??*#type*??*@abort()*))

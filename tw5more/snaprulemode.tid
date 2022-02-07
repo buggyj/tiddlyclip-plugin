@@ -1,0 +1,5 @@
+title: $:/bj/tc/SnapRuleMode
+type: application/x-bclip
+
+#nosnap=nosave
+#newdata=((*!@exists(@snap)*??*#nosnap*)) inc add
