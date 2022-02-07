@@ -216,6 +216,7 @@ tiddlyclip.modules.tPaste = (function () {
 			//remove triple quotes around any | - these were needed to stop TW thinking they were table elements
 			var pieces = defRule.replace(/\"\"\"\|\"\"\"/g,"&bar;").split("|");
 			if  (pieces.length <7) {error('short:'+defRule);throw new Error('Invalid Rule');} //error malformeed TODO: inform the user
+			var tidops = getopts();
 			for (var i=1;i<7;i++) {
 				pieces[i]= pieces[i].replace("&bar;","|"); 
 				if (pieces[i] == null) {
@@ -229,7 +230,7 @@ tiddlyclip.modules.tPaste = (function () {
 					if (i==6)  				pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//modes	
 					else if (i==4||i==5)	pieces[i] = '['+pieces[i]+']';	
 					else if (i==3) {
-						  var tidops = getopts();
+						  
 						  if (tidops && tidops.noautoextratags && tidops.noautoextratags === "yes") {
 							  if (pieces[i]) 	pieces[i] = '[{"#space":" "},{"$tags":"((*@exists($tags)*??*$tags*))((*@exists($tags)*??*#space*))'+pieces[i]+'"}]'; 
 							  else 				pieces[i] ='[]'; // don't modify/create
@@ -239,7 +240,12 @@ tiddlyclip.modules.tPaste = (function () {
 						  }
 						  
 					   }
-					else if (i==2)  		pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//text		
+					else if (i==2) {
+						if (tidops && tidops.legacybody && tidops.legacybody === "yes")
+						 		pieces[i] = '[{"#newdata":"'+pieces[i]+'"}]';//text	
+						else
+							pieces[i] =  JSON.stringify([{"#newdata":pieces[i].replaceAll("\\n","\n")}]);//text	
+							}	
 					else if (i==1){
 						  if (pieces[i]) 	pieces[i] = '[{"$title":"'+pieces[i]+'"}]';
 						  else 				pieces[i] ='[]'; // don't modify/create
