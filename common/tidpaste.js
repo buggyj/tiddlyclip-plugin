@@ -364,6 +364,7 @@ tiddlyclip.modules.tPaste = (function () {
 	function paste(catName,pageData, section, substitutionTiddler ,setCat)
 	{  
 		var cat;
+		tiddlyclip.caller = this;
 		
 		status ("paste enter");
 		if (!setCat) {

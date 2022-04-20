@@ -14,49 +14,8 @@ var Widget = require("$:/core/modules/widgets/widget.js").widget;
 
 if($tw.browser) {
 	require("$:/plugins/bj/tiddlyclip/tidpaste.js");
-}
-var CreateTiddlerWidget = function(parseTreeNode,options) {
-	this.initialise(parseTreeNode,options);
-	this.addEventListeners([
-		{type: "tiddlyclip-create", handler: "handleTiddlyclipEvent"}
-	]);
-};
 
-function getModificationFields(fields) {
-	if(fields && typeof fields.modified === "string") return {};
-	return $tw.wiki.getModificationFields();
-}
-/*
-Inherit from the base widget class
-*/
-CreateTiddlerWidget.prototype = new Widget();
 
-/*
-Render this widget into the DOM
-*/
-CreateTiddlerWidget.prototype.render = function(parent,nextSibling) {
-	this.parentDomNode = parent;
-	this.computeAttributes();
-	this.execute();
-	this.renderChildren(parent,nextSibling);
-}
-
-CreateTiddlerWidget.prototype.getTiddlerList = function() {
-	var defaultFilter = "[all[shadows+tiddlers]tag[$:/tags/tiddlyclip]]";
-	return this.wiki.filterTiddlers(defaultFilter,this);
-}
-
-CreateTiddlerWidget.prototype.getTiddlerOparserList = function() {
-	var defaultFilter = "[all[shadows+tiddlers]tag[$:/tags/tiddlyclipparser]]";
-	return this.wiki.filterTiddlers(defaultFilter,this);
-}
-/*
-Compute the internal state of the widget
-*/
-CreateTiddlerWidget.prototype.execute = function() {
-	var self = this;
-	// Get our parameters here we could allow an module to modify the plugin
-	// Get the commands and place them in the tiddlyclip structure to expose them to the user
 	tiddlyclip.dates=function(){
 		var dates ={};
 		var dateLong=    'DDD, MMM DDth, YYYY';
@@ -170,37 +129,37 @@ CreateTiddlerWidget.prototype.execute = function() {
 	
 	tiddlyclip.deleteTiddler = function (tid){$tw.wiki.deleteTiddler(tid);}
 	
-tiddlyclip.parseListFields = ":<";
+	tiddlyclip.parseListFields = ":<";
 
-tiddlyclip.parseListField = function(text) {
-	var fields = [];
-	text.split(/\r?\n/mg).forEach(function(line) {
+	tiddlyclip.parseListField = function(text) {
+		var fields = [];
+		text.split(/\r?\n/mg).forEach(function(line) {
 
-		var p = line.indexOf("="),field,value,text,q,otype=null;
-		if(p > 0) {
-			q = p;
-			otype = line.charAt(p-1);
-			if (tiddlyclip.parseListFields.indexOf(otype)!==-1) { 
-				p--;
-				text = line.substr(q+1).replace("\\n","\n");
-				value = {};
-				value.parser = otype;
-				value.text = text;
+			var p = line.indexOf("="),field,value,text,q,otype=null;
+			if(p > 0) {
+				q = p;
+				otype = line.charAt(p-1);
+				if (tiddlyclip.parseListFields.indexOf(otype)!==-1) { 
+					p--;
+					text = line.substr(q+1).replace("\\n","\n");
+					value = {};
+					value.parser = otype;
+					value.text = text;
+				}
+				else {
+					value = line.substr(q+1).replace(/\\n/g,"\n");
+				}			
+				field = line.substr(0, p).trim();
+
+				if(field) {
+					var x ={};
+					x[field] = value;
+					fields.push(x);
+				}
 			}
-			else {
-				value = line.substr(q+1).replace(/\\n/g,"\n");
-			}			
-			field = line.substr(0, p).trim();
-
-			if(field) {
-				var x ={};
-				x[field] = value;
-				fields.push(x);
-			}
-		}
-	});
-	return fields;
-};
+		});
+		return fields;
+	};
 
 	
 	tiddlyclip.getTidrules= function(tidname) {
@@ -253,10 +212,10 @@ tiddlyclip.parseListField = function(text) {
 	}	
 	tiddlyclip.finish=function (tids) {
 		for (var i = 0; i < tids.length; i++){
-			 self.dispatchEvent({type: "tm-navigate", navigateTo:tids[i]});
+			 this.caller.dispatchEvent({type: "tm-navigate", navigateTo:tids[i]});
 			 //alert("open "+tids[i])
 		 }
-		self.dispatchEvent({type: "tm-auto-save-wiki"}); 
+		this.caller.dispatchEvent({type: "tm-auto-save-wiki"}); 
 	}
 	tiddlyclip.importTids =function (fields) {
 		var tiddler = this.getMultiTidTitle(fields.title), tid;
@@ -283,36 +242,90 @@ tiddlyclip.parseListField = function(text) {
 		var tid = new $tw.Tiddler($tw.wiki.getCreationFields(),container,updateFields,getModificationFields());	
 		//alert(JSON.stringify(tid))
         var tiddlerFieldsArray = [tid.fields];					
-		self.dispatchEvent({type: "tm-import-tiddlers", param: JSON.stringify(tiddlerFieldsArray)});	
+		this.caller.dispatchEvent({type: "tm-import-tiddlers", param: JSON.stringify(tiddlerFieldsArray)});	
 	}
 	tiddlyclip.importTidsSimple =function (tidfields) {
 		//tiddlyclip.log("savefile at last!");
 		// Get the details from the message
         var tiddlerFieldsArray = [tidfields];					
-		self.dispatchEvent({type: "tm-import-tiddlers", param: JSON.stringify(tiddlerFieldsArray)});	
+		this.caller.dispatchEvent({type: "tm-import-tiddlers", param: JSON.stringify(tiddlerFieldsArray)});	
 	}
-	this.list = this.getTiddlerList();
 	tiddlyclip.macro={};
-	$tw.utils.each(this.list,function(title,index) {
-		try {
-			var func = require(title);
-			
-			tiddlyclip.macro[func.name]=func.run;
-		} catch (e) {
-			alert("tc: problem with command " + title);
-		} 
-	});	
-	this.list = this.getTiddlerOparserList();
+	$tw.utils.each(
+		(function() {
+			return $tw.wiki.filterTiddlers("[all[shadows+tiddlers]tag[$:/tags/tiddlyclip]]");
+		})(),
+		function(title,index) {
+			try {
+				var func = require(title);
+				
+				tiddlyclip.macro[func.name]=func.run;
+			} catch (e) {
+				alert("tc: problem with command " + title);
+			} 
+		}
+	);	
 	tiddlyclip.oparser={};
-	$tw.utils.each(this.list,function(title,index) {
-		try {
-			var func = require(title);
-			
-			tiddlyclip.oparser[func.symbol]=func.run;
-		} catch (e) {
-			alert("tc: problem with command " + title);
-		} 
-	});		
+	$tw.utils.each(
+		(function() {
+			return $tw.wiki.filterTiddlers("[all[shadows+tiddlers]tag[$:/tags/tiddlyclipparser]]");
+		})(),
+		function(title,index) {
+			try {
+				var func = require(title);
+				
+				tiddlyclip.oparser[func.symbol]=func.run;
+			} catch (e) {
+				alert("tc: problem with command " + title);
+			} 
+		}
+	);		
+	tiddlyclip.version = function () {
+		var versiontid = this.getTiddler("$:/plugins/bj/tiddlyclip");
+		if (versiontid && versiontid.fields && versiontid.fields.version){
+			return versiontid.fields.version
+		}
+		return null;
+	}	
+}	
+var CreateTiddlerWidget = function(parseTreeNode,options) {
+	this.initialise(parseTreeNode,options);
+	this.addEventListeners([
+		{type: "tiddlyclip-create", handler: "handleTiddlyclipEvent"}
+	]);
+};
+
+function getModificationFields(fields) {
+	if(fields && typeof fields.modified === "string") return {};
+	return $tw.wiki.getModificationFields();
+}
+/*
+Inherit from the base widget class
+*/
+CreateTiddlerWidget.prototype = new Widget();
+
+/*
+Render this widget into the DOM
+*/
+CreateTiddlerWidget.prototype.render = function(parent,nextSibling) {
+	this.parentDomNode = parent;
+	this.computeAttributes();
+	this.execute();
+	this.renderChildren(parent,nextSibling);
+}
+
+
+
+
+/*
+Compute the internal state of the widget
+*/
+CreateTiddlerWidget.prototype.execute = function() {
+	var self = this;
+	// Get our parameters here we could allow an module to modify the plugin
+	// Get the commands and place them in the tiddlyclip structure to expose them to the user
+
+//	////////////end of lib//////////////////  //
 	this.tabletid = this.getAttribute("$tabletid");
 	this.catname = this.getAttribute("$catname");
 	this.cattid = this.getAttribute("$cattid");
@@ -332,7 +345,7 @@ tiddlyclip.parseListField = function(text) {
 			cat = {title:this.cattid,modes:["immediate"]};
 		}
 		pagedata.data.category=this.catname;
-		var temptids = tiddlyclip.modules.tPaste.paste(this.catname,pagedata,null,this.tabletid,cat);
+		var temptids = tiddlyclip.modules.tPaste.paste.call(this, this.catname,pagedata,null,this.tabletid,cat);
 		for (var i =0; i< temptids.length; i++) {	
 			var title = temptids[i].title;
 			self.setVariable(title,temptids[i].text);	
@@ -343,13 +356,7 @@ tiddlyclip.parseListField = function(text) {
 			});
 		}
 	}
-	tiddlyclip.version = function () {
-		var versiontid = this.getTiddler("$:/plugins/bj/tiddlyclip");
-		if (versiontid && versiontid.fields && versiontid.fields.version){
-			return versiontid.fields.version
-		}
-		return null;
-	}	
+
 	this.makeChildWidgets();
 };
 
@@ -361,7 +368,7 @@ function settimers (delay, callback) {
 		timejson.timeout = next.toJSON() ;
 		timejson.onTimeout = callback;
 		if (!$tw.utils.bjGlogalTimer) {
-			alert ("bjGlogalTimer missing");
+			alert ("bjGlogalTimer missing");//maybe better to replace with a timer
 			return;
 		}
 		$tw.utils.bjGlogalTimer.register(timejson);
@@ -372,14 +379,14 @@ CreateTiddlerWidget.prototype.handleTiddlyclipEvent = function(event) {
 	if (event.localsection) {
 		if (event.delay) {
 			settimers (event.delay, function (){
-				tiddlyclip.modules.tPaste.paste(event.category,event.pagedata,null,event.localsection);
+				tiddlyclip.modules.tPaste.paste.call(this,event.category,event.pagedata,null,event.localsection);
 			});
 		}
 		else {
-			tiddlyclip.modules.tPaste.paste(event.category,event.pagedata,null,event.localsection);
+			tiddlyclip.modules.tPaste.paste.call(this,event.category,event.pagedata,null,event.localsection);
 		}
 	} else {
-		tiddlyclip.modules.tPaste.paste(event.category,event.pagedata,event.currentsection);	
+		tiddlyclip.modules.tPaste.paste.call(this,event.category,event.pagedata,event.currentsection);	
 	}
 	return false;
 };
