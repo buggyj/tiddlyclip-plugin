@@ -316,6 +316,32 @@ CreateTiddlerWidget.prototype.render = function(parent,nextSibling) {
 
 
 
+function findCategory (tableOfCats, category) {	
+	var categoryRows = tableOfCats.split("\n");
+	var cat = {}, tagsAndModes, pieces, catFound=false;
+	var hasExt = false;
+	
+	for (var i=0; i<categoryRows.length; i++) { 
+		pieces = categoryRows[i].split("|");// row is = |Category|Tip|Tags|Rules Tid|Modes|
+		if (pieces.length==1) continue; 	//ingore blanklines
+		if (pieces.length < 7) {
+			alert('config table format error no of row incorrect '+categoryRows[i]);
+			 return {valid:false};
+		}
+		if (pieces[1].substring(0,1)==='!') continue; //first row is column headings
+		if (category == pieces[1]) {
+			catFound = true;
+			break;
+		}
+	} //loop end
+	
+	if (!catFound) {
+		alert ("not found cat: "+category);
+		return {valid:false};
+	}
+	
+	return {title:pieces[4].replace(/^\[\[([\s\S]*)\]\]/,"$1"),valid:true};//remove wikiword parens if present
+}
 
 /*
 Compute the internal state of the widget
@@ -344,8 +370,13 @@ CreateTiddlerWidget.prototype.execute = function() {
 		if (this.cattid) {
 			cat = {title:this.cattid,modes:["immediate"]};
 		}
+		else {
+			cat = findCategory(tiddlyclip.getTidContents(this.tabletid),this.catname);//extract cat from table and make it 'immediate' only 
+			if (!cat.valid){alert("cat rule not found"); return;}
+			cat.modes=["immediate"];
+		}
 		pagedata.data.category=this.catname;
-		var temptids = tiddlyclip.modules.tPaste.paste.call(this, this.catname,pagedata,null,this.tabletid,cat);
+		var temptids = tiddlyclip.modules.tPaste.paste.call(this, null,pagedata,null,null,cat);
 		for (var i =0; i< temptids.length; i++) {	
 			var title = temptids[i].title;
 			self.setVariable(title,temptids[i].text);	
