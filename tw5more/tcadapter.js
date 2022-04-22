@@ -352,20 +352,21 @@ CreateTiddlerWidget.prototype.execute = function() {
 	// Get the commands and place them in the tiddlyclip structure to expose them to the user
 
 //	////////////end of lib//////////////////  //
-	this.tabletid = this.getAttribute("$tabletid");
-	this.catname = this.getAttribute("$catname");
-	this.cattid = this.getAttribute("$cattid");
+	this.tabletid = this.getAttribute("$$tabletid");
+	this.catname = this.getAttribute("$$catname");
+	this.cattid = this.getAttribute("$$cattid");
     this.localrefresh = [];
 	if ((this.tabletid && this.catname)||this.cattid) {
 		var pagedata = {data:{}},cat,self = this;
 		$tw.utils.each(this.attributes,function(attribute,name) {
 			if(name.charAt(0) !== "$") {
-                if (attribute.charAt(0) === "@" && attribute.charAt(attribute.length-1) === "@"){//tiddler ref
-                    attribute = attribute.substring (1,attribute.length-1);
-                    self.localrefresh.push(attribute);
-                }
 				pagedata.data[name] = attribute;
-			}
+			} else if( name.length > 1 && name.charAt(1) !== "$") {
+				var namepart=name.substring (1,name.length);
+				if (!tiddlyclip.getTiddler(attribute)) console.log ("refresh warning: tiddler in parameter does not exist"+attribute);
+				self.localrefresh.push(attribute);
+				pagedata.data[namepart] = attribute;
+			}//ignore params of a single $ or any with $$
 		});
 		if (this.cattid) {
 			cat = {title:this.cattid,modes:["immediate"]};
