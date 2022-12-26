@@ -2,8 +2,7 @@
 	"plugins": [
 		"tiddlywiki/tiddlyweb",
 		"tiddlywiki/filesystem",
-		"bj/tiddlyclip",
-		"bj/node-readability"
+		"bj/tiddlyclip-plugin"
 	],
 	"themes": [
 		"tiddlywiki/vanilla",

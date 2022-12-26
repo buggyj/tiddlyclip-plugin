@@ -363,7 +363,7 @@ tiddlyclip.modules.tPaste = (function () {
 	// This is the function called when clicking the context menu item.
 	function paste(catName,pageData, section, substitutionTiddler ,setCat)
 	{  
-		var cat;
+		var cat, save =false;
 		tiddlyclip.caller = this;
 		
 		status ("paste enter");
@@ -475,17 +475,20 @@ tiddlyclip.modules.tPaste = (function () {
 			}
 			return tidimmdiate;
 		}
+		//remove next line - bj - it is already inside noSave()
 		if(hasMode(cat,"nosave")) return;
 		status ("before adding to tw");
 		var tidnames=[];
 		for (var i =0; i< tiddlers.length; i++) {
 			if (!tiddlers[i].noSave()){
 				addTiddlerToTW(tiddlers[i]);
-				if(tiddlers[i].hasMode("open")) tidnames.push(tiddlers[i].fields.title)
+				save = true;
 			}
+			if(tiddlers[i].hasMode("open")) tidnames.push(tiddlers[i].fields.title);
 		}
 		if(hasMode(cat,"nofin")) return;
-		twobj.finish(tidnames);
+		if(hasMode(cat,"noautosave")) save = false;
+		twobj.finish(tidnames,save);
 	}  
      
     function save(tiddlerObj) {
@@ -611,9 +614,9 @@ tiddlyclip.modules.twobj = (function () {
 			return tiddlyclip.tiddlerExists(title);
 	}	
 
-	function finish(tids) 
+	function finish(tids,save) 
 	{
-		tiddlyclip.finish(tids);
+		tiddlyclip.finish(tids,save);
 	}
 			   			   
 	return api;

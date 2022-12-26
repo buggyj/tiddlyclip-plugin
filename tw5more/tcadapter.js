@@ -210,12 +210,12 @@ if($tw.browser) {
 		}
 		return current;	
 	}	
-	tiddlyclip.finish=function (tids) {
+	tiddlyclip.finish=function (tids,save) {
 		for (var i = 0; i < tids.length; i++){
 			 this.caller.dispatchEvent({type: "tm-navigate", navigateTo:tids[i]});
 			 //alert("open "+tids[i])
 		 }
-		this.caller.dispatchEvent({type: "tm-auto-save-wiki"}); 
+		if (save) this.caller.dispatchEvent({type: "tm-auto-save-wiki"}); 
 	}
 	tiddlyclip.importTids =function (fields) {
 		var tiddler = this.getMultiTidTitle(fields.title), tid;
@@ -352,21 +352,22 @@ CreateTiddlerWidget.prototype.execute = function() {
 	// Get the commands and place them in the tiddlyclip structure to expose them to the user
 
 //	////////////end of lib//////////////////  //
-	this.tabletid = this.getAttribute("$$tabletid");
-	this.catname = this.getAttribute("$$catname");
-	this.cattid = this.getAttribute("$$cattid");
+	this.tabletid = this.getAttribute("$tabletid");
+	this.catname = this.getAttribute("$catname");
+	this.cattid = this.getAttribute("$cattid");
     this.localrefresh = [];
 	if ((this.tabletid && this.catname)||this.cattid) {
 		var pagedata = {data:{}},cat,self = this;
 		$tw.utils.each(this.attributes,function(attribute,name) {
-			if(name.charAt(0) !== "$") {
-				pagedata.data[name] = attribute;
-			} else if( name.length > 1 && name.charAt(1) !== "$") {
+			if(name.charAt(0) === "$") {
+			} else if( name.length > 1 && name.charAt(0) === ":") {
 				var namepart=name.substring (1,name.length);
 				if (!tiddlyclip.getTiddler(attribute)) console.log ("refresh warning: tiddler in parameter does not exist"+attribute);
 				self.localrefresh.push(attribute);
 				pagedata.data[namepart] = attribute;
-			}//ignore params of a single $ or any with $$
+			} else {
+				pagedata.data[name] = attribute;
+			}
 		});
 		if (this.cattid) {
 			cat = {title:this.cattid,modes:["immediate"]};
@@ -517,74 +518,3 @@ exports["tcadapter"] = tcWidget;
 
 })();
 
-(function(){
-
-/*jslint node: true, browser: true */
-/*global $tw: false */
-"use strict";
-
-var Widget = require("$:/core/modules/widgets/widget.js").widget;
-
-var ToDoWidget = function(parseTreeNode,options) {
-	this.initialise(parseTreeNode,options);
-};
-
-/*
-Inherit from the base widget class
-*/
-ToDoWidget.prototype = new Widget();
-
-/*
-Render this widget into the DOM
-*/
-ToDoWidget.prototype.render = function(parent,nextSibling) {
-	this.computeAttributes();
-	this.execute();
-};
-
-/*
-Compute the internal state of the widget
-*/
-ToDoWidget.prototype.execute = function() {
-	this.tabletid = this.getAttribute("$tabletid");
-	this.catname = this.getAttribute("$catname");
-	this.delay = this.getAttribute("$delay")||null;
-	if (this.delay) this.delay *= 60; //mins to seconds
-};
-
-/*
-Refresh the widget by ensuring our attributes are up to date
-*/
-ToDoWidget.prototype.refresh = function(changedTiddlers) {
-	var changedAttributes = this.computeAttributes();
-	if(changedAttributes["$tabletid"] || changedAttributes["$catname"]|| changedAttributes["$delay"]) {
-		this.refreshSelf();
-		return true;
-	}
-	return this.refreshChildren(changedTiddlers);
-};
-
-/*
-Invoke the action associated with this widget
-*/
-ToDoWidget.prototype.invokeAction = function(triggeringWidget,event) {
-	var self = this,
-		options = {};
-	var pagedata = {data:{}};
-	$tw.utils.each(this.attributes,function(attribute,name) {
-		if(name.charAt(0) !== "$") {
-			pagedata.data[name] = attribute;
-		}
-	});
-	pagedata.data.category=this.catname;
-	self.dispatchEvent({type: "tiddlyclip-create", category:this.catname, pagedata: pagedata, currentsection:null, localsection:this.tabletid, delay:this.delay});
-	return true; // Action was invoked
-};
-
-ToDoWidget.prototype.invokeMsgAction = function(param) {
-	return this.invokeAction(this); 
-}
-
-exports["action-tiddlydo"] = ToDoWidget;
-
-})();
