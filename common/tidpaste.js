@@ -115,7 +115,7 @@ tiddlyclip.modules.tPaste = (function () {
 		//if rule is not found use the default rules
 		if (!ruleDefs) {
 			status ("rules not found for cat: "+category+" was "+cat.title);
-			ruleDefs = findDefaultRule(cat.tile);
+			ruleDefs = findDefaultRule(cat.tile);//BJ tile is not correct
 			
 			}
 		if (!!ruleDefs)  {	
@@ -365,6 +365,7 @@ tiddlyclip.modules.tPaste = (function () {
 	{  
 		var cat, save =false;
 		tiddlyclip.caller = this;
+		tiddlyclip.lastevent = pageData.e||null;
 		
 		status ("paste enter");
 		if (!setCat) {
@@ -413,7 +414,7 @@ tiddlyclip.modules.tPaste = (function () {
 				var tiddlerObj, writeMode;
 				tiddlerObj = new tiddlerAPI.Tiddler();
 				status ("before subst");
-				
+				tiddlerObj.copyCatModes(cat.modes);
 				tiddlerObj.setPageVars(pageData);
 				tiddlerObj.setNormal(patterns[i],pageData);
 				tiddlerObj.subst(patterns[i],pageData);
@@ -437,7 +438,7 @@ tiddlyclip.modules.tPaste = (function () {
 						var tiddlerObj, writeMode;
 						tiddlerObj = new tiddlerAPI.Tiddler(tid);
 						status ("before subst");
-						
+						tiddlerObj.copyCatModes(cat.modes);
 						tiddlerObj.setPageVars(pageData);
 						tiddlerObj.setTids(patterns[i],pageData);
 						if (tiddlerObj.hasMode("nontid")) {
@@ -475,7 +476,7 @@ tiddlyclip.modules.tPaste = (function () {
 			}
 			return tidimmdiate;
 		}
-		//remove next line - bj - it is already inside noSave()
+
 		if(hasMode(cat,"nosave")) return;
 		status ("before adding to tw");
 		var tidnames=[];
@@ -758,6 +759,17 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		} 
 		
 		return this;
+	}
+	
+	Tiddler.prototype.copyCatModes=function(modes) {
+		this.catModes = modes;
+	}
+
+	Tiddler.prototype.hasCatMode=function(mode){
+		if (!this.catModes) return false;
+		for (var i=0; i< this.catModes.length;i++)
+			if (mode === this.catModes[i]) return true;
+		return false;
 	}
 	
 	Tiddler.prototype.addMimeType=function(mime){
@@ -1099,14 +1111,22 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			if (!!key2) vals = toValues(key2.split(/\s*,\s*/));
 			else vals = null;
 			if (key1=="alertAll") {
-					alertAll.apply(null,vals);
-					return "all alerted";
+				alertAll.apply(null,vals);
+				return "all alerted";
 			}
 			try {
-				return tiddlyclip.macro[key1].apply(null,vals);
+				if (key1.charAt(0) === "_") throw ("invalid name");
+				tiddlyclip.setMacroInterface ({_s:function (x){return table[x];}, _hasGlobalSaver:!self.hasCatMode("nosave")});
+				return tiddlyclip.macro[key1].apply(tiddlyclip.macro,vals);
 			}
 			catch(e) {
-				alert (key1 + "marco not found");	
+				if (typeof e === "string" && e === "tcabort") {
+
+				} else {
+					alert (key1 + " marco not found");	
+					console.log(e);
+				} 
+				abort = true;
 			}
 /*
 			try {

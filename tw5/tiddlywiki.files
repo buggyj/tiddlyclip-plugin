@@ -118,6 +118,15 @@
 			}
 		},
 		{
+			"file": "userinput.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/userinput.js",
+				"tags":  "$:/tags/tiddlyclipparser",
+				"module-type": "library"
+			}
+		},
+		{
 			"file": "makejsontids.js",
 			"fields": {
 				"type": "application/javascript",

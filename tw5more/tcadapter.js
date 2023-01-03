@@ -250,7 +250,25 @@ if($tw.browser) {
         var tiddlerFieldsArray = [tidfields];					
 		this.caller.dispatchEvent({type: "tm-import-tiddlers", param: JSON.stringify(tiddlerFieldsArray)});	
 	}
-	tiddlyclip.macro={};
+	var doaction = function(action) {
+		if (this._hasGlobalSaver)	{
+			console.log("ignored, tc handles messages");
+			return "ignored, tc handles messages";
+		}
+		try{
+			tiddlyclip.caller.invokeActionString(action,tiddlyclip.caller, tiddlyclip.lastevent,{});
+		}catch(e){console.log(e)}
+		return "";
+	}
+	var _TextReference = function (str) {return $tw.wiki.getTextReference(str);}
+	
+	tiddlyclip.macro={doaction:doaction,_TextReference:_TextReference};
+
+	tiddlyclip.setMacroInterface = function (keys) {
+		for (var names in keys){ 
+			tiddlyclip.macro[names]=keys[names];	
+		}	
+	}
 	$tw.utils.each(
 		(function() {
 			return $tw.wiki.filterTiddlers("[all[shadows+tiddlers]tag[$:/tags/tiddlyclip]]");
@@ -258,8 +276,11 @@ if($tw.browser) {
 		function(title,index) {
 			try {
 				var func = require(title);
-				
-				tiddlyclip.macro[func.name]=func.run;
+				if (func.name.charAt(0) === '_') {
+					alert("tc: command name invalid" + title);
+				} else {
+					tiddlyclip.macro[func.name]=func.run;
+				}
 			} catch (e) {
 				alert("tc: problem with command " + title);
 			} 
@@ -273,9 +294,8 @@ if($tw.browser) {
 		function(title,index) {
 			try {
 				var func = require(title);
-				
 				tiddlyclip.oparser[func.symbol]=func.run;
-			} catch (e) {
+			} 	catch (e) {
 				alert("tc: problem with command " + title);
 			} 
 		}
