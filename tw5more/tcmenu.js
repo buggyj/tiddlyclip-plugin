@@ -238,5 +238,5 @@ console.log("refresh");
 
 };
 
-exports["testmenu"] = tcWidget;
+exports["tcmenu"] = tcWidget;
 })();
