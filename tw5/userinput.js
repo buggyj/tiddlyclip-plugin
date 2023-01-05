@@ -1,7 +1,7 @@
 exports.name ="userinput";
-exports.run  = function(prompt) {
+exports.run  = function(prompt,now) {
 
-	var res=window.prompt(prompt);
+	var now=now||"", res=window.prompt(prompt,now);
     if (res === null) {throw ("tcabort");}
    else return res;
 }

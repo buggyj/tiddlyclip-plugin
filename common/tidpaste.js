@@ -364,6 +364,7 @@ tiddlyclip.modules.tPaste = (function () {
 	function paste(catName,pageData, section, substitutionTiddler ,setCat)
 	{  
 		var cat, save =false;
+		try{
 		tiddlyclip.caller = this;
 		tiddlyclip.lastevent = pageData.e||null;
 		
@@ -490,6 +491,7 @@ tiddlyclip.modules.tPaste = (function () {
 		if(hasMode(cat,"nofin")) return;
 		if(hasMode(cat,"noautosave")) save = false;
 		twobj.finish(tidnames,save);
+		}catch (e) {console.log(e)}
 	}  
      
     function save(tiddlerObj) {
@@ -954,6 +956,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 	///////////////// parser implementation /////////////////
 	var error=function (message) {
 		 alert(message);
+		 throw ("tcexit");
 	}
 
     function setStatus(x) {
@@ -1083,13 +1086,26 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		//abort macro
 		return {result:source.replace(/@(.*)\(([\S\s]*?)\)/g,function(m,key1,key2,offset,str){
 			if (key1=="delete") {
+				if (!key2) {error("delete value not found")}
 				self.removeField(key2.substring(1));
 				return "deleted "+key2;
+			}
+			if (key1=="deletefield") {
+				var val2;
+				if (!key2 || valOf(key2, true) == null) {error("deletefield value not found")}
+				val2 = valOf(key2);
+				if (!table["$"][val2])  {error("deletefield value not found")}
+				self.removeField(val2); 
+				return "deletedfields "+val2;
 			}
 			if (key1=="abort") {
 				if (!key2) {abort=true;return null;} //empty params means abort whatever
 				if (valOf(key2, true) == null) {abort=true;return null;} //if val not exist abort
 				if (valOf(key2) === 'false'){abort=true;return null;}
+				return "";//otherwise just remove the abort() token
+			}
+			if (key1=="exit") {
+				if (!key2 || valOf(key2, true) == null || valOf(key2) === 'false'){throw ("tcexit");}
 				return "";//otherwise just remove the abort() token
 			}
 			if (key1=="exists") {
@@ -1116,15 +1132,27 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			}
 			try {
 				if (key1.charAt(0) === "_") throw ("invalid name");
-				tiddlyclip.setMacroInterface ({_s:function (x){return table[x];}, _hasGlobalSaver:!self.hasCatMode("nosave")});
+				tiddlyclip.setMacroInterface ({
+					_s				:function (x){return table[x];},
+					_hasGlobalSaver	:!self.hasCatMode("nosave"),
+					_caller			:tiddlyclip.caller,
+					_lastevent		:tiddlyclip.lastevent,
+					_deletefield	:function (field) {
+										if (!table["$"][field])  {error("deletefield value not found")}
+										self.removeField(field);
+									}
+				});
 				return tiddlyclip.macro[key1].apply(tiddlyclip.macro,vals);
 			}
 			catch(e) {
-				if (typeof e === "string" && e === "tcabort") {
-
+				if (typeof e === "string" && e === "tcexit") {
+					throw ("tcexit");
+				} else if (typeof e === "string" && e === "tcabort") {
+				//drop thru -  only ingore one line of substitutions
 				} else {
 					alert (key1 + " marco not found");	
 					console.log(e);
+					throw ("tcexit");
 				} 
 				abort = true;
 			}
