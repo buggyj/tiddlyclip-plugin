@@ -67,14 +67,16 @@ makeContextMenu.prototype.createMenuItem= function (item){
 	
 }
 
-makeContextMenu.prototype.createCategoryPopups= function (config, widget){
-		
+makeContextMenu.prototype.createCategoryPopups= function (config, widget, selectedtext){
+	var pagedata = Object.assign({}, widget.pagedata);
+	//replace data to stop caching of selectedtext
+	pagedata.data = Object.assign({}, pagedata.data);	
 	if (Object.keys(config).length >0) {
 
 		for(var m in config) {
 			var catsel = (function(x) {
 				return function(catname,e){
-					var pagedata = widget.pagedata;
+					if (selectedtext) pagedata.data.selectedtext = selectedtext;
 					pagedata.e=widget.event;
 					pagedata.data.category=catname;console.log(widget.contextconfig)
 					tiddlyclip.modules.tPaste.paste.call(widget,catname,pagedata,null,widget.contextconfig);
@@ -112,13 +114,12 @@ tcWidget.prototype = new Widget();
 Render this widget into the DOM
 */
 tcWidget.prototype.contextmenu = function (event) {
-	var menu;
-	this.pagedata.data.selectedtext = getSelection().toString();
+	var menu,selectedtext = getSelection().toString().trim();
 	var menuRoot = getContextMenuRoot();
 	//debounce when menu is showing
 	if (menuRoot.style.display === "block") return;
 	menu = new makeContextMenu();
-	menu.createCategoryPopups(this.activeCategories,this);
+	menu.createCategoryPopups(this.activeCategories,this,selectedtext);
 	menu.show();console.log("in contextmenu")
     this.event = event;
 	document.addEventListener('click', clickhandler);
@@ -180,10 +181,10 @@ tcWidget.prototype.loadSectionFromFile = function(activeSection) {
 			if (pieces.length < 5) {alert('config table format error no of row incorrect'); return;}
 			if (pieces[1].substring(0,1)==='!') continue; //first row is column headings
 			var catName = pieces[1]; 
-			var extratrans = catName.replace(/.*\{\{(.+)\}\}.*/,"$1").trim();
+			var extratrans = catName.replace(/.*\{\{(.+)\}\}.*/,"$1");
 			if (extratrans !== catName) { 
 				catName = catName.replace(/\{\{.+\}\}/,"");
-				cat.icon = $tw.wiki.getTiddlerText(extratrans);		
+				cat.icon = $tw.wiki.getTiddlerText(extratrans.trim());		
 			} 
 			else cat.icon = null;
 			if (pieces.length > 5) { //extension -remember that we expect a final blank piece and blank start piece;

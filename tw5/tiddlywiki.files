@@ -122,7 +122,34 @@
 			"fields": {
 				"type": "application/javascript",
 				"title": "$:/plugins/bj/tiddlyclip/userinput.js",
-				"tags":  "$:/tags/tiddlyclipparser",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
+			"file": "getlinktext.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/getlinktext.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
+			"file": "console.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/console.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
+			"file": "savetofiles.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/savetofiles.js",
+				"tags":  "$:/tags/tiddlyclip",
 				"module-type": "library"
 			}
 		},

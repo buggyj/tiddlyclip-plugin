@@ -1134,6 +1134,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 				if (key1.charAt(0) === "_") throw ("invalid name");
 				tiddlyclip.setMacroInterface ({
 					_s				:function (x){return table[x];},
+					_g				:function (x){return valOf(x);},
 					_hasGlobalSaver	:!self.hasCatMode("nosave"),
 					_caller			:tiddlyclip.caller,
 					_lastevent		:tiddlyclip.lastevent,
