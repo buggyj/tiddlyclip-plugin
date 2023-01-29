@@ -367,7 +367,7 @@ tiddlyclip.modules.tPaste = (function () {
 		try{
 		tiddlyclip.caller = this;
 		tiddlyclip.lastevent = pageData.e||null;
-		
+		twobj.tiddlers = [];//list of tids to store
 		status ("paste enter");
 		if (!setCat) {
 			if (substitutionTiddler) {
@@ -400,7 +400,6 @@ tiddlyclip.modules.tPaste = (function () {
 		status ("valid category");
 		//could check for type of cat.rules if function then run -- allows module plugin with Tw5
 		var cancelled = {val:false};
-		var tiddlers = [],tideditMode=[];//list of tids to store
 		var catTags = cat.tags;//main config tags 
 		var patterns = cat.rules;
 		var startrule=0;
@@ -427,12 +426,12 @@ tiddlyclip.modules.tPaste = (function () {
 				if (cancelled.val==true) {return;}
 				//if (pageData.data.WriteMode !="none") writeMode=pageData.data.WriteMode;
 				//add tiddlers one by one to our list of edits
-				tiddlers.push(tiddlerObj);
+				twobj.pushTiddler(tiddlerObj);
 
 				status ("after push to list");
 			}
 		} else { 
-			var tid;
+			var tid, hasfinalrule=-1, didOneShot=false;
 			for (tid=firstRemoteTid(pageData); hasNextRemoteTid(pageData);tid=nextRemoteTid(pageData)){
 				if (!hasMode(cat,"tiddlerscopy")) {
 					for(var i=startrule; i<patterns.length; i++)  {	
@@ -442,7 +441,24 @@ tiddlyclip.modules.tPaste = (function () {
 						tiddlerObj.copyCatModes(cat.modes);
 						tiddlerObj.setPageVars(pageData);
 						tiddlerObj.setTids(patterns[i],pageData);
-						if (tiddlerObj.hasMode("nontid")) {
+						if (tiddlerObj.hasMode("finally")) {
+							hasfinalrule=i;
+							continue;
+						}
+						if (tiddlerObj.hasMode("oneshot") && didOneShot ) {
+							continue;
+						}
+						if (tiddlerObj.hasMode("normal")||tiddlerObj.hasMode("oneshot")) {
+							tiddlerObj = new tiddlerAPI.Tiddler();
+							status ("reset for normal");
+							console.log ("reset for normal");
+							tiddlerObj.copyCatModes(cat.modes);
+							tiddlerObj.setPageVars(pageData);
+							tiddlerObj.setNormal(patterns[i],pageData);
+							if (tiddlerObj.hasMode("oneshot") && !didOneShot ) {
+								didOneShot=true;
+							}
+						} else if (tiddlerObj.hasMode("nontid")) {
 							tiddlerObj.fields={};
 							tiddlerObj.setPageVars(pageData);
 							tiddlerObj.setNormal(patterns[i],pageData);
@@ -455,7 +471,7 @@ tiddlyclip.modules.tPaste = (function () {
 						if (cancelled.val==true) {return;}
 						//if (pageData.data.WriteMode !="none") writeMode=pageData.data.WriteMode;
 						//add tiddlers one by one to our list of edits
-						tiddlers.push(tiddlerObj);
+						twobj.pushTiddler(tiddlerObj);
 
 						status ("after push to list");
 					}
@@ -464,16 +480,36 @@ tiddlyclip.modules.tPaste = (function () {
 					tiddlerObj=new tiddlerAPI.Tiddler(tid);
 					var writeMode;//no editmode
 					tiddlerObj.addTags(catTags);
-					tiddlers.push(tiddlerObj);
+					twobj.pushTiddler(tiddlerObj);
 				}
+			}
+			if (hasfinalrule>-1) {
+				var tiddlerObj, writeMode ,i=hasfinalrule;
+				tiddlerObj = new tiddlerAPI.Tiddler();
+				status ("final before subst");
+				tiddlerObj.copyCatModes(cat.modes);
+				tiddlerObj.setPageVars(pageData);
+				tiddlerObj.setNormal(patterns[i],pageData);
+				tiddlerObj.subst(patterns[i],pageData);
+
+				status ("final after subst");	
+				//tiddlerObj.text=userInput(tiddlerObj.text); //not used at present
+				tiddlerObj.addTags(catTags);
+				status ("final after addTags");
+				if (cancelled.val==true) {return;}
+				//if (pageData.data.WriteMode !="none") writeMode=pageData.data.WriteMode;
+				//add tiddlers one by one to our list of edits
+				twobj.pushTiddler(tiddlerObj);
+
+				status ("final after push to list");
 			}
 
 		}
 		if(hasMode(cat,"immediate")) {
 			status ("before immediate tids to tw");
 			var tidimmdiate=[];
-			for (var i =0; i< tiddlers.length; i++) {
-				tidimmdiate.push(twobj.immediatetids(tiddlers[i]));
+			for (var i =0; i< twobj.tiddlers.length; i++) {
+				tidimmdiate.push(twobj.immediatetids(twobj.tiddlers[i]));
 			}
 			return tidimmdiate;
 		}
@@ -481,12 +517,12 @@ tiddlyclip.modules.tPaste = (function () {
 		if(hasMode(cat,"nosave")) return;
 		status ("before adding to tw");
 		var tidnames=[];
-		for (var i =0; i< tiddlers.length; i++) {
-			if (!tiddlers[i].noSave()){
-				addTiddlerToTW(tiddlers[i]);
+		for (var i =0; i< twobj.tiddlers.length; i++) {
+			if (!twobj.tiddlers[i].noSave()){
+				addTiddlerToTW(twobj.tiddlers[i]);
 				save = true;
 			}
-			if(tiddlers[i].hasMode("open")) tidnames.push(tiddlers[i].fields.title);
+			if(twobj.tiddlers[i].hasMode("open")) tidnames.push(twobj.tiddlers[i].fields.title);
 		}
 		if(hasMode(cat,"nofin")) return;
 		if(hasMode(cat,"noautosave")) save = false;
@@ -512,12 +548,12 @@ tiddlyclip.modules.tPaste = (function () {
 
 		switch (tiddlerObj.getWriteMode()) {
 			case 'once':
-				var oldtid = twobj.getTiddler(tiddlerObj.fields.title);//retrieve existing version
+				var oldtid = tiddlyclip.getTiddler(tiddlerObj.fields.title);//retrieve existing version
 				if (!!oldtid) break;
 				save(tiddlerObj);
 				break;
 			case 'move':
-				var oldtid = twobj.getTiddler(tiddlerObj.fields.title);//retrieve existing version
+				var oldtid = tiddlyclip.getTiddler(tiddlerObj.fields.title);//retrieve existing version
 				if (!!oldtid)  {
 					oldtid.fields.title =oldtid.fields.title +'/'+ new Date();//move old tid by appending the date to its title
 					oldtid.modes = tiddlerObj.modes //need to know the save mode
@@ -545,12 +581,14 @@ tiddlyclip.modules.twobj = (function () {
 
 	var api = 
 	{
-		onLoad:onLoad, 			tiddlerExists:tiddlerExists,
-		modifyTW:modifyTW,		getTiddler:getTiddler,
+		onLoad:onLoad, 				tiddlerExists:tiddlerExists,
+		modifyTW:modifyTW,			getTiddler:getTiddler,
 		getTidContents:getTidContents,finish:finish,
-		importtids:importtids,	getNewTitle:getNewTitle,
-		getTidrules:getTidrules, getTiddlerData:getTiddlerData,
-		immediatetids:immediatetids,deleteTiddler:deleteTiddler
+		importtids:importtids,		getNewTitle:getNewTitle,
+		getTidrules:getTidrules,	getTiddlerData:getTiddlerData,
+		immediatetids:immediatetids,deleteTiddler:deleteTiddler,
+		tiddlers:null,				pushTiddler:pushTiddler,
+		inCache:inCache
 	}
 	var   tiddlerAPI;
 	function onLoad () {
@@ -578,13 +616,46 @@ tiddlyclip.modules.twobj = (function () {
 	function getNewTitle(tidname) {
 			return tiddlyclip.getNewTitle(tidname);
 	}
-	function getTiddler(tidname) {	
-		var storedTid=tiddlyclip.getTiddler(tidname);
+	function getTiddler(tidname,usecache) {	
+		var storedTid, found=false;
+		//console.log("tids no is "+api.tiddlers.length);
+		if (!!usecache) {
+			for (var i = 0; i < api.tiddlers.length; i++){
+				if (api.tiddlers[i].fields.title === tidname) {console.log("found in cache " +tidname);return api.tiddlers[i];}
+			}
+		}
+        console.log("not found incache "+tidname);
+		storedTid=tiddlyclip.getTiddler(tidname);
 		if (storedTid) {
 			return (new tiddlerAPI.Tiddler(storedTid,true));
 		}
 		else return null;
-	}		
+	}
+	
+	function pushTiddler(tid) {	
+		var found=false, tidname=tid.fields.title;
+		for (var i = 0; i < api.tiddlers.length; i++){
+			if (api.tiddlers[i].fields.title === tidname) {
+				console.log("foundpush "+tidname);
+				api.tiddlers[i]=tid;
+				found=true;
+				break;
+			}
+		}
+		if (!found) api.tiddlers.push(tid);
+	}
+	function inCache(tidname) {	
+		if (!tidname) return false;
+		for (var i = 0; i < api.tiddlers.length; i++){
+			if (api.tiddlers[i].fields.title === tidname) {
+				console.log("incache "+tidname);
+				return true;
+				break;
+			}
+		}
+		return false;
+	}
+		
 	function modifyTW(t)
 	{
 	    var fields={}; 
@@ -897,7 +968,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		table['#']={};		
 		//---next we need to find the modes before we can decide how to update
 		//-----1- does tiddler exist already?
-		var storedTid=twobj.getTiddler(title);
+		var storedTid=twobj.getTiddler(title,!this.hasCatMode('nocache'));
 		if (storedTid) {
 			storedTid.exportFieldsTo(table['$']);
 			table['@']['newtiddler']= 'false';
@@ -913,8 +984,8 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		table['$']={};
 
 		//---expose whether this is a new tiddler
-		if (this.hasMode('append')||this.hasMode('prepend')||this.hasMode('modify')) {
-			var storedTid=twobj.getTiddler(title);
+		if ((twobj.inCache(title) && !this.hasMode('nocache'))||this.hasMode('append')||this.hasMode('prepend')||this.hasMode('modify')) {
+			var storedTid=twobj.getTiddler(title,true);
 			if (storedTid) {
 				storedTid.exportFieldsTo(table['$']);
 				table['@']['newtiddler']= 'false';
@@ -1071,6 +1142,21 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 					 return null;
 		}	
 	}
+	function cloneTables(){
+		var clone = {'$':null,'@':null,'#':null,'%':null};
+		clone['$'] = Object.assign({}, table['$']);
+		clone['@'] = Object.assign({}, table['@']);
+		clone['#'] = Object.assign({}, table['#']);
+		clone['%'] = Object.assign({}, table['%']);
+		return clone;
+	}
+
+	function updateTables(newTabs){
+		for (var tabIndex in table) {console.log("tabIndex "+tabIndex);
+			for (var iStr in newTabs[tabIndex]) {console.log("iStr "+iStr);table[tabIndex][iStr]=newTabs[tabIndex][iStr]?newTabs[tabIndex][iStr].toString():null};
+		}
+	}
+		
 	 Tiddler.prototype.abort=function(source) {
 		if (/@abort\(/.test(source) ){ return true;}
 		return false;
@@ -1133,7 +1219,9 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			try {
 				if (key1.charAt(0) === "_") throw ("invalid name");
 				tiddlyclip.setMacroInterface ({
-					_s				:function (x){return table[x];},
+					_sAll			:updateTables,
+					_gAll			:cloneTables,
+					_s				:function (x,y,z){table[x][y]=toString(z);},
 					_g				:function (x){return valOf(x);},
 					_hasGlobalSaver	:!self.hasCatMode("nosave"),
 					_caller			:tiddlyclip.caller,

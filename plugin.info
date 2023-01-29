@@ -3,8 +3,9 @@
 	"description": "include web content",
 	"name": "tiddlyclip",
 	"author": "Jeffrey Wilkinson (aka BJ)",
-	"version": "02.1.04",
+	"version": "3.0.1",
 	"core-version": ">=5.2.1",
+	"plugin-priority": "2",
 	"source": "https://github.com/buggyj/tiddlyclip-plugin",
 	"plugin-type": "plugin",
 	"list": "readme LICENSE"
