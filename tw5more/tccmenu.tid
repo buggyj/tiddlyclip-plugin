@@ -1,0 +1,33 @@
+title: $:/bj/tccmenu/styles.css
+tags: $:/tags/Stylesheet
+
+.tccmenu {
+	padding: 0;
+	display: flex;
+	position: absolute;
+	flex-direction: column;
+	border: 1px solid <<colour dropdown-border>>;
+	background-color: <<colour dropdown-background>>;
+}
+
+.tccmenu > ul {
+	padding: 0;
+	margin: 2px 0;
+	list-style: none;
+}
+
+
+.tccmenu > ul > li > a {
+	border: 0;
+	display: flex;
+	position: relative;
+	padding: 2px 8px 2px 8px;
+	color: <<colour foreground>>;
+}
+
+.tccmenu > ul > li > a:hover {
+	fill: <<colour tiddler-link-background>>; 
+	color: <<colour tiddler-link-background>>; 
+	background: <<colour tiddler-link-foreground>>;
+}
+

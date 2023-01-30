@@ -19,7 +19,7 @@ var getContextMenuRoot = function() {
 		menuContext= document.createElement("div");
 		menuContext.style.display = "none";
 		menuContext.style.zIndex = "9999";
-		menuContext.className="context-menu";
+		menuContext.className="tccmenu";
 		menuContext.style.position = "absolute";
 		menuContext.setAttribute("id","tcContextMenu");
 		document.body.appendChild(menuContext);
@@ -67,14 +67,33 @@ makeContextMenu.prototype.createMenuItem= function (item){
 	
 }
 
-makeContextMenu.prototype.createCategoryPopups= function (config, widget, selectedtext){
+var hasMode = function  (cat,mode) {
+	if (!cat.modes) return false;
+		for (var i=0; i< cat.modes.length;i++)
+			if (mode === cat.modes[i]) return true;
+		return false;
+}
+	
+var includeNodeType = function (cat, nodeName) {
+	
+	if (hasMode (cat,"@link")) {
+		if (nodeName === "A" || nodeName === "a") return true;
+		return false;
+	}
+	if (hasMode (cat, "@notlink") && (nodeName === "A" || nodeName === "a")) return false;
+	return true;
+}
+
+makeContextMenu.prototype.createCategoryPopups= function (config, widget, selectedtext,e){
 	var pagedata = Object.assign({}, widget.pagedata);
 	//replace data to stop caching of selectedtext
 	pagedata.data = Object.assign({}, pagedata.data);	
 	if (Object.keys(config).length >0) {
 
 		for(var m in config) {
-			var catsel = (function(x) {
+			var catsel;
+			if (!includeNodeType(config[m],e.target.nodeName)) continue;
+			catsel = (function(x) {
 				return function(catname,e){
 					if (selectedtext) pagedata.data.selectedtext = selectedtext;
 					pagedata.e=widget.event;
@@ -118,10 +137,11 @@ tcWidget.prototype.contextmenu = function (event) {
 	var menuRoot = getContextMenuRoot();
 	//debounce when menu is showing
 	if (menuRoot.style.display === "block") return;
-	menu = new makeContextMenu();
-	menu.createCategoryPopups(this.activeCategories,this,selectedtext);
-	menu.show();console.log("in contextmenu")
     this.event = event;
+	menu = new makeContextMenu();
+	menu.createCategoryPopups(this.activeCategories,this,selectedtext,event);
+	menu.show();console.log("in contextmenu")
+
 	document.addEventListener('click', clickhandler);
 
 	event.preventDefault();
