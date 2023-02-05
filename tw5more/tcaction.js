@@ -38,7 +38,12 @@ ToDoWidget.prototype.execute = function() {
 	this.catname = this.getAttribute("$catname");
 	this.delay = this.getAttribute("$delay")||null;
 	this.delayms = this.getAttribute("$delayms")||null;
-	 if (this.delayms) {
+	this.filter = this.getAttribute("$filter")||null;
+	this.tag = this.getAttribute("$tag")||null;
+	if (this.tag) {
+		this.filter = "[tag["+this.tag+"]]";
+	}
+	if (this.delayms) {
 		this.delayms = parseInt(this.delayms);
 		if (isNaN(this.delayms)) { this.delayms = 0; }
 	}
@@ -70,6 +75,10 @@ ToDoWidget.prototype.invokeAction = function(triggeringWidget,event) {
 			pagedata.data[name] = attribute;
 		}
 	});
+	if (this.filter) {
+		pagedata.remoteTidArr = $tw.wiki.filterTiddlers(this.filter);
+		if (this.tag) pagedata.filterOnTag = this.tag;//maybe useful to know?
+	}
 	if (!this.sendmssg) {
 		pagedata.data.category=this.catname;
 		tiddlyclip.modules.tPaste.paste.call(this,this.catname,pagedata,null,this.tabletid);console.log("direct2 call");

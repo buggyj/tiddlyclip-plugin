@@ -434,9 +434,23 @@ tiddlyclip.modules.tPaste = (function () {
 			var tid, hasfinalrule=-1, didOneShot=false;
 			for (tid=firstRemoteTid(pageData); hasNextRemoteTid(pageData);tid=nextRemoteTid(pageData)){
 				if (!hasMode(cat,"tiddlerscopy")) {
+					var filterMode = hasModeBegining(cat,"tiddlerFilter"), filterMakeMode = hasMode(cat,"tiddlerFilterMake")
 					for(var i=startrule; i<patterns.length; i++)  {	
-						var tiddlerObj, writeMode;
-						tiddlerObj = new tiddlerAPI.Tiddler(tid);
+						var tiddlerObj, writeMode,existingTid = null;
+						if (filterMode) {// we have the name of a tid
+							existingTid = tiddlyclip.getTiddler(tid);
+							if (existingTid) {
+								tiddlerObj = new tiddlerAPI.Tiddler(existingTid,true);
+							} else { // create missing tid
+								if (filterMakeMode) {
+									tiddlerObj = new tiddlerAPI.Tiddler({fields:{title:tid}});
+								}
+								else throw ('non-existant tid');
+							}
+								
+						} else {
+							tiddlerObj = new tiddlerAPI.Tiddler(tid);//from browser addon etc
+						}
 						status ("before subst");
 						tiddlerObj.copyCatModes(cat.modes);
 						tiddlerObj.setPageVars(pageData);
@@ -557,7 +571,7 @@ tiddlyclip.modules.tPaste = (function () {
 				if (!!oldtid)  {
 					oldtid.fields.title =oldtid.fields.title +'/'+ new Date();//move old tid by appending the date to its title
 					oldtid.modes = tiddlerObj.modes //need to know the save mode
-					save(oldtid);//move out the way
+					save(oldtid);//move out the way//BJ this is a bug - save expects a tiddlerObj
 				}
 				save(tiddlerObj);
 				break;
@@ -777,7 +791,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 	function Tiddler(el,truetid) {
 		this.attribs = ["text"];
 		this.toRemove =[];
-		var current = this;
+		var current = this,el = el;
 		current.fields = {};
 		current.fields.text ="";
 		//current.fields.title ="";	
@@ -800,7 +814,6 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 					current.fields[atr]=el.fields[atr];
 					current.attribs.push(atr);		
 			}			
-
 		    this.fields.tags="";//BJ FIX remove or move to adapter
 		} else if (!truetid) {
 			if((typeof el) ==="string"){ 
@@ -822,6 +835,8 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 				this.fields[m] = undoHtmlEncode(v) ;
 			}
 		} else {
+			//if((typeof el) ==="string") {var name = el; el = $tw.wiki.getTiddler(el);}//passed in name of tiddler -BJ change $tw to tiddlyclip
+			//if (!el) console.log ("notid with name "+name);
 			for (var atr in el.fields){ 
 				current.fields[atr]=el.fields[atr];
 				current.attribs.push(atr);		
@@ -1182,7 +1197,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 				val2 = valOf(key2);
 				if (!table["$"][val2])  {error("deletefield value not found")}
 				self.removeField(val2); 
-				return "deletedfields "+val2;
+				return "deletedfields "+val2;//BJ - change to return true or false
 			}
 			if (key1=="abort") {
 				if (!key2) {abort=true;return null;} //empty params means abort whatever
