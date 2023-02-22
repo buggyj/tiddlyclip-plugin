@@ -112,11 +112,15 @@ tiddlyclip.modules.tPaste = (function () {
 
 	function setRules(cat)
 	{
-		var ruleDefs =  twobj.getTidContents(cat.title);
+		var ruleDefs;
+		if (!cat.title) {
+			return setSingleRule(cat);
+		}
+		ruleDefs =  twobj.getTidContents(cat.title);
 		//if rule is not found use the default rules
 		if (!ruleDefs) {
 			status ("rules not found for cat: "+category+" was "+cat.title);
-			ruleDefs = findDefaultRule(cat.tile);//BJ tile is not correct
+			ruleDefs = findDefaultRule(cat.title);//BJ tile is not correct
 			
 			}
 		if (!!ruleDefs)  {	
@@ -130,6 +134,22 @@ tiddlyclip.modules.tPaste = (function () {
 				return {valid:false};
 			}
 		}
+		status ("rules not found for cat: "+category);
+		return {valid:false}; 
+	}
+
+	function setSingleRule(cat) {
+		try {	
+			var rule = new Rule ({title:cat.tidtitle,InitVals:cat.doz,modes:"modify"});
+			cat.rules= [rule]; console.log(rule);
+			status("dofalse cat: ");
+			cat.valid =true;
+			return cat;
+		} catch(e) {
+			status("caught error while adding rules for cat: ");
+			return {valid:false};
+		}
+
 		status ("rules not found for cat: "+category);
 		return {valid:false}; 
 	}
@@ -271,13 +291,13 @@ tiddlyclip.modules.tPaste = (function () {
 			}
 		}	
 		else { // we are passed a structure
-			this.title =defRule.title;
-			this.body  =defRule.body;
-			this.tags  =defRule.tags;
-			this.fields ='';
-			this.InitVals="";	
-			this.modes = modes;	
-		}	
+			this.title ='[{"$title":"'+defRule.title+'"}]';
+			this.body  = '[{"#newdata":""}]';
+			this.tags  ='[]';
+			this.InitVals ='[]';
+			this.fields=twobj.getTidrules(defRule.InitVals);	
+			this.modes = '[{"#newdata":"'+defRule.modes+'"}]';
+		}
 	}
 
 	function userInput(source){ //replace  % delimited strings with user input

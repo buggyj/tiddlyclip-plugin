@@ -378,11 +378,14 @@ CreateTiddlerWidget.prototype.execute = function() {
 	this.tabletid = this.getAttribute("$tabletid");
 	this.catname = this.getAttribute("$catname");
 	this.cattid = this.getAttribute("$cattid");
+	this.doz = this.getAttribute("$do","");
+	this.title = this.getAttribute("$title","");
     this.localrefresh = [];
-	if ((this.tabletid && this.catname)||this.cattid) {
+	if ((this.tabletid && this.catname)||this.cattid||this.doz) {
 		var pagedata = {data:{}},cat,self = this;
 		$tw.utils.each(this.attributes,function(attribute,name) {
 			if(name.charAt(0) === "$") {
+				if(name !== "$catname") self.localrefresh.push(attribute);
 			} else if( name.length > 1 && name.charAt(0) === ":") {
 				var namepart=name.substring (1,name.length);
 				if (!tiddlyclip.getTiddler(attribute)) console.log ("refresh warning: tiddler in parameter does not exist"+attribute);
@@ -392,7 +395,10 @@ CreateTiddlerWidget.prototype.execute = function() {
 				pagedata.data[name] = attribute;
 			}
 		});
-		if (this.cattid) {
+		if (this.doz) {
+			cat = {tidtitle:this.title,doz:this.doz,modes:["immediate"]};
+		}
+		else if (this.cattid) {
 			cat = {title:this.cattid,modes:["immediate"]};
 		}
 		else {
@@ -401,7 +407,7 @@ CreateTiddlerWidget.prototype.execute = function() {
 			cat.modes=["immediate"];
 		}
 		pagedata.data.category=this.catname;
-		var temptids = tiddlyclip.modules.tPaste.paste.call(this, null,pagedata,null,null,cat);
+		var temptids = tiddlyclip.modules.tPaste.paste.call(this, null,pagedata,null,null,cat)||[];
 		for (var i =0; i< temptids.length; i++) {	
 			var title = temptids[i].title;
 			self.setVariable(title,temptids[i].text);	
