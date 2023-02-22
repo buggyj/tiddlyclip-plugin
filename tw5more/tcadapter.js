@@ -251,7 +251,7 @@ if($tw.browser) {
 		this.caller.dispatchEvent({type: "tm-import-tiddlers", param: JSON.stringify(tiddlerFieldsArray)});	
 	}
 	var doaction = function(action) {
-		if (this._hasGlobalSaver)	{
+		if (this._g("%$hasGlobalSaver") === 'true')	{
 			console.log("ignored, tc handles messages");
 			return "ignored, tc handles messages";
 		}
@@ -268,7 +268,10 @@ if($tw.browser) {
 		for (var names in keys){ 
 			tiddlyclip.macro[names]=keys[names];	
 		}	
+		tiddlyclip.macro["_caller"]	= function () {return tiddlyclip.caller};
+		tiddlyclip.macro["_lastevent"] = function () {return tiddlyclip.lastevent};
 	}
+	tiddlyclip.modules.tiddlerAPI.initJSinterface(tiddlyclip.setMacroInterface);
 	$tw.utils.each(
 		(function() {
 			return $tw.wiki.filterTiddlers("[all[shadows+tiddlers]tag[$:/tags/tiddlyclip]]");

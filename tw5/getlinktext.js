@@ -4,9 +4,10 @@ exports.run  = function(errorcode) {
 var onerror="tcabort";
 if (errorcode && errorcode==="exit") onerror = "tcexit";
 	try{
-		console.log(this._lastevent.target);
-		if (this._lastevent.target.nodeName !== "A" && this._lastevent.target.nodeName !== "a") throw ("not a link");
-		return this._lastevent.target.innerHTML;
+		var lastevent = this._lastevent();
+		console.log(lastevent.target);
+		if (lastevent.target.nodeName !== "A" && lastevent.target.nodeName !== "a") throw ("not a link");
+		return lastevent.target.innerHTML;
 	}catch(e){
 		console.log(e)
 		throw(onerror);
