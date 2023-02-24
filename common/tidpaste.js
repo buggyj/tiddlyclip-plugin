@@ -243,8 +243,7 @@ tiddlyclip.modules.tPaste = (function () {
 			modes = pieces[6];//raw modes
 			for (var i=1;i<7;i++) {
 				pieces[i]= pieces[i].replace("&bar;","|"); 
-				if (pieces[i] == null) {
-					if (i==1) throw new Error('Invlid Rule');//must define a name for the tid
+				if (pieces[i] == null && i !==1) {
 				} else 	if (i!=3 && isLinked.test(pieces[i])) { // -there is a definition in a seperated tiddler - go get it
 				    var temp=pieces[i].replace (/^\[\[([\s|\S]*)\]\]$/,"$1"); //remove  brackets
 						 temp =twobj.getTidrules(temp); //this.body contains the name of the tiddler
@@ -272,7 +271,7 @@ tiddlyclip.modules.tPaste = (function () {
 							}	
 					else if (i==1){
 						  if (pieces[i]) 	pieces[i] = '[{"$title":"'+pieces[i]+'"}]';
-						  else 				pieces[i] ='[]'; // don't modify/create
+						  else 				pieces[i] ='[{"$title":""}]'; // don't modify/create
 					   }  			
 				}
 			}
