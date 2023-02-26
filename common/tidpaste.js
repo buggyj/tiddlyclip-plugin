@@ -1126,7 +1126,10 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		if (type !== '#' &&type !=='$' && type !=='@'&& type !=='%') error("variable: invalid name "+n);
         else return {type:type, leftSide:n.substring(1)};
 	}
-	function valOf(n, test) {
+	function valOfxx(n, test) {
+		valOfBase(n, false, test);
+	 }
+	 function valOf(n, test) {
 		var val, type = n.substring(0,1);
 		if (type !== '#' &&type !=='$'&&type !=='@'&& type !=='%'){
 			if (!test) error("source: invalid name"+n);
@@ -1140,7 +1143,30 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			}
 			return val;
 		}
+	 }	 
+	 function valOfBase(n, extra, test) {
+		var val, type = n.substring(0,1);
+		if (type !== '#' &&type !=='$'&&type !=='@'&& type !=='%'){
+			if (extra) return n;
+			if (!test) error("source: invalid name"+n);
+			return null;
+		}
+		else {
+			val=table[type][n.substring(1)];
+			if (val == undefined) { 
+				if (!test)  error("source: invalid val "+n);
+				return null;
+			}
+			return val;
+		}
 	 }
+	function toValuesExtra(sources,test) {
+		var values = [], returned;
+		for (var i = 0 ; i < sources.length ;i++) {
+			if ((values[i]= valOfBase(sources[i],true,test))==null) return null;
+		}
+		return  values;
+	}
 	function toValues(sources,test) {
 		var values = [], returned;
 		for (var i = 0 ; i < sources.length ;i++) {
@@ -1252,6 +1278,17 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 	}
 	 Tiddler.prototype.handleFunction=function(source) {
 		var self = this, abort=false;
+		function parseParams(value) {
+			var param = /(?:^|[,])(?:\[\[(.*?)\]\])(?=[,]|$)|([^,]+)/mg,
+				parameters = [], match;
+			match = param.exec(value);
+			while(match) {
+				var item = match[1] || match[2];
+				if(item !== undefined) parameters.push(item);
+				match = param.exec(value);
+			} 
+			return parameters;
+		};	
 		function alertAll() {
 			var args = Array.prototype.slice.call(arguments);
 			args.unshift('alertAll');
@@ -1299,7 +1336,8 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 
 			//handle normal functions
 			var vals;
-			if (!!key2) vals = toValues(key2.split(/\s*,\s*/));
+			var params = parseParams(key2);
+			if (!!key2) vals = toValuesExtra(params);
 			else vals = null;
 			if (key1=="alertAll") {
 				alertAll.apply(null,vals);
