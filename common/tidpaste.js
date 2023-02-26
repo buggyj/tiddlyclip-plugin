@@ -1028,8 +1028,8 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		// guru meditation - surely for tid mode the tiddler already exists(filtermode - exists or will have been created by calling code) or will be imported (from addon)
 		table['#']={};	
 		this.exportFieldsTo(table['$']);
-		this.parseStructure(rule.title);
-		var title = table['$'].title;	
+		//this.parseStructure(rule.title);
+		//var title = table['$'].title;	
 
 		if (!options.externalTid) table['@']['$newtiddler']= (options && options.newTid)?"true":"false";
 		
