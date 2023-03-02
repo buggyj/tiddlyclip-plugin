@@ -1121,8 +1121,13 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 	}
 
 	function getSimpleVarFrom (n ) {
-		n = n.trim();
-		var type = n.substring(0,1);
+		var n = n.trim(),indexstr;
+		var type = n[0];
+		if (type === '@' && n[1] ==='(' && n[n.length-1] === ')') { //varible indirection
+			indexstr = n.substring(2,n.length-1);
+			n = valOf(indexstr);
+			type = n[0];
+		}
 		if (type !== '#' &&type !=='$' && type !=='@'&& type !=='%') error("variable: invalid name "+n);
         else return {type:type, leftSide:n.substring(1)};
 	}
@@ -1333,7 +1338,13 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 					alert(valOf(key2));
 				return "alerted";
 			}
-
+			if (key1=="expand") {
+				replaceOp= self.replaceALL(valOf(key2));
+				if (!replaceOp.abort) return replaceOp.result;
+			}
+			if (key1=="source") {
+				 return key2;
+			}
 			//handle normal functions
 			var vals;
 			var params = parseParams(key2);
