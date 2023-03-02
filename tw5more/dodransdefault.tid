@@ -1,0 +1,5 @@
+title: $:/plugins/bj/tiddlyclip/doTransDefault
+type: application/x-bclip
+
+$text=((*@expand(@text)*))
+$title=((*@title*))

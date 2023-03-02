@@ -65,7 +65,13 @@ function findCategory (tableOfCats, category) {
 /*
 Compute the internal state of the widget
 */
+
 CreateTiddlerWidget.prototype.execute = function() {
+	this.executeSelf();	
+	this.makeChildWidgets();
+}
+
+CreateTiddlerWidget.prototype.executeSelf = function() {
 	var self = this;
 	// Get our parameters here we could allow an module to modify the plugin
 	// Get the commands and place them in the tiddlyclip structure to expose them to the user
@@ -77,45 +83,43 @@ CreateTiddlerWidget.prototype.execute = function() {
 	this.doz = this.getAttribute("$do","");
 	this.title = this.getAttribute("$title","");
     this.localrefresh = [];
-	if ((this.tabletid && this.catname)||this.cattid||this.doz) {
-		var pagedata = {data:{}},cat,self = this;
-		$tw.utils.each(this.attributes,function(attribute,name) {
-			if(name.charAt(0) === "$") {
-				if(name !== "$catname") self.localrefresh.push(attribute);
-			} else if( name.length > 1 && name.charAt(0) === ":") {
-				var namepart=name.substring (1,name.length);
-				if (!tiddlyclip.getTiddler(attribute)) console.log ("refresh warning: tiddler in parameter does not exist"+attribute);
-				self.localrefresh.push(attribute);
-				pagedata.data[namepart] = attribute;
-			} else {
-				pagedata.data[name] = attribute;
-			}
-		});
-		if (this.doz) {
-			cat = {tidtitle:this.title,doz:this.doz,modes:["immediate"]};
+    if (!((this.tabletid && this.catname)||this.cattid||this.doz)) this.doz = "$:/plugins/bj/tiddlyclip/doTransDefault";
+    
+	var pagedata = {data:{}},cat,self = this;
+	$tw.utils.each(this.attributes,function(attribute,name) {
+		if(name.charAt(0) === "$") {
+			if(name !== "$catname") self.localrefresh.push(attribute);
+		} else if( name.length > 1 && name.charAt(0) === ":") {
+			var namepart=name.substring (1,name.length);
+			if (!tiddlyclip.getTiddler(attribute)) console.log ("refresh warning: tiddler in parameter does not exist"+attribute);
+			self.localrefresh.push(attribute);
+			pagedata.data[namepart] = attribute;
+		} else {
+			pagedata.data[name] = attribute;
 		}
-		else if (this.cattid) {
-			cat = {title:this.cattid,modes:["immediate"]};
-		}
-		else {
-			cat = findCategory(tiddlyclip.getTidContents(this.tabletid),this.catname);//extract cat from table and make it 'immediate' only 
-			if (!cat.valid){alert("cat rule not found"); return;}
-			cat.modes=["immediate"];
-		}
-		pagedata.data.category=this.catname;
-		var temptids = tiddlyclip.modules.tPaste.paste.call(this, null,pagedata,null,null,cat)||[];
-		for (var i =0; i< temptids.length; i++) {	
-			var title = temptids[i].title;
-			self.setVariable(title,temptids[i].text);	
-			$tw.utils.each(temptids[i],function(val,key) {
-				//build tiddler field references 
-				var newkey = title+'!!'+key;
-				self.setVariable(newkey,val);
-			});
-		}
+	});
+	if (this.doz) {
+		cat = {tidtitle:this.title,doz:this.doz,modes:["immediate"]};
 	}
-
-	this.makeChildWidgets();
+	else if (this.cattid) {
+		cat = {title:this.cattid,modes:["immediate"]};
+	}
+	else {
+		cat = findCategory(tiddlyclip.getTidContents(this.tabletid),this.catname);//extract cat from table and make it 'immediate' only 
+		if (!cat.valid){alert("cat rule not found"); return;}
+		cat.modes=["immediate"];
+	}
+	pagedata.data.category=this.catname;
+	var temptids = tiddlyclip.modules.tPaste.paste.call(this, null,pagedata,null,null,cat)||[];
+	for (var i =0; i< temptids.length; i++) {	
+		var title = temptids[i].title;
+		self.setVariable(title,temptids[i].text);	
+		$tw.utils.each(temptids[i],function(val,key) {
+			//build tiddler field references 
+			var newkey = title+'!!'+key;
+			self.setVariable(newkey,val);
+		});
+	}
 };
 
 function settimers (delay, callback) {
@@ -155,11 +159,13 @@ Selectively refreshes the widget if needed. Returns true if the widget or any of
 CreateTiddlerWidget.prototype.refresh = function(changedTiddlers) {
 	var changedAttributes = this.computeAttributes();
 	if(Object.keys(changedAttributes).length) {
+		//this.executeSelf();
 		this.refreshSelf();
 		return true;
 	}
     for (var atr in changedTiddlers){
         if (this.localrefresh.indexOf(atr) !== -1) {
+            //this.executeSelf();
             this.refreshSelf();
             return true;
         }
