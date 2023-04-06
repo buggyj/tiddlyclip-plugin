@@ -82,6 +82,7 @@ CreateTiddlerWidget.prototype.executeSelf = function() {
 	this.cattid = this.getAttribute("$cattid");
 	this.doz = this.getAttribute("$do","");
 	this.title = this.getAttribute("$title","");
+	this.doRefreshShself = this.getAttribute("$refreshself","yes");//This may not work well if it is dynamically changed - prob. won't be
     this.localrefresh = [];
     if (!((this.tabletid && this.catname)||this.cattid||this.doz)) this.doz = "$:/plugins/bj/tiddlyclip/doTransDefault";
     
@@ -159,15 +160,22 @@ Selectively refreshes the widget if needed. Returns true if the widget or any of
 CreateTiddlerWidget.prototype.refresh = function(changedTiddlers) {
 	var changedAttributes = this.computeAttributes();
 	if(Object.keys(changedAttributes).length) {
-		//this.executeSelf();
-		this.refreshSelf();
-		return true;
+		if (doRefreshShself === 'yes') {
+			this.refreshSelf();
+			return true;
+		}
+		else this.executeSelf();
 	}
     for (var atr in changedTiddlers){
+		//compare with parameters that can be refreshed
         if (this.localrefresh.indexOf(atr) !== -1) {
-            //this.executeSelf();
-            this.refreshSelf();
-            return true;
+            if (doRefreshShself === 'yes') {
+				this.refreshSelf();
+				return true;
+			} else {
+				this.executeSelf();
+				break;
+			}
         }
     }
 	return this.refreshChildren(changedTiddlers);
