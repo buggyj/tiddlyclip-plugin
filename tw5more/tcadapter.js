@@ -56,6 +56,8 @@ if($tw.browser) {
 
 	tiddlyclip.defs = {
 	}
+	tiddlyclip.parseStringArray = $tw.utils.parseStringArray;
+	
 	tiddlyclip.getMultiTidTitle = function(title) {
 		var p = title.indexOf("->"), container, tid;
 		if(p !== -1 && title.substr(0, 8) !== "Draft of") {
@@ -262,7 +264,11 @@ if($tw.browser) {
 	}
 	var _TextReference = function (str) {return $tw.wiki.getTextReference(str);}
 	
-	tiddlyclip.macro={doaction:doaction,_TextReference:_TextReference};
+	tiddlyclip.macro = {
+		doaction:doaction,
+		_TextReference:_TextReference,
+		_parseStringArray:tiddlyclip.parseStringArray
+	};
 
 	tiddlyclip.setMacroInterface = function (keys) {
 		for (var names in keys){ 

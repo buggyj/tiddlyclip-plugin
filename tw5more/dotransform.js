@@ -160,7 +160,7 @@ Selectively refreshes the widget if needed. Returns true if the widget or any of
 CreateTiddlerWidget.prototype.refresh = function(changedTiddlers) {
 	var changedAttributes = this.computeAttributes();
 	if(Object.keys(changedAttributes).length) {
-		if (doRefreshShself === 'yes') {
+		if (this.doRefreshShself === 'yes') {
 			this.refreshSelf();
 			return true;
 		}
@@ -169,7 +169,7 @@ CreateTiddlerWidget.prototype.refresh = function(changedTiddlers) {
     for (var atr in changedTiddlers){
 		//compare with parameters that can be refreshed
         if (this.localrefresh.indexOf(atr) !== -1) {
-            if (doRefreshShself === 'yes') {
+            if (this.doRefreshShself === 'yes') {
 				this.refreshSelf();
 				return true;
 			} else {

@@ -15,10 +15,12 @@ var x, contents = str.replace(/\{\{(.+)\}\}/,"$1").trim();
 };
 
 var compute = function (str, widget) {
-    var x, subtid = str.split('->');
+    var x, subtid = str.split('->'),subfld;
     if (subtid.length ===2) {
-        x=widget.wiki.getSubTiddler(subtid [0],subtid [1]);console.log(JSON.stringify(x));
-        return x? (x.fields.text) : "";
+        subfld=$tw.utils.parseTextReference(subtid[1]);
+        x=widget.wiki.getSubTiddler(subtid[0],subfld.title);
+        if (!subfld.field) return "";
+        return x? (x.getFieldString(subfld.field)): "";
     };
 	return widget.wiki.getTextReference(str);
 }

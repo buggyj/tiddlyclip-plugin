@@ -293,7 +293,7 @@ tiddlyclip.modules.tPaste = (function () {
 			this.title ='[{"$title":"'+defRule.title+'"}]';
 			this.body  = '[{"#newdata":""}]';
 			this.tags  ='[]';
-			this.InitVals ='[]';
+			this.InitVals ='[]';//bj this look wrong - initvals are used next??
 			this.fields=twobj.getTidrules(defRule.InitVals);	
 			this.modes = '[{"#newdata":"'+defRule.modes+'"}]';
 		}
@@ -806,27 +806,8 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 	function removeDuplicates(names) {
 		var i,j,dup,nams = []; 
 
-		// Parse a string array from a bracketted list. For example "OneTiddler [[Another Tiddler]] LastOne"
-		var parseStringArray = function(value) {
-			if(typeof value === "string") {
-				var memberRegExp = /(?:^|[^\S\xA0])(?:\[\[(.*?)\]\])(?=[^\S\xA0]|$)|([\S\xA0]+)/mg,
-					results = [],
-					match;
-				do {
-					match = memberRegExp.exec(value);
-					if(match) {
-						var item = match[1] || match[2];
-						if(item !== undefined && results.indexOf(item) === -1) {
-							results.push(item);
-						}
-					}
-				} while(match);
-				return results;
-			} else {
-				return null;
-			}
-		};
-		nlist = parseStringArray(names);
+
+		nlist = tiddlyclip.parseStringArray(names);
 		/*
 		for ( i=0; i < nlist.length; i++)
 			nlist[i] = nlist[i].trim();
@@ -846,6 +827,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 	
 	function initJSinterface(callback) {
 		callback ({
+		_encodeTiddlyLinkList:encodeTiddlyLinkList,
 		_sAll			:updateTables,
 		_gAll			:cloneTables,
 		_s				:function (x,y,z){table[x][y]=toString(z);},
@@ -1069,7 +1051,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		table['$']={};
 		//**  stage 2. guru meditation - why is $ table reloaded???
 		//---expose whether this is a new tiddler
-		if ((twobj.inCache(title) && !this.hasMode('nocache'))||this.hasMode('append')||this.hasMode('prepend')||this.hasMode('modify')) {
+		if (this.hasMode('append')||this.hasMode('prepend')||this.hasMode('modify')||(twobj.inCache(title) && !this.hasMode('nocache'))) {
 			var storedTid=twobj.getTiddler(title,true);
 			if (storedTid) {
 				storedTid.exportFieldsTo(table['$']);
@@ -1104,7 +1086,6 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 
 		table['#']={};
 		//what is this for ----table['@'].fields=table['$'];
-		//** (A2)after final stage. add this to documenation
 		if (table['@']['#nofieldupdates'] !=='true') this.parseStructure(rule.fields);
 		//---move data from parser table into tiddler
 		this.applyEdits(table['$']);
