@@ -3,7 +3,7 @@
 	"description": "include web content",
 	"name": "tiddlyclip",
 	"author": "Jeffrey Wilkinson (aka BJ)",
-	"version": "3.0.6test",
+	"version": "3.0.6testb",
 	"core-version": ">=5.2.1",
 	"plugin-priority": "2",
 	"source": "https://github.com/buggyj/tiddlyclip-plugin",

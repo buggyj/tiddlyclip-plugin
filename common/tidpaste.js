@@ -7,7 +7,7 @@ var log = function (x) {
 	alert(x);
 }
 	function status (param) {
-		tiddlyclip.log(param);
+		console.log(param);
 		}
 if (true) {
 
@@ -141,7 +141,7 @@ tiddlyclip.modules.tPaste = (function () {
 	function setSingleRule(cat) {
 		try {	
 			var rule = new Rule ({title:cat.tidtitle,InitVals:cat.doz,modes:"modify"});
-			cat.rules= [rule]; console.log(rule);
+			cat.rules= [rule]; 
 			status("dofalse cat: ");
 			cat.valid =true;
 			return cat;
@@ -285,7 +285,7 @@ tiddlyclip.modules.tPaste = (function () {
 				tList = modes.split(' ');//raw modes
 				for (var i=0; i< tList.length; i++) {
 					if (tList[i].trim()==="final") {this.final = "final"} //used with filterlist
-					if (tList[i].trim()==="onshot") {this.onshot = "oneshot"}//used with filterlist
+					if (tList[i].trim()==="oneshot") {this.oneshot = "oneshot"}//used with filterlist
 				}
 			}
 		}	
@@ -522,7 +522,6 @@ tiddlyclip.modules.tPaste = (function () {
 						if (tiddlerObj.hasMode("normal")||tiddlerObj.hasMode("oneshot")) {
 							tiddlerObj = new tiddlerAPI.Tiddler();
 							status ("reset for normal");
-							console.log ("reset for normal");
 							tiddlerObj.copyCatModes(cat.modes);
 							tiddlerObj.setPageVars(pageData);
 							tiddlerObj.setNormal(rules[i],fromaddon);
@@ -586,6 +585,7 @@ tiddlyclip.modules.tPaste = (function () {
 		var tidnames=[];
 		for (var i =0; i< twobj.tiddlers.length; i++) {
 			if (!twobj.tiddlers[i].noSave()){
+				twobj.tiddlers[i].deHydrate();
 				addTiddlerToTW(twobj.tiddlers[i]);
 				save = true;
 			}
@@ -683,48 +683,117 @@ tiddlyclip.modules.twobj = (function () {
 	function getNewTitle(tidname) {
 			return tiddlyclip.getNewTitle(tidname);
 	}
-	function getTiddler(tidname,usecache) {	
-		var storedTid, found=false;
+	function getTiddler(tidRefName,usecache) {	
+		var storedTid, found=false, tidname = tidRefName, tid, simple = true, subtid = null;
+		var tiddler = tiddlyclip.getMultiTidTitle(tidname);
+		if(tiddler.container) {
+			tidname = tiddler.container;
+			subtid = tiddler.title;
+			simple = false;
+		}
 		//console.log("tids no is "+api.tiddlers.length);
 		if (!!usecache) {
 			for (var i = 0; i < api.tiddlers.length; i++){
 				if (api.tiddlers[i].fields.title === tidname) {
-					console.log("found in cache " +tidname);
-					return api.tiddlers[i];
+					status("found in cache " +tidname);
+					if (simple) return api.tiddlers[i];
+					
+					//// look for subtid
+
+					tid = api.tiddlers[i].getSubTid(subtid);
+					if (tid) {
+						//put text ref as name
+						tid.fields.title = tidRefName;
+						status("subtid found in cache " +tidRefName);
+						return tid;
+					}
+					break; //subtid not found in cached parent tiddler
 				}
 			}
 		}
-		//console.log("not found in cache " +tidname);
-		storedTid=tiddlyclip.getTiddler(tidname);
+		status("not found in cache " + tidRefName);
+		storedTid=tiddlyclip.getTiddler(tidRefName);//get external tid
 		if (storedTid) {
-			return (new tiddlerAPI.Tiddler(storedTid,true));
+			var tid;
+			if (!subtid) return (new tiddlerAPI.Tiddler(storedTid,true));//make internal version
+			tid= new tiddlerAPI.Tiddler(storedTid,true);
+			tid.fields.title = tidRefName;
+			return tid;
 		}
-		else return null;
+		return null;
 	}
 	
 	function pushTiddler(tid) {	
-		var found=false, tidname=tid.fields.title;
+		var tiddlerMultiTitle, storedTid, found=false, tidname=tid.fields.title, simple = true, subtid = null;
 		if (!tidname) return;
+		tiddlerMultiTitle = tiddlyclip.getMultiTidTitle(tidname);
+		if(tiddlerMultiTitle.container) {
+			tidname = tiddlerMultiTitle.container;
+			subtid = tiddlerMultiTitle.title;
+			simple = false;
+		}
 		for (var i = 0; i < api.tiddlers.length; i++){
 			if (api.tiddlers[i].fields.title === tidname) {
-				console.log("foundpush "+tidname);
-				api.tiddlers[i]=tid;
-				found=true;
-				break;
+				status("foundpush "+tidname);
+				if (simple) {// but could be a plugin
+					// check to see if it has modified sub tids
+					var theSubTids = api.tiddlers[i].tiddlers;
+					api.tiddlers[i]=tid;
+					if (!!theSubTids) api.tiddlers[i].tiddlers = theSubTids
+					return;
+				}
+				else {
+					tid.fields.title = subtid;
+					api.tiddlers[i].putSubTid(tid);
+					return;
+				}
+			}
+		}
+		//not in cache - add
+		if (simple) {
+			api.tiddlers.push(tid);
+			return
+		}
+		//the 'plugin' (parent) of the tiddler is not in cache then load it!
+		storedTid = tiddlyclip.getSimpleTiddler(tidname);
+		if (storedTid) tiddler = new tiddlerAPI.Tiddler(storedTid,true);
+		else {//create new parent tid
+			var initVals = {text:{tiddlers:{}}, title:tidname, "plugin-type":""};
+			tiddler = new tiddlerAPI.Tiddler(initVals,true);
+		}
+		status("subpush " + subtid + " parent " +tidname);
+		tid.fields.title = subtid;
+		tiddler.putSubTid(tid);
+		api.tiddlers.push(tiddler);
+	}
+	function inCache(tidRefName) {	
+		
+		var storedTid, tiddler, found=false, tidname = tidRefName, tid, simple = true, subtid = null;
+		if (!tidRefName) return false;
+		tiddler = tiddlyclip.getMultiTidTitle(tidname);
+		if(tiddler.container) {
+			tidname = tiddler.container;
+			subtid = tiddler.title;
+			simple = false;
+		}
+		//console.log("tids no is "+api.tiddlers.length);
+
+		for (var i = 0; i < api.tiddlers.length; i++){
+			if (api.tiddlers[i].fields.title === tidname) {
+				status("found in cache " +tidname);
+				if (simple) return true;
+				
+				//// look for subtid
+
+				tid = api.tiddlers[i].getSubTid(subtid);
+				if (tid) {
+					return true;
+				}
+				break; //subtid not found in cached parent tiddler
 			}
 		}
 
-		if (!found) api.tiddlers.push(tid);
-	}
-	function inCache(tidname) {	
-		if (!tidname) return false;
-		for (var i = 0; i < api.tiddlers.length; i++){
-			if (api.tiddlers[i].fields.title === tidname) {
-				console.log("incache "+tidname);
-				return true;
-				break;
-			}
-		}
+		status("not found in cache SEARCH " + tidRefName);
 		return false;
 	}
 		
@@ -894,7 +963,45 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		
 		return this;
 	}
-	
+
+
+	Tiddler.prototype.getSubTid=function(subtidTitle) {
+		if (this.tiddlers && this.tiddlers[subtidTitle]) return this.tiddlers[subtidTitle];
+		try {
+			var subtid = (JSON.parse(this.fields.text)).tiddlers[subtidTitle];
+			if (!!subtid) return new Tiddler(subtid);
+			return null;
+		} catch (e) {
+			return null;
+		}
+	}
+
+	Tiddler.prototype.putSubTid=function(subtid) {
+		status("putSubTid "+subtid.fields.title);
+		if (!this.tiddlers) this.tiddlers = {};
+		this.tiddlers[subtid.fields.title] = subtid;
+	}
+
+	Tiddler.prototype.deHydrate=function() {
+		var oldtids,tid;
+		if (this.tiddlers) {
+			try {oldtids = (JSON.parse(this.fields.text)).tiddlers;} 
+			catch (e){
+				oldtids = {}
+			}
+		} else { 
+			return;//no new or updated subtids
+		} 
+		status("deHydrate"); 
+		//add updated and new tids
+		for (tid in this.tiddlers) {
+			oldtids[this.tiddlers[tid].fields.title] = this.tiddlers[tid].fields;
+		}
+		this.fields.text = JSON.stringify({tiddlers:oldtids});
+	}
+
+
+
 	Tiddler.prototype.copyCatModes=function(modes) {
 		this.catModes = modes;
 	}
@@ -933,7 +1040,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 	}
 
 	Tiddler.prototype.applyEdits = function(fields) {
-		this.fields = [];
+		this.fields = {};
 		if (!fields.title || fields.title === "") return;
 		for (var i in fields){				
 			this.fields[i] = fields[i];

@@ -211,7 +211,11 @@ if($tw.browser) {
 			current.fields[atr]=tid.getFieldString(atr);	
 		}
 		return current;	
-	}	
+	}
+
+	tiddlyclip.getSimpleTiddler = function (title) {
+		return $tw.wiki.getTiddler(title);
+	}
 	tiddlyclip.finish=function (tids,save) {
 		for (var i = 0; i < tids.length; i++){
 			 this.caller.dispatchEvent({type: "tm-navigate", navigateTo:tids[i]});
