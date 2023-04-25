@@ -165,7 +165,13 @@ if($tw.browser) {
 
 	
 	tiddlyclip.getTidrules= function(tidname) {
-		var tiddler = this.getMultiTidTitle(tidname), data;
+		var tiddler, data;
+		if (Array.isArray(tidname)) { 
+			console.log("string rule is"+JSON.stringify(this.parseListField(tidname[0])));
+;			return JSON.stringify(this.parseListField(tidname[0]));
+		}
+		console.log("named rule");
+		tiddler = this.getMultiTidTitle(tidname);
 		if(tiddler.container) {
 			tiddler = $tw.wiki.getSubTiddler(tiddler.container,tiddler.title);
 		} else {
@@ -261,9 +267,12 @@ if($tw.browser) {
 			console.log("ignored, tc handles messages");
 			return "ignored, tc handles messages";
 		}
-		try{
-			tiddlyclip.caller.invokeActionString(action,tiddlyclip.caller, tiddlyclip.lastevent,{});
-		}catch(e){console.log(e)}
+		//maybe this should also work with node?
+		window.setTimeout(function () {
+			try{
+				tiddlyclip.caller.invokeActionString(action,tiddlyclip.caller, tiddlyclip.lastevent,{});
+			}catch(e){console.log(e)}
+		},0);
 		return "";
 	}
 	var _TextReference = function (str) {return $tw.wiki.getTextReference(str);}

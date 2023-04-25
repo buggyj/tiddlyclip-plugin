@@ -140,7 +140,7 @@ tiddlyclip.modules.tPaste = (function () {
 
 	function setSingleRule(cat) {
 		try {	
-			var rule = new Rule ({title:cat.tidtitle,InitVals:cat.doz,modes:"modify"});
+			var rule = new Rule ({title:cat.tidtitle,fields:cat.doz,modes:"modify"});
 			cat.rules= [rule]; 
 			status("dofalse cat: ");
 			cat.valid =true;
@@ -294,7 +294,7 @@ tiddlyclip.modules.tPaste = (function () {
 			this.body  = '[{"#newdata":""}]';
 			this.tags  ='[]';
 			this.InitVals ='[]';//bj this look wrong - initvals are used next??
-			this.fields=twobj.getTidrules(defRule.InitVals);	
+			this.fields=twobj.getTidrules(defRule.fields);	
 			this.modes = '[{"#newdata":"'+defRule.modes+'"}]';
 		}
 	}

@@ -161,6 +161,42 @@
 				"tags":  "$:/tags/tiddlyclip",
 				"module-type": "library"
 			}
+		},
+		{
+			"file": "runfilter.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/runfilter.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
+			"file": "tocommas.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/tocommas.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
+			"file": "headlist.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/headlist.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
+			"file": "newtitleplusplus.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/newtitleplusplus.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
 		}
 	]
 }

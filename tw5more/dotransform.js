@@ -81,6 +81,7 @@ CreateTiddlerWidget.prototype.executeSelf = function() {
 	this.catname = this.getAttribute("$catname");
 	this.cattid = this.getAttribute("$cattid");
 	this.doz = this.getAttribute("$do","");
+	if (this.doz === "") this.doz = [this.getAttribute("$doThis","")];
 	this.title = this.getAttribute("$title","");
 	this.doRefreshShself = this.getAttribute("$refreshself","yes");//This may not work well if it is dynamically changed - prob. won't be
     this.localrefresh = [];
