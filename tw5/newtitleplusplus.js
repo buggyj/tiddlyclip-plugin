@@ -6,7 +6,7 @@ exports.run  = function(baseTitle,suffix) {
              baseTitle = baseTitle.slice(0, -suffix.length);
              append = suffix;
         }
-		s = baseTitle.search(/[0-9]+(?![^0-9]+)/g);
+		s = baseTitle.search(/[0-9]+$/);
 		if (s != -1) {
 			c = 1 + parseInt(baseTitle.substring(s)); 
 			baseTitle = baseTitle.substring(0,s);

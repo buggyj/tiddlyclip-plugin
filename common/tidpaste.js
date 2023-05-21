@@ -1293,7 +1293,15 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 					var parser = tiddlyclip.oparser[rightSide.parser];
 					if (parser) {
 						replaceOp= this.replaceALL(rightSide.text);
-						if (!replaceOp.abort) rightSide =  this.replaceALL(parser (replaceOp.result)).result;
+						if (!replaceOp.abort) {
+							try {
+								value = parser (replaceOp.result);
+							} catch (e) {
+								moreThanOne++;
+								break;								
+							}
+							rightSide =  this.replaceALL(value).result;
+						}
 						else  {
 							moreThanOne++;
 							break;
