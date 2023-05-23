@@ -1535,7 +1535,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 				if ((vals = toValues(parts)) == null) return m;
 				var regParts = (valOf(parts[1]));
 				var regexBody = regParts.replace(/\/([\s\S]*)\/.*$/,"$1");
-				var regexflags = regParts.replace(/.*\/(.*?)$/,"$1");
+				var regexflags = regParts.replace(/[\s\S]*\/(.*?)$/,"$1");
 				var pattern=new RegExp(regexBody,regexflags);
 				setStatus(null);
 			return vals[0].replace(pattern, function(match){setStatus("r"); return match.replace(new RegExp(regexBody,regexflags), vals[2]);});
