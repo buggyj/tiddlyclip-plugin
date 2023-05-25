@@ -1405,9 +1405,9 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			}
 			if (key1=="deletefield") {
 				var val2;
-				if (!key2 || valOf(key2, true) == null) {error("deletefield key not found");return ""}
+				if (!key2 || valOf(key2, true) == null) {return ""}
 				val2 = valOf(key2);
-				if (!table["$"][val2])  {error("deletefield value not found"); return ""}
+				if (!table["$"][val2])  {return ""}
 				delete table["$"][val2]; 
 				return "true";
 			}
