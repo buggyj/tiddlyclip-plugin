@@ -88,7 +88,7 @@ ToDoWidget.prototype.invokeAction = function(triggeringWidget,event) {
 												localsection:self.tabletid, delay:self.delay});console.log("delay call")},this.delayms);
 	} else {
 		pagedata.data.category=this.catname;
-		self.dispatchEvent({type: "tiddlyclip-create", category:this.catname, pagedata: pagedata, currentsection:null, localsection:this.tabletid, delay:this.delay});console.log("message2 call");
+		self.dispatchEvent({type: "tiddlyclip-create", category:this.catname, pagedata: pagedata, currentsection:null, localsection:this.tabletid, delay:this.delay});//console.log("message2 call");
 	}
 	return true; // Action was invoked
 };

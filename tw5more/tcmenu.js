@@ -97,7 +97,7 @@ makeContextMenu.prototype.createCategoryPopups= function (config, widget, select
 				return function(catname,e){
 					if (selectedtext) pagedata.data.selectedtext = selectedtext;
 					pagedata.e=widget.event;
-					pagedata.data.category=catname;console.log(widget.contextconfig)
+					pagedata.data.category=catname;//console.log(widget.contextconfig)
 					tiddlyclip.modules.tPaste.paste.call(widget,catname,pagedata,null,widget.contextconfig);
 				};
 			})(m);
@@ -140,7 +140,7 @@ tcWidget.prototype.contextmenu = function (event) {
     this.event = event;
 	menu = new makeContextMenu();
 	menu.createCategoryPopups(this.activeCategories,this,selectedtext,event);
-	menu.show();console.log("in contextmenu")
+	menu.show();//console.log("in contextmenu")
 
 	document.addEventListener('click', clickhandler);
 
@@ -193,7 +193,7 @@ tcWidget.prototype.loadSectionFromFile = function(activeSection) {
 		var categoryRows = table.split("\n");
 		var cat = {};
 		var tagsAndModes;
-		var pieces;console.log("estrart");
+		var pieces;//console.log("estrart");
 		for (var i=0; i<categoryRows.length; i++) {
 			cat = {rules:null,valid:true};
 			pieces = categoryRows[i].split("|");// form |Category|Tip|Tags|Rules Tid|Modes|
@@ -248,7 +248,7 @@ this.loadSectionFromFile(0);
 Selectively refreshes the widget if needed. Returns true if the widget or any of its children needed re-rendering
 */
 tcWidget.prototype.refresh = function(changedTiddlers) {
-console.log("refresh");
+//console.log("refresh");
 	var menuRoot = getContextMenuRoot();
 	if (menuRoot.style.display !== "none"){
 		document.removeEventListener('contextmenu', clickhandler2);//console.log("aremvoed handle2");

@@ -4,10 +4,10 @@ tiddlyclip={hello:"hello"};
 tiddlyclip.modules={};
  
 var log = function (x) {
-	alert(x);
+	//alert(x);
 }
 	function status (param) {
-		console.log(param);
+		//console.log(param);
 		}
 if (true) {
 
@@ -514,10 +514,10 @@ tiddlyclip.modules.tPaste = (function () {
 						//and not create tiddlerObj un-neccessarily -but what about 'calcuated modes?' - what are they used for??
 						//The 'modes' are cacluated in the 'setTids' so we cannot move this before that call.
 						if (tiddlerObj.hasMode("oneshot")  ) {
-							console.log("oneshot second call is good "+i);
+							//console.log("oneshot second call is good "+i);
 						}
 						if (tiddlerObj.hasMode("final")  ) {
-							console.log("final again second call is bad "+i);
+							//console.log("final again second call is bad "+i);
 						}
 						if (tiddlerObj.hasMode("normal")||tiddlerObj.hasMode("oneshot")) {
 							tiddlerObj = new tiddlerAPI.Tiddler();

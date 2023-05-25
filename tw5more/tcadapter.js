@@ -167,10 +167,10 @@ if($tw.browser) {
 	tiddlyclip.getTidrules= function(tidname) {
 		var tiddler, data;
 		if (Array.isArray(tidname)) { 
-			console.log("string rule is"+JSON.stringify(this.parseListField(tidname[0])));
+			//console.log("string rule is"+JSON.stringify(this.parseListField(tidname[0])));
 ;			return JSON.stringify(this.parseListField(tidname[0]));
 		}
-		console.log("named rule");
+		//console.log("named rule");
 		tiddler = this.getMultiTidTitle(tidname);
 		if(tiddler.container) {
 			tiddler = $tw.wiki.getSubTiddler(tiddler.container,tiddler.title);
