@@ -1,0 +1,10 @@
+title: bj/getTITLE
+type: application/x-bclip
+
+#rule=/^([\s\S]*?)#[\s\S]*$/
+#term=$1
+#title=((*@url/#rule/#term*))
+
+#rule=/^https:\/\/([\s\S]*?)\/?$/
+#term=$1
+$title=((*#title/#rule/#term*))

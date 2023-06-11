@@ -1,0 +1,17 @@
+title: bj/TSNPutdo
+type: application/x-bclip
+
+$text=((*@text*))
+#null=
+$tags=((*@totaglist(@tags)*))
+#data=data
+//don't use data url
+#test=/^data/
+@favIconUrl=((*@exists(@favIconUrl)*??*@favIconUrl*??*#data*))
+#altfavicon=https://www.google.com/s2/favicons?domain=((*$title*))
+$faviconurl=((*@favIconUrl/#test/#null*??*#altfavicon*??*@favIconUrl*))
+
+$pagetitle=((*@title*))
+$description=((*@description*))
+$mediaimage=((*@mediaImage*))
+#null=((*@send(@__callback__,sucess,done)*))

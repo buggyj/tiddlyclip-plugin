@@ -1,0 +1,4 @@
+title: bj/jotTitle
+type: application/x-bclip
+
+$title:={{bj/jotTitleIs}}

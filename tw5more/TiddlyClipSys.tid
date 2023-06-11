@@ -5,3 +5,6 @@ type: text/vnd.tiddlywiki
 |!Category|!Tip|!Tags|!Rule Tid|!Modes|
 |refocused|||[[TcSysDetail]]||
 |tcfltreq|||[[filterReqDetail]]||
+|TSN|||[[bj/sideNoteRule]]||
+|TSNput|||[[bj/sideNotePutRule]]||
+|jot|||[[bj/defaultJot]]||

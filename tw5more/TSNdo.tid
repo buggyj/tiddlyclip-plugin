@@ -1,0 +1,21 @@
+title: bj/TSNdo
+type: application/x-bclip
+
+#edit=edit
+@opts=((*@exists(@opts)*??*@opts*))
+
+//if not edit then render to html
+$text=((*@opts==#edit*??*$text*??*@textoHTML($text,block)*))
+
+//put all fields into a JSON
+#pack=((*@packFields()*))
+#altpack={}
+
+//load available tags
+#taglist:={{SideNoteTags}}
+#varname=#taglist
+#othervals=((*@addToPack(#altpack,#varname,taglist,list)*))
+#new=((*@newtiddler*))
+#varname=#new
+#othervals=((*@addToPack(#othervals,#varname,new,normal)*))
+#test=((*@send(@__callback__,#pack,#othervals)*))

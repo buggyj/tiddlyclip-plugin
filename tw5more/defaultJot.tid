@@ -1,0 +1,6 @@
+title: bj/defaultJot
+
+\rules only table wikilink prettylink
+
+|!Title|!Body|!Tags|!Fields modifiers|!field initials|!Modes|
+|[[bj/jotTitle]]|||[[bj/jotdo]]||append add|
