@@ -1125,6 +1125,8 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		this.parseStructure(rule.modes);			 
 		this.modes=extractModes(table['#']['newdata']);
 		//---modes are now determined 
+		//guru meditation - if newTid then this.parseStructure(rule.InitVals);???
+		if (!options.externalTid && options.newTid ) this.parseStructure(rule.InitVals);
 	}
 	
 	Tiddler.prototype.setNormal  =	function (rule,fromaddon){
@@ -1162,18 +1164,18 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			var storedTid=twobj.getTiddler(title,true);
 			if (storedTid) {
 				storedTid.exportFieldsTo(table['$']);
-				table['@']['newtiddler']= 'false';
+				table['@']['$newtiddler']= 'false';
 			} else { 
 				this.exportFieldsTo(table['$']);
 				this.parseStructure(rule.InitVals);
-				table['@']['newtiddler']= 'true';
+				table['@']['$newtiddler']= 'true';
 			}
 		}
 		else 
 		{
 			this.exportFieldsTo(table['$']);
 			this.parseStructure(rule.InitVals);
-			table['@']['newtiddler']= 'true';
+			table['@']['$newtiddler']= 'true';
 		}
 		table['$'].title=title;
 	}
