@@ -1,0 +1,19 @@
+caption: {{$:/plugins/bj/tiddlyclip/icon}} clip dock button
+description: click to dock
+tags: $:/tags/ViewToolbar
+title: $:/bj/viewclipbutton
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+<$createclip><$button tooltip="click to dock" aria-label="clone button" class=<<tv-config-toolbar-class>>>
+<$list filter="[<tv-config-toolbar-icons>match[yes]]">
+{{$:/bj/tiddlyclip/icon2}}
+</$list>
+<$list filter="[<tv-config-toolbar-text>match[yes]]">
+<span class="tc-btn-text">
+clip dock button
+</span>
+</$list>
+
+<$action-tcdo  $do={{{ [<currentTiddler>] :cascade[all[shadows+tiddlers]tag[$:/tags/tc/buttondock]!is[draft]get[text]] :and[!is[blank]else[$:/bj/tiddockrequest]] }}} currentTiddler=<<currentTiddler>> >
+</$button></$createclip>

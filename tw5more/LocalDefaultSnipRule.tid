@@ -1,0 +1,8 @@
+title: $:/bj/LocalDefaultSnipRule
+type: text/vnd.tiddlywiki
+
+\rules only table wikilink prettylink
+
+|!Title|!Body|!Tags|!Fields modifiers|!field initials|!Modes|
+|[[$:/bj/tc/LocalTitle]]|((*@text*))\n\n|||[[$:/bj/tc/snipmetadata]]|append add|
+						

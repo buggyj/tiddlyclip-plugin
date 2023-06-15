@@ -19,7 +19,7 @@ tiddlyclip.modules.tPaste = (function () {
 		hasMode:hasMode,			setconfig:setconfig,
 		getconfig:getconfig,		dodock:dodock,
 		hasModeBegining:hasModeBegining,setopts:setopts,
-		getopts:getopts
+		getopts:getopts, getconfigStatus:getconfigStatus
 	};
 	var   tiddlerObj, twobj,   defaults;
 	//** guru meditaion - maybe tiddlerObj can be moved inside paste as a step to make tc ri-entrant
@@ -358,6 +358,15 @@ tiddlyclip.modules.tPaste = (function () {
 		return twobj.getTidContents(configName)||null; 
 		
 	}
+	
+	function getconfigStatus() {
+		if (config) return true;
+		return false;
+
+		
+	}	
+	
+	
 	function setconfig (text,name) {
 		config = text;
 		configName = name;
@@ -447,8 +456,8 @@ tiddlyclip.modules.tPaste = (function () {
 		if(hasMode(cat,"nosub")) return;
 		//now loop over each tiddler to be created(defined in the category's extension entry)
 		//if a list of tiddlers are to be copied from a page then we will have to loop over them as well
-		tiddlerAPI.parserReset(!hasMode(cat,"nosave")); //and expose %$hasGlobalSaver
-		
+		tiddlerAPI.parserReset(true); //and expose %$hasGlobalSaver
+		console.log("nosave",cat.modes)
 		status ("before subst loop");
 		if (!hasModeBegining(cat,"tiddler"))  { //user has not selected  tiddler mode
 			for(var i=startrule; i<rules.length; i++)  {	
@@ -743,6 +752,7 @@ tiddlyclip.modules.twobj = (function () {
 					return;
 				}
 				else {
+					//bj gurumeditaion - if inc mode we should create a new tid with inc'd title here???
 					tid.fields.title = subtid;
 					api.tiddlers[i].putSubTid(tid);
 					return;

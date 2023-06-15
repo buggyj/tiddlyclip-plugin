@@ -1,0 +1,13 @@
+title: $:/bj/tiddockrequest/tw5
+type: application/x-bclip
+
+@section=((*@currentTiddler*))
+#conf:={{$:/bj/TidClipConfig}}
+#tcconf:={{TiddlyClipConfig}}
+#config=((*#conf*))\n\n((*#tcconf*))
+
+#opts:={{$:/bj/TidClipOptions}}
+
+#opts=((*@makeobj(#opts,TiddlyClipOpts)*))
+#config=((*@makeobj(#config,TiddlyClipConfigalt)*))
+$test=((*@send(dock,#config,#opts)*))

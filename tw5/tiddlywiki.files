@@ -55,6 +55,15 @@
 			}
 		},
 		{
+			"file": "sendraw.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/sendraw.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
 			"file": "senddelayed.js",
 			"fields": {
 				"type": "application/javascript",

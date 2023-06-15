@@ -1,0 +1,15 @@
+title: $:/bj/tiddockrequest
+type: application/x-bclip
+
+#config:=TiddlyClipConfig
+
+#opts:=TiddlyClipOpts
+
+#opts=((*@exists(#opts)*??*#opts*))
+
+#opts=((*@makeobj(#opts,TiddlyClipOpts)*))
+#config=((*@makeobj(#config,TiddlyClipConfigalt)*))
+
+
+$test=((*@send(dock,#config,#opts)*))
+#null=((*$@alert(cannot dock to this type of tiddler!)*))

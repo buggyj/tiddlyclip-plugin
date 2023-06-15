@@ -263,10 +263,11 @@ if($tw.browser) {
 		this.caller.dispatchEvent({type: "tm-import-tiddlers", param: JSON.stringify(tiddlerFieldsArray)});	
 	}
 	var doaction = function(action) {
+		/*
 		if (this._g("%$hasGlobalSaver") === 'true')	{
 			console.log("ignored, tc handles messages");
 			return "ignored, tc handles messages";
-		}
+		}*/
 		//maybe this should also work with node?
 		window.setTimeout(function () {
 			try{

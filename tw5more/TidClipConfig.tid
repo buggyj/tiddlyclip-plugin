@@ -1,0 +1,6 @@
+title: $:/bj/TidClipConfig
+type: text/vnd.tiddlywiki
+
+!((*@section*))
+|!Category|!Tip|!Tags|!Rule Tid|!Modes|
+|((*@section*)) - Snip|Copy||[[$:/bj/LocalDefaultSnipRule]]|note|
