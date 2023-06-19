@@ -18,4 +18,4 @@ $text=((*@opts==#edit*??*$text*??*@textoHTML($text,block)*))
 #new=((*@newtiddler*))
 #varname=#new
 #othervals=((*@addToPack(#othervals,#varname,new,normal)*))
-#test=((*@send(@__callback__,#pack,#othervals)*))
+#test=((*@sendsimple(@__callback__,#pack,#othervals)*))

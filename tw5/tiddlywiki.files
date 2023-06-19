@@ -55,6 +55,15 @@
 			}
 		},
 		{
+			"file": "sendsimple.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/sendsimple.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
 			"file": "sendraw.js",
 			"fields": {
 				"type": "application/javascript",
