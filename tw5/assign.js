@@ -9,8 +9,7 @@ var doAssign = function(str) {
 var x, contents = str.replace(/\{\{(.+)\}\}/,"$1").trim();
 	
 	x= compute(contents,widget);
-    if (typeof x === 'string') return x;
-    throw("is undefined");
+    return x;
 
 };
 

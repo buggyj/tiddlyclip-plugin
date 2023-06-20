@@ -154,15 +154,6 @@
 			}
 		},
 		{
-			"file": "console.js",
-			"fields": {
-				"type": "application/javascript",
-				"title": "$:/plugins/bj/tiddlyclip/console.js",
-				"tags":  "$:/tags/tiddlyclip",
-				"module-type": "library"
-			}
-		},
-		{
 			"file": "savetofiles.js",
 			"fields": {
 				"type": "application/javascript",

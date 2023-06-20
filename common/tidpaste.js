@@ -1312,6 +1312,8 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 								moreThanOne++;
 								break;								
 							}
+							//test for non-existing or invalid
+							if (typeof value !== "string") break;
 							rightSide =  this.replaceALL(value).result;
 						}
 						else  {
@@ -1445,6 +1447,13 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 				else
 					alert(valOf(key2));
 				return "alerted";
+			}
+			if (key1=="console") {
+				if (!key2 || valOf(key2, true) == null) 
+					console.log(key2," = nodef");
+				else
+					console.log(valOf(key2));
+				return "";
 			}
 			if (key1=="expand") {
 				replaceOp= self.replaceALL(valOf(key2));
