@@ -95,10 +95,19 @@ makeContextMenu.prototype.createCategoryPopups= function (config, widget, select
 			if (!includeNodeType(config[m],e.target.nodeName)) continue;
 			catsel = (function(x) {
 				return function(catname,e){
+					var rules,type;
 					if (selectedtext) pagedata.data.selectedtext = selectedtext;
 					pagedata.e=widget.event;
 					pagedata.data.category=catname;//console.log(widget.contextconfig)
-					tiddlyclip.modules.tPaste.paste.call(widget,catname,pagedata,null,widget.contextconfig);
+					rules = $tw.wiki.getTiddler(config[catname].rules||"");
+					if (rules && rules.fields ) type = rules.fields.type ||"";
+					else type = "";
+					if (type == "application/x-bclip")	{
+						var cat = {tidtitle:'',doz:config[catname].rules,modes:[]};
+						tiddlyclip.modules.tPaste.paste.call(widget, null,pagedata,null,null,cat)
+					}
+					else
+					   tiddlyclip.modules.tPaste.paste.call(widget,catname,pagedata,null,widget.contextconfig);
 				};
 			})(m);
 	
@@ -135,6 +144,9 @@ Render this widget into the DOM
 tcWidget.prototype.contextmenu = function (event) {
 	var menu,selectedtext = getSelection().toString().trim();
 	var menuRoot = getContextMenuRoot();
+			if(this.matchSelector && !event.target.matches(this.matchSelector)) {
+				return false;
+			}
 	//debounce when menu is showing
 	if (menuRoot.style.display === "block") return;
     this.event = event;
@@ -170,7 +182,12 @@ tcWidget.prototype.loadSectionFromFile = function(activeSection) {
 		if (content) {
 			sectionStrgs = content.split('\n!'); //sections begin with a title, eg !mysection, followed by a table of categories
 			//the ! has not be removed by the split in the case of the first section
-			sectionStrgs[0] = sectionStrgs[0].substr(1);
+			if (sectionStrgs[0].charAt(0) == "!") {
+				sectionStrgs[0] = sectionStrgs[0].substr(1);
+			} else  { //put tid name as section
+				sectionStrgs[0] = this.contextconfig + "\n" + sectionStrgs[0];
+			}
+				
 			//remember all section names - used to allow the user to see sections and change which is active
 			for (var  j =0; j< sectionStrgs.length;  j++) { 
 				
@@ -214,6 +231,7 @@ tcWidget.prototype.loadSectionFromFile = function(activeSection) {
 			cat.modes= this.extractModes(pieces[5]);
 			cat.tags = pieces[3];
 			cat.tip  = pieces[2];
+			cat.rules = pieces[4].replace (/^\[\[([\s|\S]*)\]\]$/,"$1"); //remove  brackets;
 			/*if (hasModeBegining(cat,"debug")) {
 				debugcontrol(cat);
 			} else {*/
@@ -236,6 +254,8 @@ Compute the internal state of the widget
 tcWidget.prototype.execute = function() {
 	var self = this;
 	this.contextconfig = this.getAttribute("$contextconfig");
+	this.matchSelector = this.getAttribute("$matchSelector"),
+
 	this.pagedata = {data:{}};
 	$tw.utils.each(this.attributes,function(attribute,name) {
 		if(name.charAt(0) !== "$") {
@@ -249,11 +269,16 @@ Selectively refreshes the widget if needed. Returns true if the widget or any of
 */
 tcWidget.prototype.refresh = function(changedTiddlers) {
 //console.log("refresh");
-	var menuRoot = getContextMenuRoot();
+	var changedAttributes = this.computeAttributes(), menuRoot = getContextMenuRoot();
 	if (menuRoot.style.display !== "none"){
 		document.removeEventListener('contextmenu', clickhandler2);//console.log("aremvoed handle2");
 		document.removeEventListener('click', clickhandler);//console.log("aremvoed handle");
 		menuRoot.style.display = "none";
+	}
+
+	if($tw.utils.count(changedAttributes) > 0 || changedTiddlers[this.contextconfig]) {
+		this.refreshSelf();
+		return true;
 	}
 	return false;		
 

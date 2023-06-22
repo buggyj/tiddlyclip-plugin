@@ -140,7 +140,7 @@ tiddlyclip.modules.tPaste = (function () {
 
 	function setSingleRule(cat) {
 		try {	
-			var rule = new Rule ({title:cat.tidtitle,fields:cat.doz,modes:"modify"});
+			var rule = new Rule ({title:cat.tidtitle,fields:cat.doz,modes:cat.modes});//bj modes should be from cat??
 			cat.rules= [rule]; 
 			status("dofalse cat: ");
 			cat.valid =true;

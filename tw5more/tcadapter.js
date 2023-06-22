@@ -167,7 +167,7 @@ if($tw.browser) {
 	tiddlyclip.getTidrules= function(tidname) {
 		var tiddler, data;
 		if (Array.isArray(tidname)) { 
-			//console.log("string rule is"+JSON.stringify(this.parseListField(tidname[0])));
+			//bj maybe this should be in tidpaste??
 ;			return JSON.stringify(this.parseListField(tidname[0]));
 		}
 		//console.log("named rule");
@@ -276,10 +276,28 @@ if($tw.browser) {
 		},0);
 		return "";
 	}
+
+	var doStringAction = function(action, vars) {
+		/*
+		if (this._g("%$hasGlobalSaver") === 'true')	{
+			console.log("ignored, tc handles messages");
+			return "ignored, tc handles messages";
+		}*/
+		//maybe this should also work with node?
+		var vars = vars||'{}';
+        vars = JSON.parse(vars);
+		window.setTimeout(function () {
+			try{
+				tiddlyclip.caller.invokeActionString(action,tiddlyclip.caller, tiddlyclip.lastevent,vars);
+			}catch(e){console.log(e)}
+		},0);
+		return "";
+	}
 	var _TextReference = function (str) {return $tw.wiki.getTextReference(str);}
 	
 	tiddlyclip.macro = {
 		doaction:doaction,
+		doStringAction:doStringAction,
 		_TextReference:_TextReference,
 		_parseStringArray:tiddlyclip.parseStringArray
 	};
