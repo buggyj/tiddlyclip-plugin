@@ -31,11 +31,12 @@ var getContextMenuRoot = function() {
 
 var menuRoot = null;
 
-var makeContextMenu = function() {
+var makeContextMenu = function(source) {
 	var menuRoot = getContextMenuRoot();
 	//clear old contents before adding new
 	menuRoot.innerHTML = "";
 	this.menu = document.createElement("ul");
+	this.source = source;
 	menuRoot.appendChild(this.menu);
 }
 
@@ -52,11 +53,14 @@ makeContextMenu.prototype.createMenuItem= function (item){
 	var menuItem = 	document.createElement("li");
 	var link = document.createElement("a");
 	var icon;
-	if (item.icon) {
-		link.innerHTML = item.icon;
+	if (item.display && item.display !== "") link.innerHTML = this.source.getValueAsHtmlWikified(item.display,true);
+	else {
+		if (item.icon) {
+			link.innerHTML = item.icon;
+		}
+		link.appendChild(document.createTextNode(item.title));
 	}
 	menuItem.appendChild(link);
-	link.appendChild(document.createTextNode(item.title));
 	this.menu.appendChild(menuItem);
 	menuItem.addEventListener('click', (e) => {
 		var menuRoot = getContextMenuRoot();
@@ -64,7 +68,6 @@ makeContextMenu.prototype.createMenuItem= function (item){
 		item.onclick(item.title,e);
 	});
 
-	
 }
 
 var hasMode = function  (cat,mode) {
@@ -111,7 +114,7 @@ makeContextMenu.prototype.createCategoryPopups= function (config, widget, select
 				};
 			})(m);
 	
-			this.createMenuItem({title: m, onclick: catsel,icon: config[m].icon});
+			this.createMenuItem({title:m, onclick:catsel, icon:config[m].icon,display:config[m].display});
 		}
 	
 	}
@@ -141,6 +144,13 @@ tcWidget.prototype = new Widget();
 /*
 Render this widget into the DOM
 */
+
+tcWidget.prototype.getValueAsHtmlWikified = function(text,mode) {
+	return $tw.wiki.renderText("text/html","text/vnd.tiddlywiki",text,{
+		parseAsInline: mode !== "block",
+		parentWidget:this
+	});
+};
 tcWidget.prototype.contextmenu = function (event) {
 	var menu,selectedtext = getSelection().toString().trim();
 	var menuRoot = getContextMenuRoot();
@@ -150,7 +160,7 @@ tcWidget.prototype.contextmenu = function (event) {
 	//debounce when menu is showing
 	if (menuRoot.style.display === "block") return;
     this.event = event;
-	menu = new makeContextMenu();
+	menu = new makeContextMenu(this);
 	menu.createCategoryPopups(this.activeCategories,this,selectedtext,event);
 	menu.show();//console.log("in contextmenu")
 
@@ -230,7 +240,7 @@ tcWidget.prototype.loadSectionFromFile = function(activeSection) {
 			
 			cat.modes= this.extractModes(pieces[5]);
 			cat.tags = pieces[3];
-			cat.tip  = pieces[2];
+			cat.display  = pieces[2];
 			cat.rules = pieces[4].replace (/^\[\[([\s|\S]*)\]\]$/,"$1"); //remove  brackets;
 			/*if (hasModeBegining(cat,"debug")) {
 				debugcontrol(cat);
