@@ -1,0 +1,16 @@
+title: bj/addRowRuleDo
+type: application/x-bclip
+
+##xy=((*@%getCellPosition()*))
+#null=((*@exit(##xy)*))
+
+#tid:={{((*@currentTid*))}}
+
+#newtable=((*@putRow(#tid,##xy,|--new--|)*))
+
+//create a tw variable for the new table (variable avoids  problems with triple quotes)
+#refToVal=#newtable
+#.vars=((*@addToPack({},#refToVal,newtable)*))
+
+#action=<$action-setfield $tiddler="""((*@currentTid*))""" text=<<newtable>>/>
+#null=((*@doStringAction(#action,#.vars)*))

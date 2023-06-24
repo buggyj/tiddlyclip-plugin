@@ -158,7 +158,7 @@ tcWidget.prototype.contextmenu = function (event) {
 				return false;
 			}
 	//debounce when menu is showing
-	if (menuRoot.style.display === "block") return;
+	if (menuRoot.style.display === "block") {event.preventDefault();return;}
     this.event = event;
 	menu = new makeContextMenu(this);
 	menu.createCategoryPopups(this.activeCategories,this,selectedtext,event);

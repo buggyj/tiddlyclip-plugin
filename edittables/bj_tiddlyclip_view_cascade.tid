@@ -1,0 +1,8 @@
+created: 20230620110034963
+list-before: $:/config/ViewTemplateBodyFilters/system
+modified: 20230620110650400
+tags: $:/tags/ViewTemplateBodyFilter
+title: bj/tiddlyclip/view/cascade
+type: text/vnd.tiddlywiki
+
+[applicationtype[tcTable]then[bj/tcCatTable/ViewTemplate]]

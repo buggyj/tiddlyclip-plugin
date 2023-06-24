@@ -1,0 +1,18 @@
+{
+	"plugins": [
+		"tiddlywiki/tiddlyweb",
+		"tiddlywiki/filesystem",
+		"bj/tiddlyclip-plugin1",
+		"bj/tiddlyclip-plugin1/edittables"
+	],
+	"themes": [
+		"tiddlywiki/vanilla",
+		"tiddlywiki/snowwhite"
+	],
+	"includeWikis": [
+		"../edittb"
+	],
+	"config": {
+		"default-tiddler-location": "../edittb/tiddlers"
+	}
+}

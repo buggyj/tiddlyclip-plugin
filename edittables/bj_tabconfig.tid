@@ -1,0 +1,12 @@
+applicationtype: tcTable
+delrow: del here
+tags: TclipConfig
+title: bj/tableconfig
+type: text/vnd.tiddlywiki
+
+|!Category|!Display|!Tags|!Rule/do|!Modes|
+|edit cell|✎||[[bj/cellRuleDo]]||
+|del row|''delRow''||[[bj/delRowRuleDo]]||
+|add row|<span class="tciconsize"> {{$:/core/images/clone-button}}</span> row||[[bj/addRowRuleDo]]||
+|up row|<big>up</big>⏫||[[bj/upRowRuleDo]]||
+|down row|⏬<scan>down</scan>||[[bj/downRowRuleDo]]||

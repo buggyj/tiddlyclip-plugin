@@ -1,0 +1,15 @@
+title: bj/upRowRuleDo
+type: application/x-bclip
+
+// stop heading from moving (cannot move line up at row 1)
+##xy=((*@%getCellPosition(0,2)*))
+#tid:={{((*@currentTid*))}}
+
+#newtable=((*@upRow(#tid,##xy)*))
+
+//create a tw variable for the new table (variable avoids  problems with triple quotes)
+#refToVal=#newtable
+#.vars=((*@addToPack({},#refToVal,newtable)*))
+
+#action=<$action-setfield $tiddler="""((*@currentTid*))""" text=<<newtable>>/>
+#null=((*@doStringAction(#action,#.vars)*))

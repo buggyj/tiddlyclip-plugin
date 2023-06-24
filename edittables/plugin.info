@@ -1,11 +1,11 @@
 {
-	"title": "$:/plugins/bj/tiddlyclip",
-	"description": "include web content",
-	"name": "tiddlyclip",
+	"title": "$:/plugins/bj/tcedittables",
+	"description": "edit tc config tables",
+	"name": "tcedittables",
 	"author": "Jeffrey Wilkinson (aka BJ)",
 	"version": "3.0.7f",
 	"core-version": ">=5.2.7",
-	"plugin-priority": "2",
+	"plugin-priority": "4",
 	"source": "https://github.com/buggyj/tiddlyclip-plugin",
 	"plugin-type": "plugin",
 	"list": "readme LICENSE"
