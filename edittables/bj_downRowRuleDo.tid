@@ -1,4 +1,4 @@
-title: bj/downRowRuleDo
+title: $:/bj/downRowRuleDo
 type: application/x-bclip
 
 ##xy=((*@%getCellPosition(0,1)*))

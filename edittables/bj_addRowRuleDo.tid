@@ -1,4 +1,4 @@
-title: bj/addRowRuleDo
+title: $:/bj/addRowRuleDo
 type: application/x-bclip
 
 ##xy=((*@%getCellPosition()*))

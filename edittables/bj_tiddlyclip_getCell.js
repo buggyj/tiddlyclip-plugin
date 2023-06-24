@@ -1,7 +1,7 @@
 /*\
 module-type: library
 tags: $:/tags/tiddlyclip
-title: bj/tiddlyclip/getCell.js
+title: $:/bj/tiddlyclip/getCell.js
 type: application/javascript
 
 \*/

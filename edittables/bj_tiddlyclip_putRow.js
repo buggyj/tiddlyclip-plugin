@@ -1,7 +1,7 @@
 /*\
 module-type: library
 tags: $:/tags/tiddlyclip
-title: bj/tiddlyclip/putRow.js
+title: $:/bj/tiddlyclip/putRow.js
 type: application/javascript
 
 \*/

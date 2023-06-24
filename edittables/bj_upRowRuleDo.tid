@@ -1,4 +1,4 @@
-title: bj/upRowRuleDo
+title: $:/bj/upRowRuleDo
 type: application/x-bclip
 
 // stop heading from moving (cannot move line up at row 1)

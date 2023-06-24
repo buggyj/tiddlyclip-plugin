@@ -1,4 +1,4 @@
-title: bj/delRowRuleDo
+title: $:/bj/delRowRuleDo
 type: application/x-bclip
 
 //first row (1) is heading - do not allow removal  

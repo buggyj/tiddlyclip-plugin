@@ -1,4 +1,4 @@
-title: bj/cellRuleDo
+title: $:/bj/cellRuleDo
 type: application/x-bclip
 
 ##xy=((*@%getCellPosition(0,1)*))

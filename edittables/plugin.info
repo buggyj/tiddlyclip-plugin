@@ -3,7 +3,7 @@
 	"description": "edit tc config tables",
 	"name": "tcedittables",
 	"author": "Jeffrey Wilkinson (aka BJ)",
-	"version": "3.0.7f",
+	"version": "3.0.7g",
 	"core-version": ">=5.2.7",
 	"plugin-priority": "4",
 	"source": "https://github.com/buggyj/tiddlyclip-plugin",

@@ -1,8 +1,8 @@
 applicationtype: tcTable
 delrow: del here
 tags: TclipConfig
-title: bj/tableheaderconfig
+title: $:/bj/tableheaderconfig
 type: text/vnd.tiddlywiki
 
 |!Category|!Display|!Tags|!Rule/do|!Modes|
-|add row|<span class="tciconsize"> {{$:/core/images/clone-button}}</span>||[[bj/addRowRuleDo]]||
+|add row|<span class="tciconsize"> {{$:/core/images/clone-button}}</span>||[[$:/bj/addRowRuleDo]]||

@@ -1,7 +1,7 @@
 /*\
 module-type: library
 tags: $:/tags/tiddlyclip
-title: bj/tiddlyclip/delRow.js
+title: $:/bj/tiddlyclip/delRow.js
 type: application/javascript
 
 \*/

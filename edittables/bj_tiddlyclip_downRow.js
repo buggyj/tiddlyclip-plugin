@@ -1,7 +1,7 @@
 /*\
 module-type: library
 tags: $:/tags/tiddlyclip
-title: bj/tiddlyclip/downRow.js
+title: $:/bj/tiddlyclip/downRow.js
 type: application/javascript
 
 \*/
