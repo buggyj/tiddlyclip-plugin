@@ -137,11 +137,10 @@ tiddlyclip.modules.tPaste = (function () {
 		status ("rules not found for cat: "+category);
 		return {valid:false}; 
 	}
-
-	function setSingleRule(cat) {
+	function setSingleRule(def) {
 		try {	
-			var rule = new Rule ({title:cat.tidtitle,fields:cat.doz,modes:cat.modes});//bj modes should be from cat??
-			cat.rules= [rule]; 
+			var rule = new Rule ({title:def.tidtitle,fields:def.doz,modes:(def.rulemodes||"append")});//bj modes should be from cat??
+			cat = {rules:[rule],modes:def.modes}; 
 			status("dofalse cat: ");
 			cat.valid =true;
 			return cat;
