@@ -1249,6 +1249,21 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			return val;
 		}
 	 }	 
+	 function touchValOf(n, test) {
+		var val, type = n.substring(0,1);
+		if (type !== '#' &&type !=='$'&&type !=='@'&& type !=='%'){
+			if (!test) error("source: invalid name"+n);
+			return null;
+		}
+		else {
+			val=table[type][n.substring(1)];
+			if (val == undefined) { 
+				table[type][n.substring(1)]="";
+				return "";
+			}
+			return "";
+		}
+	 }	
 	 function valOfBase(n, extra, test) {
 		var val, type = n.substring(0,1);
 		if (type !== '#' &&type !=='$'&&type !=='@'&& type !=='%'){
@@ -1272,6 +1287,15 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		}
 		return  values;
 	}
+	
+	function touchVars(sources,test) {
+		var values = [], returned;
+		for (var i = 0 ; i < sources.length ;i++) {
+			if ((values[i]= touchValOf(sources[i],test))==null) return null;
+		}
+		return  "";
+	}
+	
 	function toValues(sources,test) {
 		var values = [], returned;
 		for (var i = 0 ; i < sources.length ;i++) {
@@ -1462,9 +1486,18 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			if (key1=="source") {
 				 return key2;
 			}
-			//handle normal functions
+			
 			var vals;
 			var params = parseParams(key2);
+			if (key1=="$touch") {
+				if (touchVars(params)=== null){
+					throw ("tcexit");
+				}
+				 return touchVars(params);
+			}
+			
+			
+			//handle normal functions
 			if (!!key2) vals = toValuesExtra(params);
 			else vals = null;
 			if (key1=="alertAll") {
