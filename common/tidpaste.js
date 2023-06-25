@@ -409,6 +409,7 @@ tiddlyclip.modules.tPaste = (function () {
 	function paste(catName,pageData, section, substitutionTiddler ,setCat)
 	{  
 		var cat, save = false, fromaddon = false;
+		if (tiddlyclip.disabled) return;
 		disableOpts();
 		try{
 		tiddlyclip.caller = this;
