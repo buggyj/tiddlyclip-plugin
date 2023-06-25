@@ -1493,7 +1493,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 				if (touchVars(params)=== null){
 					throw ("tcexit");
 				}
-				 return touchVars(params);
+				 return "";
 			}
 			
 			
