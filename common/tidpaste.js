@@ -1489,7 +1489,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			
 			var vals;
 			var params = parseParams(key2);
-			if (key1=="$touch") {
+			if (key1=="$$touch") {
 				if (touchVars(params)=== null){
 					throw ("tcexit");
 				}
