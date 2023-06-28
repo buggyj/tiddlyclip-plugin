@@ -1,17 +1,21 @@
-title: bj/TSNPutdo
+title: $:/bj/TSNPutdo
 type: application/x-bclip
 
 $text=((*@text*))
 #null=
 $tags=((*@totaglist(@tags)*))
 #data=data
-//don't use data url
+
+//don't use data url (or empty url)
 #test=/^data/
+//make empty url equal data
 @favIconUrl=((*@exists(@favIconUrl)*??*@favIconUrl*??*#data*))
+//use google's api in place of data url
 #altfavicon=https://www.google.com/s2/favicons?domain=((*$title*))
 $faviconurl=((*@favIconUrl/#test/#null*??*#altfavicon*??*@favIconUrl*))
 
 $pagetitle=((*@title*))
 $description=((*@description*))
 $mediaimage=((*@mediaImage*))
+$applicationtype=urlcard
 #null=((*@sendsimple(@__callback__,sucess,done)*))

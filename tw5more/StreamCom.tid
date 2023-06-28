@@ -1,0 +1,6 @@
+title: $:/bj/StreamComRule
+applicationtype: tcTable
+
+|!Title|!Body|!Tags|!Fields modifiers|!field initials|!Modes|
+|[[$:/bj/StreamtitleDo]]|||[[$:/bj/StreamCommentDo]]|[[$:/bj/StreamInitDo]]|append add|
+

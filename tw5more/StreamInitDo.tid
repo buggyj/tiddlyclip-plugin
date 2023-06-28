@@ -1,0 +1,7 @@
+title: $:/bj/StreamInitDo
+type: application/x-bclip
+
+#timefmt=hh
+$mytime=((*@now(#timefmt)*)).00
+$tags=Journal
+$njots=0

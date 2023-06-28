@@ -1,0 +1,5 @@
+title: $:/bj/StreamtitleDo
+type: application/x-bclip
+
+#format:={{$:/config/NewJournal/Title}}
+$title=((*@now(#format)*))

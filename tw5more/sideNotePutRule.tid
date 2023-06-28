@@ -1,7 +1,7 @@
-title: bj/sideNotePutRule
+title: $:/bj/sideNotePutRule
 type: text/vnd.tiddlywiki
 
 \rules only table wikilink prettylink
 
 |!Title|!Body|!Tags|!Fields modifiers|!field initials|!Modes|
-|[[bj/getTITLE]]|||[[bj/TSNPutdo]]||add append|
+|[[$:/bj/GetTitleDo]]|||[[$:/bj/TSNPutdo]]||add append|
