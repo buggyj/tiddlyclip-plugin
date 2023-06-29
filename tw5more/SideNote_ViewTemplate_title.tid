@@ -1,0 +1,14 @@
+title: $:/bj/SideNote/ViewTemplate/title
+type: text/vnd.tiddlywiki
+
+\define TitleChangeDo()
+//remove query string ending is any and replace with dots
+#test=/^([\s\S]*?)\?([\S\s]*)/
+#replace=$1? ...
+$text=((*@title/#test/#replace*))
+$title=ChangedTitle
+\end
+
+<scan style="font-size:20px;line-height:0em;" title={{!!title}}>
+<$do-transform  $doThis=<<TitleChangeDo>> title=<<currentTiddler>>><<ChangedTitle>></$do-transform>
+</scan>
