@@ -10,6 +10,15 @@
 			}
 		},
 		{
+			"file": "get.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/get.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
 			"file": "sublink.js",
 			"fields": {
 				"type": "application/javascript",
