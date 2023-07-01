@@ -1,0 +1,69 @@
+title: $:/bj/cardtemplate
+type: text/vnd.tiddlywiki
+
+\define dourl()
+#maxchars=190
+#charsize=30
+$textstyle=font-size:((*#charsize*))
+#block=flex
+#none=none
+#displaytype=urlcard
+#hide=hide
+#nul=((*@$$touch($faviconurl,$mediaimage,$description,$applicationtype,#null,#blank,@showlink)*))
+
+
+$tidname=((*$title*))
+$showlink=display: ((*@showlink==#hide*??*#none*??*#block*))
+
+//if we have  a urlcard type then  display card
+$display=display: ((*$applicationtype==#displaytype*??*#block*??*#none*));
+
+//add scheme if missing (check for : before first .)
+#hasScheme=/^([^\.]?)*:/
+#scheme=https:/
+$href=((*!$title/#hasScheme/#null*??*#scheme*))((*$title*))
+
+//choose text and image
+$image=((*!$mediaimage==#blank*??*$mediaimage*??*$faviconurl*))
+#text=((*!$description==#blank*??*$description*??*$pagetitle*))
+
+//split large text first #maxchars chars
+#rule=/^([\s\S]{((*#maxchars*))})[\s\S]*$/
+#term=$1
+$text=((*#text/#rule/#term*))
+
+//second part
+#rule=/^[\s\S]{((*#maxchars*))}([\s\S]*)$/
+$extratext=((*#text/#rule/#term*))
+
+//check status variable @$$ to see if replacement happened (eg >300 chars)- blank otherwise
+$extratext=((*@exists(@$$)*??*@abort()*))
+
+#dots=⏬
+$dots=((*@exists(@$$)*??*#dots*))
+
+//set the fall-back to Google if image not found
+$altfavicon=https://www.google.com/s2/favicons?domain=((*$title*))
+
+//set output name
+$title=((*@outtitle*))
+\end
+
+<$do-transform  $doThis=<<dourl>> $title=<<currentTiddler>> outtitle="card" showlink=<<showlink>>>
+	<div class="urlcard" style=<<card!!display>> >
+<div>
+			<object data=<<card!!image>> >
+				<object data=<<card!!altfavicon>> >
+{{$:/core/images/globe}}
+				</object>
+			</object>
+					</div>
+		<div class="urlcard-content" style=<<card!!textstyle>>><$tcmenu $contextconfig="$:/bj/urlcardconfig" currentTid=<<currentTiddler>>/><<card!!text>><span class="urlcardmore"><span class="dots"><<card!!dots>></span><span><<card!!extratext>></span></span>
+		</div>
+<div class="cardtidlink" style=<<card!!showlink>>><a class="" href=<<card!!href>> target="_blank">{{$:/core/images/preview-open}}</a></div>
+	</div>
+</$do-transform>
+
+
+
+

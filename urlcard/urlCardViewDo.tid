@@ -1,0 +1,5 @@
+title: $:/bj/urlCardViewDo
+type: application/x-bclip
+
+#action=<$action-navigate $to="""((*@currentTid*))""" />
+#null=((*@doStringAction(#action)*))

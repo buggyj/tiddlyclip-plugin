@@ -9,6 +9,7 @@
 	 "directories": [
 		"common",
 		"tw5",
-		"tw5more"
+		"tw5more",
+		"urlcard"
 	 ]
 }

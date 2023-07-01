@@ -1,0 +1,6 @@
+applicationtype: tcTable
+title: $:/bj/urlcardconfig
+type: text/vnd.tiddlywiki
+
+|!Category|!Display|!Tags|!Rule/do|!Modes|
+|view|[''''[X]]||[[$:/bj/urlCardViewDo]]||
