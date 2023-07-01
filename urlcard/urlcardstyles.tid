@@ -1,0 +1,33 @@
+tags: $:/tags/Stylesheet
+title: $:/bj/urlcardstyles
+type: text/plain
+
+.urlcard {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.urlcard img {
+  width: auto; 
+  height: 45px;
+  margin-right: 10px; 
+}
+
+.urlcard object {
+  width: auto; 
+  height: 45px;
+  margin-right: 10px; 
+}
+
+.urlcard-content {
+font-size:20px;
+  flex: 1; 
+}
+
+.urlcardmore span {display:none; }
+.urlcardmore  span.dots {display:inline; }
+.urlcardmore:hover span {display:inline;}
+.urlcardmore:hover  span.dots {display:none;}
