@@ -146,9 +146,23 @@ Render this widget into the DOM
 */
 
 tcWidget.prototype.getValueAsHtmlWikified = function(text,mode) {
+	
+	function copyvars(obj, prefix) {
+	  const result = {};
+
+	  for (const key in obj) {
+		if (key.startsWith(prefix)) {
+		  result[key] = obj[key].value;
+		}
+	  }
+
+	  return result;
+	}	
+	
 	return $tw.wiki.renderText("text/html","text/vnd.tiddlywiki",text,{
 		parseAsInline: mode !== "block",
-		parentWidget:this
+		parentWidget:this,
+		variables: copyvars(this.variables,"tcmenu")
 	});
 };
 tcWidget.prototype.contextmenu = function (event) {
