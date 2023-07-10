@@ -422,7 +422,7 @@ tiddlyclip.modules.tPaste = (function () {
 			} else if (pageData.data.section === "__sys__") { //from addon - change of focused tw
 				cat = findCategory (findSection(section,twobj.getTidContents("TiddlyClipSys")), catName);
 			} else if (pageData.data.section === "__sysdock__") {//from addon to solicite dock 
-				var tidclipconfigtext = twobj.getTidContents("TiddlyClipConfig");
+				var tidclipconfigtext = twobj.getTidContents("TiddlyClipConfig");// bj if empty then filter on tag tcconfigfiles
 				var tcconf = JSON.stringify({text:tidclipconfigtext,title:'TiddlyClipConfig'});
 				var tidclipconfigopts = twobj.getTidContents("TiddlyClipOpts");
 				var tcopts = JSON.stringify({text:tidclipconfigopts,title:'TiddlyClipOpts'});
@@ -457,7 +457,7 @@ tiddlyclip.modules.tPaste = (function () {
 		//now loop over each tiddler to be created(defined in the category's extension entry)
 		//if a list of tiddlers are to be copied from a page then we will have to loop over them as well
 		tiddlerAPI.parserReset(true); //and expose %$hasGlobalSaver
-		console.log("nosave",cat.modes)
+		//console.log("nosave",cat.modes)
 		status ("before subst loop");
 		if (!hasModeBegining(cat,"tiddler"))  { //user has not selected  tiddler mode
 			for(var i=startrule; i<rules.length; i++)  {	
@@ -1228,6 +1228,14 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			n = valOf(indexstr);
 			type = n[0];
 		}
+		if (n.length === 0) {
+			error("variable: invalid name "+n);
+			return {type:"#", leftSide:null};
+		}
+		if (n.length === 1) {
+			//error("variable: invalid name "+n);
+			return {type:n, leftSide:null};
+		}
 		if (type !== '#' &&type !=='$' && type !=='@'&& type !=='%') error("variable: invalid name "+n);
         else return {type:type, leftSide:n.substring(1)};
 	}
@@ -1363,11 +1371,13 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 				if (type !== '#' &&type !=='$' &&type !=='%' &&type !=='@'){ 
 					error("target: invalid name "+n);	
 					continue;
-				}		
-				if (!localonly)  table[type][leftSide] = rightSide;
-				else {
-					if (type=='#') table[type][leftSide] = rightSide;
-					else error("target: invalid assignment");
+				}	
+				if (!!leftSide) {	
+					if (!localonly)  table[type][leftSide] = rightSide;
+					else {
+						if (type=='#') table[type][leftSide] = rightSide;
+						else error("target: invalid assignment");
+					}
 				}
 				moreThanOne++;		
 			}
