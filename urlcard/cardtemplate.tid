@@ -32,7 +32,7 @@ $image=((*!$mediaimage==#blank*??*$mediaimage*??*$faviconurl*))
 #term=$1
 $text=((*#text/#rule/#term*))
 
-//second part
+//second part of text
 #rule=/^[\s\S]{((*#maxchars*))}([\s\S]*)$/
 $extratext=((*#text/#rule/#term*))
 
@@ -51,16 +51,16 @@ $title=((*@outtitle*))
 
 <$do-transform  $doThis=<<dourl>> $title=<<currentTiddler>> outtitle="card" showlink=<<showlink>>>
 	<div class="urlcard" style=<<card!!display>> >
-<div>
+		<div>
 			<object data=<<card!!image>> >
 				<object data=<<card!!altfavicon>> >
-{{$:/core/images/globe}}
+					{{$:/core/images/globe}}
 				</object>
 			</object>
-					</div>
+		</div>
 		<div class="urlcard-content" style=<<card!!textstyle>>><$tcmenu $contextconfig="$:/bj/urlcardconfig" currentTid=<<currentTiddler>>/><<card!!text>><span class="urlcardmore"><span class="dots"><<card!!dots>></span><span><<card!!extratext>></span></span>
 		</div>
-<div class="cardtidlink" style=<<card!!showlink>>><a class="" href=<<card!!href>> target="_blank">{{$:/core/images/preview-open}}</a></div>
+		<div class="cardtidlink" style=<<card!!showlink>>><a class="" href=<<card!!href>> target="_blank">{{$:/core/images/preview-open}}</a></div>
 	</div>
 </$do-transform>
 
