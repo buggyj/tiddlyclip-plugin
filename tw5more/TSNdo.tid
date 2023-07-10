@@ -14,8 +14,8 @@ $text=((*@opts==#edit*??*$text*??*@textoHTML($text,block)*))
 //load available tags
 #taglist:={{SideNoteTags}}
 #varname=#taglist
-#othervals=((*@addToPack(#altpack,#varname,taglist,list)*))
+#othervals=((*@addToObject(#altpack,#varname,taglist,list)*))
 #new=((*@$newtiddler*))
 #varname=#new
-#othervals=((*@addToPack(#othervals,#varname,new,normal)*))
+#othervals=((*@addToObject(#othervals,#varname,new,normal)*))
 #test=((*@sendsimple(@__callback__,#pack,#othervals)*))

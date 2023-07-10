@@ -5,8 +5,8 @@ title: $:/bj/tableconfig
 type: text/vnd.tiddlywiki
 
 |!Category|!Display|!Tags|!Rule/do|!Modes|
-|edit cell|✎||[[$:/bj/cellRuleDo]]||
+|edit cell|✎ <<tcmenustr>>||[[$:/bj/cellRuleDo]]||
 |del row|''delRow''||[[$:/bj/delRowRuleDo]]||
 |add row|<span class="tciconsize"> {{$:/core/images/clone-button}}</span> row||[[$:/bj/addRowRuleDo]]||
 |up row|<big>up</big>⏫||[[$:/bj/upRowRuleDo]]||
-|down row|⏬<scan>down</scan>||[[$:/bj/downRowRuleDo]]||
+|down row|⏬<scan style="color:red;">down</scan>||[[$:/bj/downRowRuleDo]]||

@@ -1,10 +1,7 @@
-created: 20230623065237759
-modified: 20230623141503167
-tags: 
 title: $:/bj/tcCatTable/ViewTemplate
 type: text/vnd.tiddlywiki
 
-\define delrow() del this row
+<$vars tcmenustr=edit>
 
 <$tcmenu $contextconfig="$:/bj/tableheaderconfig" currentTid=<<currentTiddler>> $matchSelector='th'/>
 
@@ -12,3 +9,5 @@ type: text/vnd.tiddlywiki
 <$tcmenu $contextconfig="$:/bj/tableconfig" currentTid=<<currentTiddler>> $matchSelector='td,  td *'/>
 
 {{}}
+
+</$vars>

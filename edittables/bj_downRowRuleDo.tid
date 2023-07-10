@@ -3,13 +3,13 @@ type: application/x-bclip
 
 ##xy=((*@%getCellPosition(0,1)*))
 
-#tid:={{((*@currentTid*))}}
+#table=((*@get(@currentTid)*))
 
-#newtable=((*@downRow(#tid,##xy)*))
+#newtable=((*@downRow(#table,##xy)*))
 
 //create a tw variable for the new table (variable avoids  problems with triple quotes)
-#refToVal=#newtable
-#.vars=((*@addToPack({},#refToVal,newtable)*))
+//and put it in a JSON
+##vars=((*@addToObject({},#newtable,newtable)*))
 
 #action=<$action-setfield $tiddler="""((*@currentTid*))""" text=<<newtable>>/>
-#null=((*@doStringAction(#action,#.vars)*))
+#null=((*@doStringAction(#action,##vars)*))
