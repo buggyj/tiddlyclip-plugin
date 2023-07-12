@@ -13,8 +13,7 @@ $text=((*@opts==#edit*??*$text*??*@textoHTML($text,block)*))
 
 //load available tags
 #taglist:={{SideNoteTags}}
-#varname=#taglist
-#othervals=((*@addToObject(#altpack,#varname,taglist,list)*))
+#othervals=((*@addToObject(#altpack,#taglist,taglist,list)*))
 #new=((*@$newtiddler*))
 #varname=#new
 #othervals=((*@addToObject(#othervals,#varname,new,normal)*))
