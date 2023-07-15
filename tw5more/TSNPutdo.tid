@@ -1,15 +1,15 @@
 title: $:/bj/TSNPutdo
 type: application/x-bclip
 
-$text=((*@text*))
+$text=((*@sideText*))
 #null=
 $tags=((*@totaglist(@tags)*))
 //don't use data url
 #testDataUrl=/^data/
 $faviconurl=((*!@favIconUrl/#testDataUrl/#null*??*@favIconUrl*))
 
-$pagetitle=((*@title*))
+$pagetitle=((*@pageTitle*))
 $description=((*@description*))
 $mediaimage=((*@mediaImage*))
 $applicationtype=urlcard
-#null=((*@sendsimple(@__callback__,sucess,done)*))
+#null=((*@callback(sucess,done)*))

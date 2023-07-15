@@ -4,7 +4,7 @@ type: application/x-bclip
 //remove fragment
 #rule=/^([\s\S]*?)#[\s\S]*$/
 #term=$1
-#title=((*@url/#rule/#term*))
+#title=((*@pageRef/#rule/#term*))
 
 //remove https scheme
 #rule=/^https:\/\/([\s\S]*?)\/?$/

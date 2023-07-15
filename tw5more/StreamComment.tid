@@ -6,7 +6,7 @@ type: application/x-bclip
 #false=false
 #timefmt=hh
 #time=((*@now(#timefmt)*)).00
-$text=((*$text*))((*!$mytime==#time*??*#nl*))((*@$newtiddler*??*#time*))((*!$mytime==#time*??*#time*))\n\n ((*@text*))\n\n------
+$text=((*$text*))((*!$mytime==#time*??*#nl*))((*@$newtiddler*??*#time*))((*!$mytime==#time*??*#time*))\n\n ((*@sideText*))\n\n------
 
 #timefmt=hh
 $mytime=((*@now(#timefmt)*)).00

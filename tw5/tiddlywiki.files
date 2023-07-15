@@ -64,6 +64,15 @@
 			}
 		},
 		{
+			"file": "callback.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/callback.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
 			"file": "sendsimple.js",
 			"fields": {
 				"type": "application/javascript",

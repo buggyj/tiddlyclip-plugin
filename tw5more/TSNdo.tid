@@ -2,19 +2,22 @@ title: $:/bj/TSNdo
 type: application/x-bclip
 
 #edit=edit
-@opts=((*@exists(@opts)*??*@opts*))
+#nul=((*@$$touch(@opts,$text)*))
 
 //if not edit then render to html
-$text=((*@opts==#edit*??*$text*??*@textoHTML($text,block)*))
-
+#sideText=((*@opts==#edit*??*$text*??*@textoHTML($text,block)*))
+#ff=((*@console(#sideText)*))
 //put all fields into a JSON
-#pack=((*@packFields()*))
+
 #altpack={}
+
+#pack=((*@addToObject(#altpack,#sideText,sideText)*))
+#pack=((*@addToObject(#pack,$tags,tags,list)*))
 
 //load available tags
 #taglist:={{SideNoteTags}}
 #othervals=((*@addToObject(#altpack,#taglist,taglist,list)*))
 #new=((*@$newtiddler*))
-#varname=#new
-#othervals=((*@addToObject(#othervals,#varname,new,normal)*))
-#test=((*@sendsimple(@__callback__,#pack,#othervals)*))
+
+#othervals=((*@addToObject(#othervals,#new,new)*))
+#test=((*@callback(#pack,#othervals)*))
