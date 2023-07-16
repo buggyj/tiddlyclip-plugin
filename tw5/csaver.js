@@ -56,11 +56,8 @@ function save (text,method,callback,options) {
 
 
 exports.name ="csaver";
-exports.run  = function(title,text)
-	{
-var subdir = "media";
-if (!text) return "";
-return csaver(text,title,subdir,function (){alert("dl'ed")});
-
-
-};
+exports.run  = function(title,text) {
+	if (!text) return "";
+	var subdir = ($tw.wiki.getTiddlerText("$:/plugin/bj/savemedia/useFilesDir")||"").trim()=='yes'?'files':'media';
+	return csaver(text,title,subdir,function (){alert("dl'ed")});
+	};
