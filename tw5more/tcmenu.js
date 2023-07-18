@@ -188,7 +188,7 @@ tcWidget.prototype.render = function(parent,nextSibling) {
 
 	this.computeAttributes();
 	this.activeCategories = {};
-	this.execute();
+	if (!this.execute())return;
 	this.parentDomNode = parent;
 	parent.addEventListener("contextmenu", this.contextmenu.bind(this));
 	
@@ -278,8 +278,8 @@ Compute the internal state of the widget
 tcWidget.prototype.execute = function() {
 	var self = this;
 	this.contextconfig = this.getAttribute("$contextconfig");
-	this.matchSelector = this.getAttribute("$matchSelector"),
-
+	this.matchSelector = this.getAttribute("$matchSelector");
+    if (!this.contextconfig) return false;
 	this.pagedata = {data:{}};
 	$tw.utils.each(this.attributes,function(attribute,name) {
 		if(name.charAt(0) !== "$") {
@@ -287,6 +287,7 @@ tcWidget.prototype.execute = function() {
 		}
 	});
 this.loadSectionFromFile(0);
+return true;
 };
 /*
 Selectively refreshes the widget if needed. Returns true if the widget or any of its children needed re-rendering

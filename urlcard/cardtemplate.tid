@@ -6,14 +6,15 @@ type: text/vnd.tiddlywiki
 #charsize=30
 $textstyle=font-size:((*#charsize*))
 #block=flex
+#configurl=$:/bj/urlcardconfig
 #none=none
 #displaytype=urlcard
-#hide=hide
+#true=true
 #nul=((*@$$touch($faviconurl,$mediaimage,$description,$applicationtype,#null,#blank,@showlink)*))
 
 
 $tidname=((*$title*))
-$showlink=display: ((*@showlink==#hide*??*#none*??*#block*))
+$urlcardconfig=((*@showlink==#true*??*#configurl*))
 
 //if we have  a urlcard type then  display card
 $display=display: ((*$applicationtype==#displaytype*??*#block*??*#none*));
@@ -36,7 +37,7 @@ $text=((*#text/#rule/#term*))
 #rule=/^[\s\S]{((*#maxchars*))}([\s\S]*)$/
 $extratext=((*#text/#rule/#term*))
 
-//check status variable @$$ to see if replacement happened (eg >300 chars)- blank otherwise
+//check status variable @$$ to see if replacement happened (eg >n chars)- blank otherwise
 $extratext=((*@exists(@$$)*??*@abort()*))
 
 #dots=⏬
@@ -58,9 +59,9 @@ $title=((*@outtitle*))
 				</object>
 			</object>
 		</div>
-		<div class="urlcard-content" style=<<card!!textstyle>>><$tcmenu $contextconfig="$:/bj/urlcardconfig" currentTid=<<currentTiddler>>/><<card!!text>><span class="urlcardmore"><span class="dots"><<card!!dots>></span><span><<card!!extratext>></span></span>
+		<div class="urlcard-content" style=<<card!!textstyle>>><$tcmenu $contextconfig=<<card!!urlcardconfig>> currentTid=<<currentTiddler>>/><<card!!text>><span class="urlcardmore"><span class="dots"><<card!!dots>></span><span><<card!!extratext>></span></span>
 		</div>
-		<div class="cardtidlink" style=<<card!!showlink>>><a class="" href=<<card!!href>> target="_blank">{{$:/core/images/preview-open}}</a></div>
+		<div class="cardtidlink"><a class="" href=<<card!!href>> target="_blank">{{$:/core/images/preview-open}}</a></div>
 	</div>
 </$do-transform>
 
