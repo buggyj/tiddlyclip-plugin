@@ -1,7 +1,8 @@
  function send(action,text,aux,extra) {
 
+	var message = document.createElement("div") ,messageBox = document.getElementById("tiddlyclip-message-box-send");
+	if (!messageBox) messageBox = document.getElementById("tiddlyclip-message-box");
 
-	var message = document.createElement("div") ,messageBox = document.getElementById("tiddlyclip-message-box");
 	if(messageBox) {
 		message.setAttribute("data-action",action);
 		message.setAttribute("data-text",text||"");
