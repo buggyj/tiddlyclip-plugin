@@ -1,0 +1,13 @@
+title: $:/bj/SelectCardByTag
+caption: SideNoteCards
+
+<$select tiddler="selectedTag" default='HelloThere'>
+<$list filter={{$:/bj/SideNoteTags}}>
+<option value=<<currentTiddler>>><$view field='title'/></option>
+</$list>
+</$select>
+<$vars showlink="true">
+<$list filter="[applicationtype[urlcard]tag{selectedTag}]">
+
+{{||$:/bj/cardtemplate}}
+</$list></$vars>

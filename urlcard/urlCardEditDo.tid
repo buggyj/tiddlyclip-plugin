@@ -1,0 +1,5 @@
+title: $:/bj/urlCardEditDo
+type: application/x-bclip
+
+#action=<<$action-sendmessage $message="tm-edit-tiddler" param="""((*@currentTid*))""" />
+#null=((*@doStringAction(#action)*))

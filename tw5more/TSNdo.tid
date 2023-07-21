@@ -15,7 +15,9 @@ type: application/x-bclip
 #pack=((*@addToObject(#pack,$tags,tags,list)*))
 
 //load available tags
-#taglist:={{SideNoteTags}}
+#SideNoteTags=$:/bj/SideNoteTags
+#taglist=((*@get(#SideNoteTags)*))
+
 #othervals=((*@addToObject(#altpack,#taglist,taglist,list)*))
 #new=((*@$newtiddler*))
 

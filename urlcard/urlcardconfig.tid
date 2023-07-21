@@ -3,4 +3,5 @@ title: $:/bj/urlcardconfig
 type: text/vnd.tiddlywiki
 
 |!Category|!Display|!Tags|!Rule/do|!Modes|
-|view|[''''[X]]||[[$:/bj/urlCardViewDo]]||
+|view|[''''[☀]]||[[$:/bj/urlCardViewDo]]||
+|edit|<span class="tciconsize"> {{$:/core/images/edit-button}}</span>||$:/bj/urlCardEditDo||
