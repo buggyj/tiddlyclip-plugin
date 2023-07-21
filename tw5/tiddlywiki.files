@@ -10,6 +10,15 @@
 			}
 		},
 		{
+			"file": "now.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/now.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
 			"file": "get.js",
 			"fields": {
 				"type": "application/javascript",
