@@ -21,7 +21,7 @@ $display=display: ((*$applicationtype==#displaytype*??*#block*??*#none*));
 
 //add scheme if missing (check for : before first .)
 #hasScheme=/^([^\.]?)*:/
-#scheme=https:/
+#scheme=https://
 $href=((*!$title/#hasScheme/#null*??*#scheme*))((*$title*))
 
 //choose text and image
