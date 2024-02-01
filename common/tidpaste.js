@@ -1257,6 +1257,22 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 			return val;
 		}
 	 }	 
+
+	 function removeVar(n, test) {
+		var val, type = n.substring(0,1);
+		if (type !== '#' &&type !=='$'&&type !=='@'&& type !=='%'){
+			if (!test) error("source: invalid name"+n);
+			return null;
+		}
+		else {
+				val=table[type][n.substring(1)];
+				if (val == undefined) { 
+					return "";
+				}
+			delete table[type][n.substring(1)];
+			return "";
+		}
+	 }
 	 function touchValOf(n, test) {
 		var val, type = n.substring(0,1);
 		if (type !== '#' &&type !=='$'&&type !=='@'&& type !=='%'){
@@ -1303,7 +1319,13 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		}
 		return  "";
 	}
-	
+	function removeVars(sources,test) {
+		var values = [], returned;
+		for (var i = 0 ; i < sources.length ;i++) {
+			if ((values[i]= removeVars(sources[i],test))==null) return null;
+		}
+		return  "";
+	}
 	function toValues(sources,test) {
 		var values = [], returned;
 		for (var i = 0 ; i < sources.length ;i++) {
@@ -1445,196 +1467,213 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		}
 		if (!/@(.*)\(([\S\s]*?)\)/.test(source) )return {result:null,abort:abort};
 		//abort macro
-		return {result:source.replace(/@(.*)\(([\S\s]*?)\)/g,function(m,key1,key2,offset,str){
-			if (key1=="delete") {
-				if (!key2) {error("delete key not found")}
-				delete table[key2[0]][key2.substring(1)];
-				return "deleted "+key2;
-			}
-			if (key1=="deletefield") {
-				var val2;
-				if (!key2 || valOf(key2, true) == null) {return ""}
-				val2 = valOf(key2);
-				if (!table["$"][val2])  {return ""}
-				delete table["$"][val2]; 
-				return "true";
-			}
-			if (key1=="abort") {
-				if (!key2) {abort=true;return null;} //empty params means abort whatever
-				if (valOf(key2, true) == null) {abort=true;return null;} //if val not exist abort
-				if (valOf(key2) === 'false'){abort=true;return null;}
-				return "";//otherwise just remove the abort() token
-			}
-			if (key1=="exit") {
-				if (!key2 || valOf(key2, true) == null || valOf(key2) === 'false'){throw ("tcexit");}
-				return "";//otherwise just remove the abort() token
-			}
-			if (key1=="exists") {
-				if (valOf(key2, true) != null)
-					return "true";
-				else
-					return "false"
-			}
-			if (key1=="alert") {
-				if (valOf(key2,true) == null)
-					alert(key2+" null");
-				else
-					alert(valOf(key2));
-				return "alerted";
-			}
-			if (key1=="console") {
-				if (!key2 || valOf(key2, true) == null) 
-					console.log(key2," = nodef");
-				else
-					console.log(valOf(key2));
-				return "";
-			}
-			if (key1=="expand") {
-				replaceOp= self.replaceALL(valOf(key2));
-				if (!replaceOp.abort) return replaceOp.result;
-			}
-			if (key1=="source") {
-				 return key2;
-			}
-			
-			var vals;
-			var params = parseParams(key2);
-			if (key1=="$$touch") {
-				if (touchVars(params)=== null){
-					throw ("tcexit");
+		var returnobj;
+			returnobj = {result:source.replace(/@(.*)\(([\S\s]*?)\)/g,function(m,key1,key2,offset,str){
+				if (key1=="delete") {
+					if (!key2) {error("delete key not found")}
+					delete table[key2[0]][key2.substring(1)];
+					return "deleted "+key2;
 				}
-				 return "";
-			}
-			
-			
-			//handle normal functions
-			if (!!key2) vals = toValuesExtra(params);
-			else vals = null;
-			if (key1=="alertAll") {
-				alertAll.apply(null,vals);
-				return "all alerted";
-			}
-			try {
-				if (key1.charAt(0) === "_") throw ("invalid name");
-				return tiddlyclip.macro[key1].apply(tiddlyclip.macro,vals);
-			}
-			catch(e) {
-				if (typeof e === "string" && e === "tcexit") {
-					throw ("tcexit");
-				} else if (typeof e === "string" && e === "tcabort") {
-				//drop thru -  only ingore one line of substitutions
-				} else {
-					alert (key1 + " marco not found");	
-					console.log(e);
-					throw ("tcexit");
+				if (key1=="deletefield") {
+					var val2;
+					if (!key2 || valOf(key2, true) == null) {return ""}
+					val2 = valOf(key2);
+					if (!table["$"][val2])  {return ""}
+					delete table["$"][val2]; 
+					return "true";
+				}
+				if (key1=="abort") {
+					if (!key2) {throw ("tcdoabort")} //empty params means abort whatever
+					if (valOf(key2, true) == null) {throw ("tcdoabort")} //if val not exist abort
+					if (valOf(key2) === 'false'){throw ("tcdoabort")}
+					return "";//otherwise just remove the abort() token
+				}
+				if (key1=="exit") {
+					if (!key2 || valOf(key2, true) == null || valOf(key2) === 'false'){throw ("tcexit");}
+					return "";//otherwise just remove the abort() token
+				}
+				if (key1=="exists") {
+					if (valOf(key2, true) != null)
+						return "true";
+					else
+						return "false"
+				}
+				if (key1=="alert") {
+					if (valOf(key2,true) == null)
+						alert(key2+" null");
+					else
+						alert(valOf(key2));
+					return "alerted";
+				}
+				if (key1=="console") {
+					if (!key2 || valOf(key2, true) == null) 
+						console.log(key2," = nodef");
+					else
+						console.log(valOf(key2));
+					return "";
+				}
+				if (key1=="expand") {
+					replaceOp= self.replaceALL(valOf(key2));
+					if (!replaceOp.abort) return replaceOp.result;
+				}
+				if (key1=="source") {
+					 return key2;
+				}
+				
+				var vals;
+				var params = parseParams(key2);
+				if (key1=="$$touch") {
+					if (touchVars(params)=== null){
+						throw ("tcexit");
+					}
+					 return "";
+				}
+				
+				if (key1=="$$remove") {
+					if (removeVars(params)=== null){
+						throw ("tcexit");
+					}
+					 return "";
+				}
+					
+				//handle normal functions
+				if (!!key2) vals = toValuesExtra(params);
+				else vals = null;
+				if (key1=="alertAll") {
+					alertAll.apply(null,vals);
+					return "all alerted";
+				}
+				try {
+					if (key1.charAt(0) === "_") throw ("invalid name");
+					return tiddlyclip.macro[key1].apply(tiddlyclip.macro,vals);
+				}
+				catch(e) {
+					if (typeof e === "string" && e === "tcexit") {
+						throw ("tcexit");
+					} else if (typeof e === "string" && e === "tcabort") {
+						throw("tcdoabort")
+					// ingore one line of substitutions
+					} else {
+						alert (key1 + " marco not found");	
+						console.log(e);
+						throw ("tcexit");
+					} 
+					abort = true;
+				}
+	/*
+				try {
+					return tiddlyclip[key1](val);
+				} catch (e) {
+					error ("macro "+key1 +" not found");
+					return "macro " + key1 + " not found";
 				} 
-				abort = true;
-			}
-/*
-			try {
-				return tiddlyclip[key1](val);
-			} catch (e) {
-				error ("macro "+key1 +" not found");
-				return "macro " + key1 + " not found";
-			} 
-*/				
-			return m;
-		}),abort:abort};
+	*/				
+				return m;
+			}),abort:abort};
+			return returnobj;
+
 	}
 	
 	Tiddler.prototype.replaceALL=function(source, data){ //replace all ((* *)) delimited strings
 		var self = this, abort=false;
-		return {result:source.replace(/\(\(\*([\S\s]*?)\*\)\)/g,function(m,key,offset,str){ 
-			var parts, vals, res, firstterm, firstparts, testedTrue = true;
-			// check for  ((*conditional*??*Use this variable*??*or use this variable*))
-			firstparts= key.split("*??*");
-			//handle conditional string
-			if (firstparts.length >1) {	
-				var negate=(firstparts[0].substring(0,1)== '!');
-				if (negate) {
-					firstterm = firstparts[0].substring(1);
-				} else {
-					firstterm = firstparts[0];
+		var returned;
+		try {
+			returned = {result:source.replace(/\(\(\*([\S\s]*?)\*\)\)/g,function(m,key,offset,str){ 
+				var parts, vals, res, firstterm, firstparts, testedTrue = true;
+				// check for  ((*conditional*??*Use this variable*??*or use this variable*))
+				firstparts= key.split("*??*");
+				//handle conditional string
+				if (firstparts.length >1) {	
+					var negate=(firstparts[0].substring(0,1)== '!');
+					if (negate) {
+						firstterm = firstparts[0].substring(1);
+					} else {
+						firstterm = firstparts[0];
+					}
+					// regex condition
+					if ((parts= firstterm.split("/")).length ==3) {
+						if ((vals = toValues(parts)) == null) return m;
+						var regParts = (valOf(parts[1])).split("/");
+						var pattern=new RegExp(regParts[1],regParts[2]);
+						
+						if (negate&&pattern.test(vals[0])) testedTrue = false;
+						else if (!negate&&!pattern.test(vals[0]))testedTrue = false;
+					}
+					// comparision
+					else if ((parts= firstterm.split("==")).length ==2) {
+						if ((vals =toValues(parts))==null) return m;
+						if ((res=handleBinaryForm(vals[0],negate?"NQ":"EQ",vals[1]))==null) return m;
+						else if (!res) testedTrue = false; 
+					} 
+					// macro
+					else if ((res = self.handleFunction(firstterm).result) != null) { // a function
+						if ( negate && res==="true") 	{testedTrue = false;}
+						if (!negate && res==="false") {testedTrue = false;}
+
+					}
+					// boolean variable
+					else {
+						if ((vals =valOf(firstterm))==null)  return m;
+						if ( negate && vals==="true") 	testedTrue = false;
+						if (!negate && vals==="false") testedTrue = false;
+					}
+
+					if (testedTrue) {
+						key = firstparts[1];
+					} 
+					else { 
+						if (firstparts.length == 2) return '';//no 'else' defined
+						key = firstparts[2];
+					}
 				}
-				// regex condition
-				if ((parts= firstterm.split("/")).length ==3) {
+				// end of handling conditional string part
+				var parts;
+				// regex ((*@PageRef/#rule/#term*)) or ((*.....*??*@PageRef/#rule/#term*))
+				if ((parts = key.split("/")).length ==3) {
 					if ((vals = toValues(parts)) == null) return m;
-					var regParts = (valOf(parts[1])).split("/");
-					var pattern=new RegExp(regParts[1],regParts[2]);
-					
-					if (negate&&pattern.test(vals[0])) testedTrue = false;
-					else if (!negate&&!pattern.test(vals[0]))testedTrue = false;
+					var regParts = (valOf(parts[1]));
+					var regexBody = regParts.replace(/\/([\s\S]*)\/.*$/,"$1");
+					var regexflags = regParts.replace(/[\s\S]*\/(.*?)$/,"$1");
+					var pattern=new RegExp(regexBody,regexflags);
+					setStatus(null);
+				return vals[0].replace(pattern, function(match){setStatus("r"); return match.replace(new RegExp(regexBody,regexflags), vals[2]);});
 				}
-				// comparision
-				else if ((parts= firstterm.split("==")).length ==2) {
-					if ((vals =toValues(parts))==null) return m;
-					if ((res=handleBinaryForm(vals[0],negate?"NQ":"EQ",vals[1]))==null) return m;
-					else if (!res) testedTrue = false; 
-				} 
-				// macro
-				else if ((res = self.handleFunction(firstterm).result) != null) { // a function
-					if ( negate && res==="true") 	{testedTrue = false;}
-					if (!negate && res==="false") {testedTrue = false;}
-
+				// substitute
+				if ((parts = key.split(":")).length ==3) {
+					if ((vals = toValues(parts)) == null) return m;		
+					//var strg = str.replace(/i/g, function(token){replaced = true; return '!';});
+					setStatus(null);
+					return vals[0].replace(vals[1], function(token){setStatus("r"); return vals[2];});
 				}
-				// boolean variable
-				else {
-					if ((vals =valOf(firstterm))==null)  return m;
-					if ( negate && vals==="true") 	testedTrue = false;
-					if (!negate && vals==="false") testedTrue = false;
-				}
-
-				if (testedTrue) {
-					key = firstparts[1];
-				} 
-				else { 
-					if (firstparts.length == 2) return '';//no 'else' defined
-					key = firstparts[2];
-				}
-			}
-			// end of handling conditional string part
-			var parts;
-			// regex ((*@PageRef/#rule/#term*)) or ((*.....*??*@PageRef/#rule/#term*))
-			if ((parts = key.split("/")).length ==3) {
-				if ((vals = toValues(parts)) == null) return m;
-				var regParts = (valOf(parts[1]));
-				var regexBody = regParts.replace(/\/([\s\S]*)\/.*$/,"$1");
-				var regexflags = regParts.replace(/[\s\S]*\/(.*?)$/,"$1");
-				var pattern=new RegExp(regexBody,regexflags);
-				setStatus(null);
-			return vals[0].replace(pattern, function(match){setStatus("r"); return match.replace(new RegExp(regexBody,regexflags), vals[2]);});
-			}
-			// substitute
-			if ((parts = key.split(":")).length ==3) {
-				if ((vals = toValues(parts)) == null) return m;		
-				//var strg = str.replace(/i/g, function(token){replaced = true; return '!';});
-				setStatus(null);
-				return vals[0].replace(vals[1], function(token){setStatus("r"); return vals[2];});
-			}
-			// add 
-			if ((parts = key.split("+")).length == 2) {
-				if ((vals = toValues(parts)) == null) return m;
-				if ((res = handleBinaryForm(vals[0],"PS",vals[1])) == null) return m;
-				return res.toString();
-			}	
-			// subtract	
-			if ((parts= key.split("-")).length ==2) {
-				if ((vals = toValues(parts,true)) != null) {
-					if ((res = handleBinaryForm(vals[0],"MS",vals[1])) == null) return m;
+				// add 
+				if ((parts = key.split("+")).length == 2) {
+					if ((vals = toValues(parts)) == null) return m;
+					if ((res = handleBinaryForm(vals[0],"PS",vals[1])) == null) return m;
 					return res.toString();
+				}	
+				// subtract	
+				if ((parts= key.split("-")).length ==2) {
+					if ((vals = toValues(parts,true)) != null) {
+						if ((res = handleBinaryForm(vals[0],"MS",vals[1])) == null) return m;
+						return res.toString();
+					}
 				}
-			}
-			// macro
-			var returned = self.handleFunction(key);
-			if (returned.abort) {abort=true; return null};//abort replaceAll completely
-			if ((res = returned.result) != null) return res;
-			else 
-			// vanilla variable
-			if ((res = valOf(key,true)) != null) return res;
-                        else return "";
-			// error
-			return m;
-		}),abort:abort};
+				// macro
+				var returned = self.handleFunction(key);
+				if (returned.abort) {abort=true; return null};//abort replaceAll completely
+				if ((res = returned.result) != null) return res;
+				else 
+				// vanilla variable
+				if ((res = valOf(key,true)) != null) return res;
+							else return "";
+				// error
+				return m;
+			}),abort:abort};
+			return returned;
+		} catch(e){
+			if (typeof e !== "string"  || e !== "tcdoabort") throw (e);
+			return {result:"",abort:true}
+		}
     }
 	///////////////// parser implementation end/////////////////
 	return api;

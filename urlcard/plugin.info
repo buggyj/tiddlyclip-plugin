@@ -1,11 +1,11 @@
 {
-	"title": "$:/plugins/bj/tiddlyclip",
-	"description": "include web content",
-	"name": "tiddlyclip",
+	"title": "$:/plugins/bj/urlcard",
+	"description": "card templates",
+	"name": "tcurlcard",
 	"author": "Jeffrey Wilkinson (aka BJ)",
-	"version": "3.1.2prerelease",
+	"version": "3.1.0prerelease",
 	"core-version": ">=5.2.7",
-	"plugin-priority": "2",
+	"plugin-priority": "4",
 	"source": "https://github.com/buggyj/tiddlyclip-plugin",
 	"plugin-type": "plugin",
 	"list": "readme LICENSE"

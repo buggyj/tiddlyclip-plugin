@@ -87,7 +87,7 @@ var includeNodeType = function (cat, nodeName) {
 	return true;
 }
 
-makeContextMenu.prototype.createCategoryPopups= function (config, widget, selectedtext,e){
+makeContextMenu.prototype.createCategoryPopups= function (config, widget, selectedtext,selectIndex,e){
 	var pagedata = Object.assign({}, widget.pagedata);
 	//replace data to stop caching of selectedtext
 	pagedata.data = Object.assign({}, pagedata.data);	
@@ -100,6 +100,7 @@ makeContextMenu.prototype.createCategoryPopups= function (config, widget, select
 				return function(catname,e){
 					var rules,type;
 					if (selectedtext) pagedata.data.selectedtext = selectedtext;
+					pagedata.data.selectIndex = selectIndex.toString();                                                                        ;
 					pagedata.e=widget.event;
 					pagedata.data.category=catname;//console.log(widget.contextconfig)
 					rules = $tw.wiki.getTiddler(config[catname].rules||"");
@@ -165,17 +166,30 @@ tcWidget.prototype.getValueAsHtmlWikified = function(text,mode) {
 		variables: copyvars(this.variables,"tcmenu")
 	});
 };
+
+var editable = document.getElementById('editable'),
+    word = document.getElementById('word');
+
+editable.addEventListener('click', function(e) {
+    word.innerHTML = getWord();
+}, false);
+
+
 tcWidget.prototype.contextmenu = function (event) {
-	var menu,selectedtext = getSelection().toString().trim();
+	var selectIndex, menu,selectedtext = getSelection().toString().trim();
 	var menuRoot = getContextMenuRoot();
-			if(this.matchSelector && !event.target.matches(this.matchSelector)) {
-				return false;
-			}
+    var range = window.getSelection().getRangeAt(0);
+    if (range.collapsed) {selectIndex = range.startOffset;}
+    else selectIndex= 0;
+    	
+	if(this.matchSelector && !event.target.matches(this.matchSelector)) {
+		return false;
+	}
 	//debounce when menu is showing
 	if (menuRoot.style.display === "block") {event.preventDefault();return;}
     this.event = event;
 	menu = new makeContextMenu(this);
-	menu.createCategoryPopups(this.activeCategories,this,selectedtext,event);
+	menu.createCategoryPopups(this.activeCategories,this,selectedtext,selectIndex,event);
 	menu.show();//console.log("in contextmenu")
 
 	document.addEventListener('click', clickhandler);

@@ -3,18 +3,20 @@ type: text/vnd.tiddlywiki
 
 \define dourl()
 #maxchars=190
-#charsize=30
-$textstyle=font-size:((*#charsize*))
+#charsize=20px
+$textstyle=text-align: left;font-size:((*#charsize*))
 #block=flex
 #configurl=$:/bj/urlcardconfig
 #none=none
 #displaytype=urlcard
 #true=true
 #nul=((*@$$touch($faviconurl,$mediaimage,$description,$applicationtype,#null,#blank,@showlink)*))
+#hidedesc=false
 
-
+#hidedesc=((*@exists($hidedesc)*??*$hidedesc*))
 $tidname=((*$title*))
 $urlcardconfig=((*@showlink==#true*??*#configurl*))
+$imagemodal=$:/bj/imagemodal
 
 //if we have  a urlcard type then  display card
 $display=display: ((*$applicationtype==#displaytype*??*#block*??*#none*));
@@ -26,7 +28,8 @@ $href=((*!$title/#hasScheme/#null*??*#scheme*))((*$title*))
 
 //choose text and image
 $image=((*!$mediaimage==#blank*??*$mediaimage*??*$faviconurl*))
-#text=((*!$description==#blank*??*$description*??*$pagetitle*))
+#description=((*!#hidedesc==#true*??*$description*))
+#text=((*!#description==#blank*??*$description*??*$pagetitle*))
 
 //split large text first #maxchars chars
 #rule=/^([\s\S]{((*#maxchars*))})[\s\S]*$/
@@ -59,11 +62,30 @@ $title=((*@outtitle*))
 				</object>
 			</object>
 		</div>
-		<div class="urlcard-content" style=<<card!!textstyle>>><$tcmenu $contextconfig=<<card!!urlcardconfig>> currentTid=<<currentTiddler>>/><<card!!text>><span class="urlcardmore"><span class="dots"><<card!!dots>></span><span><<card!!extratext>></span></span>
+
+		<div class="urlcard-content" 
+        ><$tcmenu $contextconfig=<<card!!urlcardconfig>> currentTid=<<currentTiddler>>
+          /><$button class="tc-btn-invisible" style=<<card!!textstyle>>            ><$action-sendmessage $message="tm-modal" $param=<<card!!imagemodal>> image=<<card!!image>> 
+               /><<card!!text>><span class="urlcardmore"
+                                         ><span class="dots"
+                                            ><<card!!dots>></span><span
+                                                       ><<card!!extratext>></span></span></$button>
 		</div>
 		<div class="cardtidlink"><a class="" href=<<card!!href>> target="_blank">{{$:/core/images/preview-open}}</a></div>
 	</div>
 </$do-transform>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

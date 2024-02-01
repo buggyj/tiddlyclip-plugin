@@ -2,14 +2,34 @@ title: $:/bj/TSNPutdo
 type: application/x-bclip
 
 $text=((*@sideText*))
-#null=
 $tags=((*@totaglist(@tags)*))
-//don't use data url
-#testDataUrl=/^data/
-$faviconurl=((*!@favIconUrl/#testDataUrl/#null*??*@favIconUrl*))
-
 $pagetitle=((*@pageTitle*))
 $description=((*@description*))
 $mediaimage=((*@mediaImage*))
 $applicationtype=urlcard
-#null=((*@callback(sucess,done)*))
+#true=true
+
+
+//don't store img if it is a data url
+#null=
+#testDataUrl=/^data/
+$faviconurl=((*!@favIconUrl/#testDataUrl/#null*??*@favIconUrl*))
+
+
+//need to test for buggy utube data - check id used in mediaimage matches that in url
+
+//1. try to extract video id
+#match=/(?:www\.)?(?:youtube(?:-nocookie)?\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11}).*/
+#sub=$1
+#utubeid=((*$title/#match/#sub*))
+#test=/((*#utubeid*))/g
+
+//2. check if utube url by look at last regex status (@$$), and if exists (there was a match) look for utube error
+#isutube=((*@exists(@$$)*))
+#utubeErr=((*!#isutube*??*@abort()*))((*$mediaimage/#test/#null*??*@abort()*??*#true*))
+
+//3. if utube error make corrections
+$mediaimage=((*!@exists(#utubeErr)*??*@abort()*))https://i.ytimg.com/vi/((*#utubeid*))/hqdefault.jpg
+#nul=((*@exists(#utubeErr)*??*@delete($description)*))
+
+#nul=((*@callback(sucess,done)*))

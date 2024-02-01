@@ -3,4 +3,6 @@ tags: $:/tags/ViewTemplate
 title: $:/bj/vtemplate
 type: text/vnd.tiddlywiki
 
+<$reveal type="match" stateTitle=<<currentTiddler>> stateField="applicationtype" text="urlcard">
 {{||$:/bj/cardtemplate}}
+</$reveal>

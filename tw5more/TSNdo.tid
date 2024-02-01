@@ -1,25 +1,29 @@
 title: $:/bj/TSNdo
 type: application/x-bclip
 
+//called from side bar to retrieve sites tiddler and also menu data that can be selected on edit.
 #edit=edit
-#nul=((*@$$touch(@opts,$text)*))
+#nul=((*@$$touch(@opts,$text,#type)*))
+#datatid=application/x-tiddler-dictionary
 
 //if not edit then render to html
 #sideText=((*@opts==#edit*??*$text*??*@textoHTML($text,block)*))
-#ff=((*@console(#sideText)*))
-//put all fields into a JSON
 
-#altpack={}
-
-#pack=((*@addToObject(#altpack,#sideText,sideText)*))
+//put  text and tags into a JSON
+#pack=((*@addToObject({},#sideText,sideText)*))
 #pack=((*@addToObject(#pack,$tags,tags,list)*))
 
 //load available tags
 #SideNoteTags=$:/bj/SideNoteTags
 #taglist=((*@get(#SideNoteTags)*))
 
-#othervals=((*@addToObject(#altpack,#taglist,taglist,list)*))
-#new=((*@$newtiddler*))
+#type=((*@get(#SideNoteTags,type)*))
 
+//test - data dict defines a 2-level menu, normal tid contain a list 
+#taglist=((*#type==#datatid*??*@toDoubleList(#taglist)*??*@toObjectList(#taglist)*))
+#othervals=((*@addToObject({},#taglist,taglist,json)*))
+
+#new=((*@$newtiddler*))
 #othervals=((*@addToObject(#othervals,#new,new)*))
-#test=((*@callback(#pack,#othervals)*))
+
+#nul=((*@callback(#pack,#othervals)*))

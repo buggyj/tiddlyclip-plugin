@@ -5,3 +5,5 @@ type: text/vnd.tiddlywiki
 |!Category|!Display|!Tags|!Rule/do|!Modes|
 |view|[''''[☀]]||[[$:/bj/urlCardViewDo]]||
 |edit|<span class="tciconsize"> {{$:/core/images/edit-button}}</span>||$:/bj/urlCardEditDo||
+|description|📖||[[$:/bj/urlCardDescDo]]||
+|nodescription|📘||[[$:/bj/urlCardHideDescDo]]||

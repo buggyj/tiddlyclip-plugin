@@ -23,7 +23,6 @@ type: text/plain
 }
 
 .urlcard-content {
-font-size:20px;
   flex: 1; 
 }
 
