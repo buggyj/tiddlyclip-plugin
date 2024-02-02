@@ -167,14 +167,6 @@ tcWidget.prototype.getValueAsHtmlWikified = function(text,mode) {
 	});
 };
 
-var editable = document.getElementById('editable'),
-    word = document.getElementById('word');
-
-editable.addEventListener('click', function(e) {
-    word.innerHTML = getWord();
-}, false);
-
-
 tcWidget.prototype.contextmenu = function (event) {
 	var selectIndex, menu,selectedtext = getSelection().toString().trim();
 	var menuRoot = getContextMenuRoot();

@@ -3,16 +3,16 @@
 		"tiddlywiki/tiddlyweb",
 		"tiddlywiki/filesystem",
 		"bj/tiddlyclip-plugin",
-		"bj/tiddlyclip-plugin/edittables"
+		"bj/tiddlyclip-plugin/urlcard"
 	],
 	"themes": [
 		"tiddlywiki/vanilla",
 		"tiddlywiki/snowwhite"
 	],
 	"includeWikis": [
-		"../edittb"
+		"../editcard"
 	],
 	"config": {
-		"default-tiddler-location": "../edittb/tiddlers"
+		"default-tiddler-location": "../editcard/tiddlers"
 	}
 }

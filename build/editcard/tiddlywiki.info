@@ -1,7 +1,7 @@
 {
 	"plugins": [
 		"bj/tiddlyclip-plugin",
-		"bj/tiddlyclip-plugin/edittables"
+		"bj/tiddlyclip-plugin/urlcard"
 	],
 	"themes": [
 		"tiddlywiki/vanilla",
