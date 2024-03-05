@@ -100,7 +100,7 @@ makeContextMenu.prototype.createCategoryPopups= function (config, widget, select
 				return function(catname,e){
 					var rules,type;
 					if (selectedtext) pagedata.data.selectedtext = selectedtext;
-					pagedata.data.selectIndex = selectIndex.toString();                                                                        ;
+					pagedata.data.selectIndex = selectIndex.toString();
 					pagedata.e=widget.event;
 					pagedata.data.category=catname;//console.log(widget.contextconfig)
 					rules = $tw.wiki.getTiddler(config[catname].rules||"");
@@ -167,17 +167,33 @@ tcWidget.prototype.getValueAsHtmlWikified = function(text,mode) {
 	});
 };
 
+
 tcWidget.prototype.contextmenu = function (event) {
 	var selectIndex, menu,selectedtext = getSelection().toString().trim();
-	var menuRoot = getContextMenuRoot();
+	var menuRoot;
+	var container2,child,offset;
     var range = window.getSelection().getRangeAt(0);
     if (range.collapsed) {selectIndex = range.startOffset;}
-    else selectIndex= 0;
+    else selectIndex=range.startOffset;
+
+	var container = range.commonAncestorContainer,container2={};
+	if (container.nodeType === Node.TEXT_NODE) {
+		container2 = container.parentNode;
+	  }
+	child = container2.firstChild||container;
+	offset=0;
+	while (child != container) {
+		offset+=child.textContent.length;console.log(child)
+		child=child.nextSibling;
+	}
+	selectIndex += offset;console.log("selectIndex",selectIndex)
+
     	
 	if(this.matchSelector && !event.target.matches(this.matchSelector)) {
 		return false;
 	}
 	//debounce when menu is showing
+	menuRoot = getContextMenuRoot();
 	if (menuRoot.style.display === "block") {event.preventDefault();return;}
     this.event = event;
 	menu = new makeContextMenu(this);
@@ -190,6 +206,7 @@ tcWidget.prototype.contextmenu = function (event) {
 	window.setTimeout(function () {document.addEventListener('contextmenu', clickhandler2)},0);
 }
 
+
 tcWidget.prototype.render = function(parent,nextSibling) {
 
 	this.computeAttributes();
@@ -197,7 +214,8 @@ tcWidget.prototype.render = function(parent,nextSibling) {
 	if (!this.execute())return;
 	this.parentDomNode = parent;
 	parent.addEventListener("contextmenu", this.contextmenu.bind(this));
-	
+	this.makeChildWidgets();
+	this.renderChildren(parent,nextSibling);
 
 }
 
@@ -311,7 +329,9 @@ tcWidget.prototype.refresh = function(changedTiddlers) {
 		this.refreshSelf();
 		return true;
 	}
-	return false;		
+	else {
+		return this.refreshChildren(changedTiddlers);
+	}
 
 };
 

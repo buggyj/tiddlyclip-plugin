@@ -57,7 +57,7 @@ ToDoWidget.prototype.invokeAction = function(triggeringWidget,event) {
 			pagedata.data[name] = attribute;
 		}
 	});
-	cat = {tidtitle:"",doz:this.doz,modes:["nosave"]};//bj title should be ""
+	cat = {tidtitle:"",doz:this.doz,rulemodes:["add"]};//bj title should be ""
 	tiddlyclip.modules.tPaste.paste.call(this, null,pagedata,null,null,cat)
 	return true; // Action was invoked
 };
