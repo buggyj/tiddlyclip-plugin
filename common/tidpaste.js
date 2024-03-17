@@ -1361,7 +1361,7 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 						replaceOp= this.replaceALL(rightSide.text);
 						if (!replaceOp.abort) {
 							try {
-								value = parser (replaceOp.result);
+								value = parser (replaceOp.result,table);
 							} catch (e) {
 								moreThanOne++;
 								break;								
@@ -1468,7 +1468,9 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		if (!/@(.*)\(([\S\s]*?)\)/.test(source) )return {result:null,abort:abort};
 		//abort macro
 		var returnobj;
+
 			returnobj = {result:source.replace(/@(.*)\(([\S\s]*?)\)/g,function(m,key1,key2,offset,str){
+
 				if (key1=="delete") {
 					if (!key2) {error("delete key not found")}
 					delete table[key2[0]][key2.substring(1)];

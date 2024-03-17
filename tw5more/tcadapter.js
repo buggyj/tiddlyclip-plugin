@@ -131,7 +131,7 @@ if($tw.browser) {
 	
 	tiddlyclip.deleteTiddler = function (tid){$tw.wiki.deleteTiddler(tid);}
 	
-	tiddlyclip.parseListFields = ":<";
+	tiddlyclip.parseListFields = ":<#";
 
 	tiddlyclip.parseListField = function(text) {
 		var fields = [];
