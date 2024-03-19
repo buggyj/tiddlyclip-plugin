@@ -909,15 +909,12 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 		_encodeTiddlyLinkList:encodeTiddlyLinkList,
 		_sAll			:updateTables,
 		_gAll			:cloneTables,
-		_s				:function (x,y,z){table[x][y]=toString(z);},
-		_g				:function (x){return valOf(x,true);},
-		_deletefield	:function (field) {
-							if (!table["$"][field])  {error("deletefield value not found")}
-							else delete table["$"][field];
-						}
+		_s				:setVar, 
+		_g				:getVar
 		});
 	}
-	
+	function getVar(x){return valOf(x,true);}
+	function setVar (x,y,z){table[x][y]=toString(z);}
 	function Tiddler(el,truetid) {
 		this.toRemove =[];
 		var current = this,el = el;
@@ -1425,22 +1422,21 @@ tiddlyclip.modules.tiddlerAPI = (function () {
 					 return null;
 		}	
 	}
+	var stringIt = {
+	  set(target, prop, receiver) {
+		return Reflect.set(target, prop, receiver.toString());
+	  }
+	};
 	function cloneTables(){
 		var clone = {'$':null,'@':null,'#':null,'%':null};
-		clone['$'] = Object.assign({}, table['$']);
-		clone['@'] = Object.assign({}, table['@']);
-		clone['#'] = Object.assign({}, table['#']);
-		clone['%'] = Object.assign({}, table['%']);
+		clone['$'] = new Proxy(table['$'], stringIt);
+		clone['@'] = new Proxy(table['@'], stringIt);
+		clone['#'] = new Proxy(table['#'], stringIt);
+		clone['%'] = new Proxy(table['%'], stringIt);
 		return clone;
 	}
 
 	function updateTables(newTabs){
-		for (var tabIndex in table) {
-			table[tabIndex]=[];
-			for (var iStr in newTabs[tabIndex]) {
-				table[tabIndex][iStr]=newTabs[tabIndex][iStr]?newTabs[tabIndex][iStr].toString():"";	
-			}
-		}
 	}
 		
 	 Tiddler.prototype.abort=function(source) {
