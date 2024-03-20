@@ -1,9 +1,9 @@
 title: $:/bj/urlCardHideDescDo
 type: application/x-bclip
 
-#false=false
+#true=true
 #hidedesc=false
 #hidedesc=((*@get(@currentTid,hidedesc)*))
-#nul=((*#hidedesc==#false*??*@exit()*))
-#action=<$action-setfield $tiddler="""((*@currentTid*))""" hidedesc="false")/>
+#nul=((*#hidedesc==#true*??*@exit()*))
+#action=<$action-setfield $tiddler="""((*@currentTid*))""" hidedesc="true"/>
 #null=((*@doaction(#action)*))

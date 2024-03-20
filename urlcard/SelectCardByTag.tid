@@ -1,0 +1,43 @@
+title: $:/bj/SelectCardByTag
+caption: SideNoteCards
+tags: $:/tags/SideBar
+
+<$reveal type="nomatch" state="$:/bj/SideNoteTags!!type" text="">
+<$button popup="$:/temp/bj/popupstate"><$view tiddler=selectedTag/></$button>
+<$reveal type="popup" state="$:/temp/bj/popupstate">
+
+<$select tiddler="selectedTag" default='HelloThere' multiple size=20>
+<$list filter='[title[$:/bj/SideNoteTags]indexes[]sort[title]]' variable=ind>
+<optgroup label=<<ind>>>
+<$list filter='[title[$:/bj/SideNoteTags]getindex<ind>enlist-input[]]' variable=indx>
+<option value=<<indx>>><<indx>></option>
+</$list>
+</optgroup>
+
+</$list>
+</$select>
+
+
+
+</$reveal></$reveal>
+<$reveal type="match" state="$:/bj/SideNoteTags!!type" text="">
+
+Show by Tag: <$select tiddler="selectedTag" default='HelloThere'>
+<$list filter="[enlist{$:/bj/SideNoteTags}]">
+<option value=<<currentTiddler>>><<currentTiddler>></option>
+</$list>
+</$select>
+
+</$reveal>
+
+
+<$vars n={{{[enlist{selectedTag}] +[count[]] }}}>
+    <$list filter="[enlist{selectedTag}tagging[]applicationtype[urlcard]]" variable="ball" >
+        <$list filter="[<ball>tags[]] :intersection[enlist{selectedTag}] +[count[]compare:number:eq<n>]" variable="rem"  >
+            <$vars currentTiddler=<<ball>> showlink="true">
+
+{{||$:/bj/cardtemplate}}
+</$vars>
+        </$list>
+    </$list>
+</$vars>
