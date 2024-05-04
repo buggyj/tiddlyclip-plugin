@@ -4,7 +4,10 @@ function encodeTiddlyLink(title)
 };
 
 exports.name = "nth";
-exports.run = function(data,n) {
-var item = (this._parseStringArray(data,true))[n];//allow duplicates
-return encodeTiddlyLink(item);
+exports.run = function(data,n,onEmpty) {
+var onEmpty = onEmpty||"",items;
+if (n < 0) return onEmpty;
+items = this._parseStringArray(data,true);//allow duplicates
+if (items.length < n ) return onEmpty;
+return encodeTiddlyLink(items[n]);
 };

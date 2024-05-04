@@ -26,7 +26,25 @@
 				"tags":  "$:/tags/tiddlyclip",
 				"module-type": "library"
 			}
-		},		
+		},	
+		{
+			"file": "split.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/str/split.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
+			"file": "splitat.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/str/splitat.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},	
 		{
 			"file": "substring.js",
 			"fields": {
@@ -53,7 +71,25 @@
 				"tags":  "$:/tags/tiddlyclip",
 				"module-type": "library"
 			}
-		},		
+		},
+		{
+			"file": "trim.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/str/trim.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
+			"file": "replaceall.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/str/replaceall.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},	
 		{
 			"file": "StartWithCaps.js",
 			"fields": {
