@@ -1,0 +1,13 @@
+{
+	"tiddlers": [
+		{
+			"file": "nth.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/lists/nth.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		}
+	]
+}
