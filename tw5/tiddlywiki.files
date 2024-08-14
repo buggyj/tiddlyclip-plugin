@@ -1,6 +1,15 @@
 {
 	"tiddlers": [
 		{
+			"file": "splithtmlat.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/splithtmlat.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
 			"file": "convert.js",
 			"fields": {
 				"type": "application/javascript",
@@ -239,6 +248,15 @@
 			"fields": {
 				"type": "application/javascript",
 				"title": "$:/plugins/bj/tiddlyclip/getlinktext.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
+		},
+		{
+			"file": "saveto.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/saveto.js",
 				"tags":  "$:/tags/tiddlyclip",
 				"module-type": "library"
 			}
