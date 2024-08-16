@@ -57,10 +57,10 @@ function save (text,method,callback,options) {
 
 
 exports.name ="saveto";
-exports.run  = function(title,text,sudir)
+exports.run  = function(title,text,subdir)
 	{
 if (!text) return "";
-sudir = subir||"";
+subdir = subdir||"";
 return csaver(text,title,subdir,function (){alert("dl'ed")});
 
 
