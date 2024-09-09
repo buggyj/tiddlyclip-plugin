@@ -13,8 +13,15 @@ type: application/x-bclip
 #pack=((*@addToObject({},#sideText,sideText)*))
 #pack=((*@addToObject(#pack,$tags,tags,list)*))
 
+//if opts begins with @ it is a request of tags with that name
+#SideNoteTags=$:/bj/SideNoteTags@Start
+#SideNoteTagsOther=$:/bj/SideNoteTags((*@opts*))
+//if opts begins with @ it is a request of tags
+#tagreq=((*@slice(@opts,0,1)*))
+#at=@
+#SideNoteTags=((*#tagreq==#at*??*#SideNoteTagsOther*??*#SideNoteTags*))
+
 //load available tags
-#SideNoteTags=$:/bj/SideNoteTags
 #taglist=((*@get(#SideNoteTags)*))
 
 #type=((*@get(#SideNoteTags,type)*))

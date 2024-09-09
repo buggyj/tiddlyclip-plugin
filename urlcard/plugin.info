@@ -3,7 +3,7 @@
 	"description": "card templates",
 	"name": "tcurlcard",
 	"author": "Jeffrey Wilkinson (aka BJ)",
-	"version": "3.1.1prerelease",
+	"version": "3.2.0",
 	"core-version": ">=5.3.1",
 	"plugin-priority": "4",
 	"source": "https://github.com/buggyj/tiddlyclip-plugin",

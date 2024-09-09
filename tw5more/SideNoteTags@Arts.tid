@@ -1,0 +1,8 @@
+title: $:/bj/SideNoteTags@Arts
+type: application/x-tiddler-dictionary
+
+Art: ArtisticExpression plasticArts fineArts Artists
+Geography&Travel: ExploringTheWorld MapsAndPlaces TravelAndLearn
+History: PastAndPresent HistoricalReflections LearningFromHistory
+Culture: CulturalJourney Religion Politics
+Other:@Personal @STEM @Start
