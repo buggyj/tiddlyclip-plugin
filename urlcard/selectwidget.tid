@@ -1,0 +1,15 @@
+title: $:/bj/urlcard/selectwidget
+
+
+\widget $select.override()
+<$parameters $params="params-var">
+	<$genesis
+			$type="$select"
+			$remappable="no"
+			$names="[<params-var>jsonindexes[]]"
+			$values="[<params-var>jsonindexes[]] :map[<params-var>jsonget<currentTiddler>]"
+			>
+<$slot $name="ts-raw">
+	</$genesis>
+</$parameters>
+\end

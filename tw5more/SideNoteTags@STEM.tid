@@ -1,6 +1,8 @@
 title: $:/bj/SideNoteTags@STEM
 type: application/x-tiddler-dictionary
 
-Science: ScientificThoughts DiscoveringScience ScientificMethod Maths&Statistics 
-Technology: AI Software hardware networks automation CarsPlanesShips MagaStructures
-Other:@Personal @Arts @Start
+Science: ScientificThoughts DiscoveringScience ScientificMethod  
+Technology: AI SocialMedia Software hardware networks automation CarsPlanesShips 
+Engineering:MagaStructures
+Maths:Statistics Trigonometry MathLiteracy 
+Other:@Personal @Arts @Start @Categories @Topic

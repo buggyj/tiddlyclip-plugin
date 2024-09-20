@@ -4,16 +4,27 @@ tags: $:/tags/SideBar
 
 \import $:/bj/urlcard/selectwidget
 
+\define acts() <$action-listops $tiddler="$:/temp/bj/cardselectedTags"$field="text" $subfilter="-[<listTiddler>]"/>
+
+\define catlist()
+<$list filter="[enlist{$:/temp/bj/cardselectedTags}]" variable =listTiddler>
+<$macrocall $name="tag-pill-body" tag=<<listTiddler>> icon="$:/core/images/delete-button" colour="red"palette={{$:/palette}} element-tag="""$button""" element-attributes="""actions=<<acts>> tag='span'"""/> 
+\end
+
 \define selactions()
 <% if [{$:/temp/bj/cardselectedTag}prefix[@]] %>
 <$action-setfield $tiddler="$:/temp/bj/cardselectedmenu" text={{{[{$:/temp/bj/cardselectedTag}split[ ]first[]addprefix[$:/bj/SideNoteTags]]}}}/>
 <$action-setfield $tiddler="$:/temp/bj/cardselectedTag" text={{{[{$:/temp/bj/cardselectedTag}split[ ]first[]]}}}/>
+<$action-setfield $tiddler="$:/temp/bj/cardselectedGrp" text={{{[{$:/temp/bj/cardselectedTag}split[ ]first[]]}}}/>
+<% else %>
+<$action-listops $tiddler="$:/temp/bj/cardselectedTags" $field="text"  $subfilter={{$:/temp/bj/cardselectedTag}}/>
+<$action-setfield $tiddler="$:/temp/bj/cardselectedTag" text={{$:/temp/bj/cardselectedGrp}}/>
 <% endif %>
 \end
 \define addtype(x) $x$!!type
 <<selactions>>
 <$reveal type="nomatch" state={{{[{$:/temp/bj/cardselectedmenu}addsuffix[!!type]]}}} text="">
-<$button popup="$:/temp/bj/popupstate"><$view tiddler="$:/temp/bj/cardselectedTag"/></$button>
+<$button popup="$:/temp/bj/popupstate"><$view tiddler="$:/temp/bj/cardselectedTag"/></$button><<catlist>>
 <$reveal type="popup" state="$:/temp/bj/popupstate">
 
 <$select.override tiddler="$:/temp/bj/cardselectedTag" default='HelloThere' multiple size=20 actions=<<selactions>>>
@@ -37,7 +48,7 @@ tags: $:/tags/SideBar
 
 </$reveal></$reveal>
 <$reveal type="match" state={{{[{$:/temp/bj/cardselectedmenu}addsuffix[!!type]]}}} text="">
-<$button popup="$:/temp/bj/popupstate"><$view tiddler="$:/temp/bj/cardselectedTag"/></$button>
+<$button popup="$:/temp/bj/popupstate"><$view tiddler="$:/temp/bj/cardselectedTag"/></$button><<catlist>>
 <$reveal type="popup" state="$:/temp/bj/popupstate">
 <$vars lst={{{[{$:/temp/bj/cardselectedmenu}get[text]]}}}>
 <$select.override tiddler="$:/temp/bj/cardselectedTag" default='HelloThere' multiple actions=<<selactions>>>
@@ -49,9 +60,9 @@ tags: $:/tags/SideBar
 </$reveal></$reveal>
 
 
-<$vars n={{{[enlist{$:/temp/bj/cardselectedTag}] +[count[]] }}}>
-    <$list filter="[enlist{$:/temp/bj/cardselectedTag}tagging[]applicationtype[urlcard]]" variable="ball" >
-        <$list filter="[<ball>tags[]] :intersection[enlist{$:/temp/bj/cardselectedTag}] +[count[]compare:number:eq<n>]" variable="rem"  >
+<$vars n={{{[enlist{$:/temp/bj/cardselectedTags}] +[count[]] }}}>
+    <$list filter="[enlist{$:/temp/bj/cardselectedTags}tagging[]applicationtype[urlcard]]" variable="ball" >
+        <$list filter="[<ball>tags[]] :intersection[enlist{$:/temp/bj/cardselectedTags}] +[count[]compare:number:eq<n>]" variable="rem"  >
             <$vars currentTiddler=<<ball>> showlink="true">
 
 {{||$:/bj/cardtemplate}}
