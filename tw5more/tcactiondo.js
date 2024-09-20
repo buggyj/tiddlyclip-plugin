@@ -51,13 +51,14 @@ ToDoWidget.prototype.invokeAction = function(triggeringWidget,event) {
 	var pagedata = {data:{}};
 	this.computeAttributes();
 	this.doz = this.getAttribute("$do","");
+	this.title = this.getAttribute("$title","");
 	if (this.doz === "") this.doz = [this.getAttribute("$doThis","")];
 	$tw.utils.each(this.attributes,function(attribute,name) {
 		if(name.charAt(0) !== "$") {
 			pagedata.data[name] = attribute;
 		}
 	});
-	cat = {tidtitle:"",doz:this.doz,rulemodes:["add"]};//bj title should be ""
+	cat = {tidtitle:this.title,doz:this.doz,rulemodes:"append add"};//bj title should be ""
 	tiddlyclip.modules.tPaste.paste.call(this, null,pagedata,null,null,cat)
 	return true; // Action was invoked
 };
