@@ -341,6 +341,15 @@
 				"tags":  "$:/tags/tiddlyclip",
 				"module-type": "library"
 			}
+		},
+		{
+			"file": "openwindow.js",
+			"fields": {
+				"type": "application/javascript",
+				"title": "$:/plugins/bj/tiddlyclip/openwindow.js",
+				"tags":  "$:/tags/tiddlyclip",
+				"module-type": "library"
+			}
 		}
 	]
 }

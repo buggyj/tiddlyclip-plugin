@@ -79,6 +79,7 @@ var hasMode = function  (cat,mode) {
 	
 var includeNodeType = function (cat, nodeName) {
 	
+	if (hasMode (cat, "@hide")) return false;
 	if (hasMode (cat,"@link")) {
 		if (nodeName === "A" || nodeName === "a") return true;
 		return false;

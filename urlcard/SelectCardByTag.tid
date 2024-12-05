@@ -3,14 +3,25 @@ caption: SideNoteCards
 tags: $:/tags/SideBar
 
 \import $:/bj/urlcard/selectwidget
-
-\define acts() <$action-listops $tiddler="$:/temp/bj/cardselectedTags"$field="text" $subfilter="-[<listTiddler>]"/>
+\define acts() 
+<%if [<modifier>match[shift]]%>
+<$action-listops $tiddler="$:/temp/bj/cardselectedTags"$field="text" $subfilter="-[<listTiddler>]"/>
+<$action-listops $tiddler="$:/temp/bj/cardselectedNotTags"$field="text" $subfilter="[<listTiddler>]"/>
+<%else%>
+<$action-listops $tiddler="$:/temp/bj/cardselectedNotTags"$field="text" $subfilter="-[<listTiddler>]"/>
+<$action-listops $tiddler="$:/temp/bj/cardselectedTags"$field="text" $subfilter="-[<listTiddler>]"/>
+<%endif %>
+\end
 
 \define catlist()
 <$list filter="[enlist{$:/temp/bj/cardselectedTags}]" variable =listTiddler>
-<$macrocall $name="tag-pill-body" tag=<<listTiddler>> icon="$:/core/images/delete-button" colour="red"palette={{$:/palette}} element-tag="""$button""" element-attributes="""actions=<<acts>> tag='span'"""/> 
+<$macrocall $name="tag-pill-body" tag=<<listTiddler>> icon="$:/core/images/delete-button" colour="green"palette={{$:/palette}} element-tag="""$button""" element-attributes="""actions=<<acts>> tag='span'"""/> 
 \end
 
+\define negcatlist()
+<$list filter="[enlist{$:/temp/bj/cardselectedNotTags}]" variable =listTiddler>
+<$macrocall $name="tag-pill-body" tag=<<listTiddler>> icon="$:/core/images/delete-button" colour="red"palette={{$:/palette}} element-tag="""$button""" element-attributes="""actions=<<acts>> tag='span'"""/> 
+\end
 \define selactions()
 <% if [{$:/temp/bj/cardselectedTag}prefix[@]] %>
 <$action-setfield $tiddler="$:/temp/bj/cardselectedmenu" text={{{[{$:/temp/bj/cardselectedTag}split[ ]first[]addprefix[$:/bj/SideNoteTags]]}}}/>
@@ -18,13 +29,13 @@ tags: $:/tags/SideBar
 <$action-setfield $tiddler="$:/temp/bj/cardselectedGrp" text={{{[{$:/temp/bj/cardselectedTag}split[ ]first[]]}}}/>
 <% else %>
 <$action-listops $tiddler="$:/temp/bj/cardselectedTags" $field="text"  $subfilter={{$:/temp/bj/cardselectedTag}}/>
+<$action-listops $tiddler="$:/temp/bj/cardselectedNotTags" $field="text"  $subfilter="-[{$:/temp/bj/cardselectedTag}]"/>
 <$action-setfield $tiddler="$:/temp/bj/cardselectedTag" text={{$:/temp/bj/cardselectedGrp}}/>
 <% endif %>
 \end
 \define addtype(x) $x$!!type
-<<selactions>>
 <$reveal type="nomatch" state={{{[{$:/temp/bj/cardselectedmenu}addsuffix[!!type]]}}} text="">
-<$button popup="$:/temp/bj/popupstate"><$view tiddler="$:/temp/bj/cardselectedTag"/></$button><<catlist>>
+<$button popup="$:/temp/bj/popupstate"><$view tiddler="$:/temp/bj/cardselectedTag"/></$button><<catlist>> <<negcatlist>>
 <$reveal type="popup" state="$:/temp/bj/popupstate">
 
 <$select.override tiddler="$:/temp/bj/cardselectedTag" default='HelloThere' multiple size=20 actions=<<selactions>>>
@@ -48,7 +59,7 @@ tags: $:/tags/SideBar
 
 </$reveal></$reveal>
 <$reveal type="match" state={{{[{$:/temp/bj/cardselectedmenu}addsuffix[!!type]]}}} text="">
-<$button popup="$:/temp/bj/popupstate"><$view tiddler="$:/temp/bj/cardselectedTag"/></$button><<catlist>>
+<$button popup="$:/temp/bj/popupstate"><$view tiddler="$:/temp/bj/cardselectedTag"/></$button><<catlist>><<negcatlist>>
 <$reveal type="popup" state="$:/temp/bj/popupstate">
 <$vars lst={{{[{$:/temp/bj/cardselectedmenu}get[text]]}}}>
 <$select.override tiddler="$:/temp/bj/cardselectedTag" default='HelloThere' multiple actions=<<selactions>>>
@@ -61,12 +72,11 @@ tags: $:/tags/SideBar
 
 
 <$vars n={{{[enlist{$:/temp/bj/cardselectedTags}] +[count[]] }}}>
-    <$list filter="[enlist{$:/temp/bj/cardselectedTags}tagging[]applicationtype[urlcard]]" variable="ball" >
+    <$list filter="[enlist{$:/temp/bj/cardselectedTags}tagging[]applicationtype[urlcard]] -[enlist{$:/temp/bj/cardselectedNotTags}tagging[]applicationtype[urlcard]]" variable="ball" >
         <$list filter="[<ball>tags[]] :intersection[enlist{$:/temp/bj/cardselectedTags}] +[count[]compare:number:eq<n>]" variable="rem"  >
             <$vars currentTiddler=<<ball>> showlink="true">
-
-{{||$:/bj/cardtemplate}}
-</$vars>
+                {{||$:/bj/cardtemplate}}
+            </$vars>
         </$list>
     </$list>
 </$vars>
